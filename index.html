@@ -29,47 +29,22 @@
 
   <script>
     const sections = [
-      // Limpieza básica
-      {id:'chkTemp', label:'Archivos temporales', cmds:[
-        '# Limpia temp','Remove-Item "$env:TEMP\\*" -Recurse -Force','Remove-Item "C:\\Windows\\Temp\\*" -Recurse -Force'
-      ]},
-      {id:'chkRecycle', label:'Vaciar papelera', cmds:[
-        '# Papelera','Clear-RecycleBin -Force'
-      ]},
-      // Windows Update
-      {id:'chkWUCache', label:'WU cache y logs', cmds:[
-        '# WU','Stop-Service wuauserv','Remove-Item "C:\\Windows\\SoftwareDistribution\\Download\\*" -Recurse -Force','Remove-Item "C:\\Windows\\Logs\\WindowsUpdate\\*" -Recurse -Force','Start-Service wuauserv'
-      ]},
-      {id:'chkDistStore', label:'DataStore SD', cmds:[
-        '# DataStore','Remove-Item "C:\\Windows\\SoftwareDistribution\\DataStore\\*" -Recurse -Force'
-      ]},
-      {id:'chkWINSXS', label:'Component Store', cmds:[
-        '# ComponentStore','Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase'
-      ]},
-      {id:'chkCBS', label:'CBS logs', cmds:[
-        '# CBS','Remove-Item "C:\\Windows\\Logs\\CBS\\*" -Recurse -Force'
-      ]},
-      {id:'chkPrefetch', label:'Prefetch & icon cache', cmds:[
-        '# Prefetch','Remove-Item "C:\\Windows\\Prefetch\\*" -Recurse -Force','ie4uinit.exe -ClearIconCache'
-      ]},
+      {id:'chkTemp', label:'Archivos temporales', cmds:['# Limpia temp','Remove-Item "$env:TEMP\\*" -Recurse -Force','Remove-Item "C:\\Windows\\Temp\\*" -Recurse -Force']},
+      {id:'chkRecycle', label:'Vaciar papelera', cmds:['# Papelera','Clear-RecycleBin -Force']},
+      {id:'chkWUCache', label:'WU cache y logs', cmds:['# WU','Stop-Service wuauserv','Remove-Item "C:\\Windows\\SoftwareDistribution\\Download\\*" -Recurse -Force','Remove-Item "C:\\Windows\\Logs\\WindowsUpdate\\*" -Recurse -Force','Start-Service wuauserv']},
+      {id:'chkDistStore', label:'DataStore SD', cmds:['# DataStore','Remove-Item "C:\\Windows\\SoftwareDistribution\\DataStore\\*" -Recurse -Force']},
+      {id:'chkWINSXS', label:'Component Store', cmds:['# ComponentStore','Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase']},
+      {id:'chkCBS', label:'CBS logs', cmds:['# CBS','Remove-Item "C:\\Windows\\Logs\\CBS\\*" -Recurse -Force']},
+      {id:'chkPrefetch', label:'Prefetch & icon cache', cmds:['# Prefetch','Remove-Item "C:\\Windows\\Prefetch\\*" -Recurse -Force','ie4uinit.exe -ClearIconCache']},
       {id:'chkDNS', label:'Flush DNS', cmds:['ipconfig /flushdns']},
-      {id:'chkEvents', label:'Event Logs', cmds:[
-        '# Eventos','wevtutil el | ForEach-Object { wevtutil cl $_ }'
-      ]},
-      {id:'chkSearchIndex', label:'Rebuild Search Index', cmds:[
-        'Stop-Service WSearch','Remove-Item "$env:ProgramData\\Microsoft\\Search\\Data\\Applications\\Windows\\*" -Recurse -Force','Start-Service WSearch'
-      ]},
+      {id:'chkEvents', label:'Event Logs', cmds:['# Eventos','wevtutil el | ForEach-Object { wevtutil cl $_ }']},
+      {id:'chkSearchIndex', label:'Rebuild Search Index', cmds:['Stop-Service WSearch','Remove-Item "$env:ProgramData\\Microsoft\\Search\\Data\\Applications\\Windows\\*" -Recurse -Force','Start-Service WSearch']},
       {id:'chkWMI', label:'WMI repo', cmds:['winmgmt /verifyrepository','winmgmt /salvagerepository']},
-      {id:'chkDefender', label:'Defender cache', cmds:[
-        'Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Scans\\*" -Recurse -Force','Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Support\\*" -Recurse -Force'
-      ]},
-      {id:'chkDiag', label:'Crash dumps', cmds:[
-        'Remove-Item "$env:LOCALAPPDATA\\CrashDumps\\*" -Recurse -Force'
-      ]},
+      {id:'chkDefender', label:'Defender cache', cmds:['Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Scans\\*" -Recurse -Force','Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Support\\*" -Recurse -Force']},
+      {id:'chkDiag', label:'Crash dumps', cmds:['Remove-Item "$env:LOCALAPPDATA\\CrashDumps\\*" -Recurse -Force']},
       {id:'chkSpotlight', label:'Spotlight Assets', cmds:['Remove-Item "$env:LOCALAPPDATA\\Packages\\Microsoft.Windows.ContentDeliveryManager*_LocalState\\Assets\\*" -Recurse -Force']},
       {id:'chkClipboard', label:'Clipboard', cmds:['Set-Clipboard -Value $null']},
       {id:'chkIconCache', label:'IconCache', cmds:['Stop-Process explorer -Force','Remove-Item "$env:LocalAppData\\IconCache.db" -Force','Start-Process explorer']},
-      // Optimizaciones
       {id:'chkHibernate', label:'Desactivar hibernación', cmds:['powercfg -h off']},
       {id:'chkSSD', label:'Optimizar SSD', cmds:['Optimize-Volume -DriveLetter C -ReTrim -Verbose','Disable-ScheduledTask -TaskPath "Microsoft\\Windows\\Defrag\\" -TaskName "ScheduledDefrag"']},
       {id:'chkFonts', label:'FontCache', cmds:['Stop-Service FontCache -Force','Remove-Item "$env:WinDir\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache*" -Recurse -Force','Start-Service FontCache']},
@@ -78,7 +53,6 @@
       {id:'chkWindowsOld', label:'Eliminar Windows.old', cmds:['Remove-Item "C:\\Windows.old\\*" -Recurse -Force']},
       {id:'chkTelemetry', label:'Desactivar telemetría', cmds:['Stop-Service DiagTrack -Force']},
       {id:'chkStoreCache', label:'MS Store cache', cmds:['Start-Process wsreset.exe -Wait']},
-      // Apps y bloatware
       {id:'chkXbox', label:'Xbox', cmds:['Get-AppxPackage *XboxApp* | Remove-AppxPackage']},
       {id:'chkGameBar', label:'Game Bar', cmds:['Get-AppxPackage *XboxGameBar* | Remove-AppxPackage']},
       {id:'chk3DBuilder', label:'3D Builder', cmds:['Get-AppxPackage *3DBuilder* | Remove-AppxPackage']},
@@ -95,13 +69,12 @@
       {id:'chkCamera', label:'Camera', cmds:['Get-AppxPackage *Camera* | Remove-AppxPackage']},
       {id:'chkCalculator', label:'Calculator', cmds:['Get-AppxPackage *Calculator* | Remove-AppxPackage']},
       {id:'chkFeedbackHub', label:'Feedback Hub', cmds:['Get-AppxPackage *FeedbackHub* | Remove-AppxPackage']},
-      // Avanzadas V5
       {id:'chkRestorePoints', label:'Puntos de restauración', cmds:['vssadmin delete shadows /for=C: /oldest']},
       {id:'chkVssResize', label:'ShadowStorage 10%', cmds:['vssadmin resize shadowstorage /for=C: /on=C: /maxsize=10%']},
       {id:'chkWER', label:'WER logs', cmds:['Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\*" -Recurse -Force']},
       {id:'chkEventTrace', label:'EventTrace logs', cmds:['Remove-Item "C:\\Windows\\System32\\winevt\\Logs\\*" -Force']},
       {id:'chkOfficeCache', label:'Cache Office', cmds:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Office\\16.0\\OfficeFileCache\\*" -Recurse -Force']},
-      {id:'chkAppXCache', label:'AppX Cache', cmds:['Remove-Item "$env:LOCALAPPDATA\\Packages\\*AppX*\\LocalState\\*" -Recurse -Force']},
+      {id:'chkAppXCache', label:'AppX Cache', cmds:['Remove-Item "$env:LOCALAPPDATA\Packages\*AppX*\LocalState\*" -Recurse -Force']},
       {id:'chkDriverBackup', label:'Driver Backups', cmds:['pnputil.exe /enum-drivers | ForEach-Object {$_.PublishedName} | ForEach-Object {pnputil.exe /delete-driver $_ /uninstall /force}']},
       {id:'chkPageFile', label:'pagefile.sys', cmds:['Remove-Item "C:\\pagefile.sys" -Force']},
       {id:'chkInstallerTemp', label:'Installer Temp', cmds:['Remove-Item "C:\\Windows\\Installer\\*.tmp" -Recurse -Force']},
@@ -116,11 +89,11 @@
       {id:'chkNbstat', label:'NetBIOS Cache', cmds:['nbtstat -R']},
       {id:'chkSMB1', label:'Deshabilitar SMBv1', cmds:['Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force']},
       {id:'chkLangPacks', label:'Idiomas innecesarios', cmds:['Get-WinUserLanguageList | Where-Object {$_.LanguageTag -notin @("es-AR","en-US")} | ForEach-Object { Remove-WinUserLanguageList $_ }']},
-      {id:'chkWinTips', label:'Sugerencias Windows', cmds:['New-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Value 0 -PropertyType DWord -Force']},
-      {id:'chkStartupApps', label:'Startup Apps', cmds:['Get-CimInstance Win32_StartupCommand | Where-Object {$_.Command -notlike "*explorer.exe*"} | ForEach-Object { # revisar manualmente }']},
-      {id:'chkSchedTasks', label:'Tareas programadas', cmds:['Get-ScheduledTask | Where-Object {$_.TaskName -in @("Customer Experience Improvement Program","Autochk","WmpNetworkSvc") } | Disable-ScheduledTask']},
+      {id:'chkWinTips', label:'Sugerencias Windows', cmds:['New-ItemProperty -Path "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Value 0 -PropertyType DWord -Force']},
+      {id:'chkStartupApps', label:'Startup Apps', cmds:['Get-CimInstance Win32_StartupCommand | Where-Object {$_.Command -notlike "*explorer.exe*"} | ForEach-Object { }']},
+      {id:'chkSchedTasks', label:'Tareas programadas', cmds:['Get-ScheduledTask | Where-Object {$_.TaskName -in @("Customer Experience Improvement Program","Autochk","WmpNetworkSvc")} | Disable-ScheduledTask']},
       {id:'chkFileCache', label:'System File Cache', cmds:['Clear-FileCache']},
-      {id:'chkPrefetchOpt', label:'Prefetch Opt', cmds:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters" -Name EnableSuperfetch -Value 0 -Force']},
+      {id:'chkPrefetchOpt', label:'Prefetch Opt', cmds:['Set-ItemProperty -Path "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters" -Name EnableSuperfetch -_VALUE 0 -Force']},
       {id:'chkDefragC', label:'Defrag C:', cmds:['Optimize-Volume -DriveLetter C -Defrag -Verbose']},
       {id:'chkWSL', label:'WSL Distribuciones', cmds:['wsl --shutdown','Get-ChildItem "$env:USERPROFILE\\AppData\\Local\\Packages" | Where-Object {$_.Name -like "*CanonicalGroupLimited*"} | Remove-Item -Recurse -Force']},
       {id:'chkDocker', label:'Docker Cleanup', cmds:['docker system prune -af']},
@@ -128,7 +101,7 @@
       {id:'chkWinFeatures', label:'Desactivar características', cmds:['Disable-WindowsOptionalFeature -Online -FeatureName XPSViewer,MediaPlayback,Printing-PrintToPDFServices-Features -NoRestart']},
       {id:'chkNetProfiles', label:'Network Profiles', cmds:['Get-NetConnectionProfile | Remove-NetConnectionProfile']},
       {id:'chkWifiProfiles', label:'WiFi Profiles', cmds:['netsh wlan delete profile name="*"']},
-      {id:'chkRDP', label:'Desactivar RDP', cmds:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" -Name fDenyTSConnections -Value 1']},
+      {id:'chkRDP', label:'Desactivar RDP', cmds:['Set-ItemProperty -Path "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" -Name fDenyTSConnections -Value 1']},
       {id:'chkMemoryDumps', label:'Memory Dumps', cmds:['Remove-Item "C:\\Windows\\MEMORY.DMP" -Force']}
     ];
 
@@ -136,8 +109,7 @@
     const opts = document.querySelector('.options');
     sections.forEach(s => {
       const lb = document.createElement('label');
-      const inp = document.createElement('input');
-      inp.type='checkbox'; inp.id=s.id; inp.checked=true;
+      const inp = document.createElement('input'); inp.type='checkbox'; inp.id=s.id; inp.checked=true;
       lb.append(inp,' ',s.label);
       opts.append(lb);
     });
@@ -145,19 +117,16 @@
     // Actions
     const scriptArea = document.getElementById('script');
     document.querySelector('.controls').addEventListener('click', e => {
-      const act = e.target.dataset.action;
-      if(!act) return;
+      const act = e.target.dataset.action; if(!act) return;
       if(act==='all') sections.forEach(s=>document.getElementById(s.id).checked=true);
       if(act==='gen'){
-        let lines = ['# WC ULTRA Serie - V5 Máximo',
-          'if(-not([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){Write-Warning "Ejecute como Administrador"; Exit}',''];
-        sections.filter(s=>document.getElementById(s.id).checked)
-          .forEach(s=>{ lines.push(...s.cmds,''); });
+        const lines=['# WC ULTRA Serie - V5 Máximo','if(-not([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){Write-Warning "Ejecute como Administrador"; Exit}',''];
+        sections.filter(s=>document.getElementById(s.id).checked).forEach(s=>lines.push(...s.cmds,''));
         lines.push('Write-Host "¡Limpieza completa!" -ForegroundColor Green');
-        scriptArea.value = lines.join('\r\n');
+        scriptArea.value=lines.join('\r\n');
       }
       if(act==='copy'){
-        navigator.clipboard.writeText(scriptArea.value).then(()=>alert('Copiado')).catch(()=>{scriptArea.select();document.execCommand('copy');alert('Copiado (fallback)');});
+        navigator.clipboard.writeText(scriptArea.value).then(_=>alert('Copiado')).catch(_=>{scriptArea.select();document.execCommand('copy');alert('Copiado (fallback)');});
       }
     });
   </script>
