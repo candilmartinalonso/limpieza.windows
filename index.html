@@ -1,117 +1,138 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Script de Limpieza Seguro para Windows</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Windows Cleaner ULTRA Serie - Expanded</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background: #fafafa; color: #333; }
-    h1 { text-align: center; }
-    #script { background: #f0f0f0; padding: 20px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; }
-    button { display: block; margin: 20px auto; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    body { font:14px Arial, sans-serif; margin:20px; background:#f9f9f9; color:#222; }
+    h1 { text-align:center; color:#003366; }
+    .controls { text-align:center; margin-bottom:15px; }
+    .options { column-count:2; column-gap:40px; margin-bottom:20px; }
+    .options label { display:block; margin-bottom:6px; cursor:pointer; }
+    textarea { width:100%; height:600px; font-family:Consolas, monospace; font-size:13px; padding:12px; border:1px solid #ccc; border-radius:5px; white-space:pre; overflow:auto; }
+    button { margin:5px; padding:10px 22px; font-size:14px; background:#005a9e; color:white; border:none; border-radius:4px; cursor:pointer; }
+    button:hover { background:#004078; }
+    hr { border:0; border-top:1px dashed #bbb; margin:25px 0; }
   </style>
 </head>
 <body>
-  <h1>Script de Limpieza Seguro para Windows</h1>
-  <p>Copia el siguiente código y pégalo en tu consola de PowerShell <strong>ejecutada como administrador</strong>:</p>
-  <pre id="script">
-# ==============================================
-# Limpieza Segura y Optimizada de Windows
-# ==============================================
+  <h1>Windows Cleaner ULTRA Serie - Expanded</h1>
+  <div class="controls">
+    <button id="selectAll">Seleccionar Todo</button>
+    <button id="generate">Generar Script</button>
+    <button id="copyAll">Copiar Script</button>
+  </div>
 
-# Verificar privilegios de administrador
-$mr = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if (-not $mr.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Warning "Este script debe ejecutarse con permisos de Administrador."
-    exit 1
-}
+  <div class="options">
+    <!-- Opciones de limpieza -->
+    <label><input type="checkbox" id="chkTemp" checked> Archivos temporales</label>
+    <label><input type="checkbox" id="chkRecycle" checked> Vaciar papelera</label>
+    <label><input type="checkbox" id="chkWUCache" checked> Windows Update (caché y logs)</label>
+    <label><input type="checkbox" id="chkDistStore"> SoftwareDistribution DataStore</label>
+    <label><input type="checkbox" id="chkWINSXS" checked> Component Store Cleanup</label>
+    <label><input type="checkbox" id="chkCBS" checked> Logs CBS</label>
+    <label><input type="checkbox" id="chkPrefetch" checked> Prefetch y miniaturas</label>
+    <label><input type="checkbox" id="chkDNS" checked> Flush DNS</label>
+    <label><input type="checkbox" id="chkEvents" checked> Registros de eventos</label>
+    <label><input type="checkbox" id="chkSearchIndex"> Reconstruir índice de búsqueda</label>
+    <label><input type="checkbox" id="chkWMI"> Reparar repositorio WMI</label>
+    <label><input type="checkbox" id="chkDefender"> Defender caché y cuarentena</label>
+    <label><input type="checkbox" id="chkDiag" checked> Diagnóstico y crash dumps</label>
+    <label><input type="checkbox" id="chkSpotlight"> Windows Spotlight Assets</label>
+    <label><input type="checkbox" id="chkClipboard"> Limpiar portapapeles</label>
+    <label><input type="checkbox" id="chkIconCache"> Reconstruir IconCache</label>
+    <label><input type="checkbox" id="chkHibernate"> Deshabilitar hibernación</label>
+    <label><input type="checkbox" id="chkSSD"> Optimizar SSD (TRIM + desactivar desfragmentación)</label>
+    <label><input type="checkbox" id="chkFonts"> Limpieza caché de fuentes</label>
+    <label><input type="checkbox" id="chkSFC"> SFC /scannow</label>
+    <label><input type="checkbox" id="chkDISM"> DISM /RestoreHealth</label>
+    <label><input type="checkbox" id="chkWindowsOld"> Eliminar Windows.old</label>
+    <label><input type="checkbox" id="chkTelemetry"> Desactivar telemetría</label>
+    <label><input type="checkbox" id="chkStoreCache"> Caché Microsoft Store</label>
+    <label><input type="checkbox" id="chkDeliveryCache"> Caché Delivery Optimization</label>
+  </div>
+  <hr>
+  <div class="options">
+    <!-- Bloatware removal -->
+    <label><input type="checkbox" id="chkXbox"> Xbox App</label>
+    <label><input type="checkbox" id="chkGameBar"> Xbox Game Bar</label>
+    <label><input type="checkbox" id="chk3DBuilder"> 3D Builder</label>
+    <label><input type="checkbox" id="chkCortana"> Cortana</label>
+    <label><input type="checkbox" id="chkOneNote"> OneNote</label>
+    <label><input type="checkbox" id="chkSolitaire"> MS Solitaire</label>
+    <label><input type="checkbox" id="chkSpotify"> Spotify</label>
+    <label><input type="checkbox" id="chkMail"> Mail & Calendar</label>
+  </div>
+  <textarea id="script" readonly></textarea>
 
-# Función para limpiar y reportar estado
-function Invoke-Clean {
-    param(
-        [string]$Name,
-        [scriptblock]$Action
-    )
-    Write-Host "Iniciando: $Name"
-    try {
-        & $Action
-        Write-Host "✔ $Name completado."
-    } catch {
-        Write-Warning "✖ Error en $Name: $_"
-    }
-}
-
-# Opciones de ejecución
-$WhatIfPreference = $false  # Cambiar a $true para simular acciones
-$VerbosePreference = 'Continue'
-
-Invoke-Clean "Archivos temporales de usuario" {
-    Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "Archivos temporales del sistema" {
-    Remove-Item "C:\Windows\Temp\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "Papelera de reciclaje" {
-    Clear-RecycleBin -Force -ErrorAction Stop
-}
-Invoke-Clean "Caché de actualizaciones de Windows" {
-    Stop-Service wuauserv -Force -ErrorAction Stop
-    Remove-Item "C:\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction Stop
-    Start-Service wuauserv -ErrorAction Stop
-}
-Invoke-Clean "Caché Prefetch" {
-    Remove-Item "C:\Windows\Prefetch\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "Accesos directos recientes" {
-    Remove-Item "$env:APPDATA\Microsoft\Windows\Recent\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "Caché de miniaturas" {
-    ie4uinit.exe -ClearIconCache
-}
-Invoke-Clean "Historial de PowerShell" {
-    Remove-Item (Get-PSReadlineOption).HistorySavePath -ErrorAction Stop
-}
-Invoke-Clean "Caché de navegadores (Chrome, Edge)" {
-    $localApp = $env:LOCALAPPDATA
-    Remove-Item "$localApp\Google\Chrome\User Data\Default\Cache\*" -Recurse -Force -ErrorAction Stop
-    Remove-Item "$localApp\Microsoft\Edge\User Data\Default\Cache\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "Logs de eventos" {
-    wevtutil el | Foreach-Object { wevtutil cl $_ }
-}
-Invoke-Clean "Caché DNS" {
-    ipconfig /flushdns
-}
-Invoke-Clean "ComponentStoreCleanup" {
-    Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
-}
-Invoke-Clean "Puntos de restauración antiguos" {
-    vssadmin delete shadows /for=C: /oldest
-}
-Invoke-Clean "Caché instalación de controladores" {
-    Remove-Item "C:\Windows\System32\DriverStore\Temp\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "Archivos de diagnóstico" {
-    Remove-Item "$env:ProgramData\Microsoft\Diagnosis\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "Caché de minivolcado de fallos" {
-    Remove-Item "$env:LOCALAPPDATA\CrashDumps\*" -Recurse -Force -ErrorAction Stop
-}
-Invoke-Clean "OneDrive y sync leftovers" {
-    Remove-Item "$env:UserProfile\OneDriveTemp\*" -Recurse -Force -ErrorAction SilentlyContinue
-}
-
-Write-Host ""
-Write-Host "🎉 Limpieza completa. ¡Tu sistema está listo!"
-  </pre>
-  <button id="copyBtn">Copiar al portapapeles</button>
   <script>
-    document.getElementById('copyBtn').addEventListener('click', function() {
-      const scriptText = document.getElementById('script').innerText;
-      navigator.clipboard.writeText(scriptText)
-        .then(() => alert('Código copiado al portapapeles'))
-        .catch(err => alert('Error al copiar: ' + err));
+  document.addEventListener('DOMContentLoaded', () => {
+    const sections = {
+      chkTemp: ['# Temp files', 'Remove-Item "$env:TEMP\\*" -Recurse -Force', 'Remove-Item "C:\\Windows\\Temp\\*" -Recurse -Force'],
+      chkRecycle: ['# Recycle Bin', 'Clear-RecycleBin -Force'],
+      chkWUCache: ['# Windows Update', 'Stop-Service wuauserv', 'Remove-Item "C:\\Windows\\SoftwareDistribution\\Download\\*" -Recurse -Force', 'Remove-Item "C:\\Windows\\Logs\\WindowsUpdate\\*" -Recurse -Force', 'Start-Service wuauserv'],
+      chkDistStore: ['# DataStore', 'Remove-Item "C:\\Windows\\SoftwareDistribution\\DataStore\\*" -Recurse -Force'],
+      chkWINSXS: ['# ComponentStore Cleanup', 'Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase'],
+      chkCBS: ['# CBS Logs', 'Remove-Item "C:\\Windows\\Logs\\CBS\\*" -Recurse -Force'],
+      chkPrefetch: ['# Prefetch & Thumbnails', 'Remove-Item "C:\\Windows\\Prefetch\\*" -Recurse -Force', 'ie4uinit.exe -ClearIconCache'],
+      chkDNS: ['# Flush DNS', 'ipconfig /flushdns'],
+      chkEvents: ['# Event Logs', 'wevtutil el | ForEach-Object { wevtutil cl $_ }'],
+      chkSearchIndex: ['# Rebuild Search Index', 'Stop-Service WSearch', 'Remove-Item "$env:ProgramData\\Microsoft\\Search\\Data\\Applications\\Windows\\*" -Recurse -Force', 'Start-Service WSearch'],
+      chkWMI: ['# Repair WMI', 'winmgmt /verifyrepository', 'winmgmt /salvagerepository'],
+      chkDefender: ['# Defender Cache & Quarantine', 'Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Scans\\*" -Recurse -Force', 'Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Support\\*" -Recurse -Force'],
+      chkDiag: ['# Diagnostics', 'Remove-Item "$env:ProgramData\\Microsoft\\Diagnosis\\*" -Recurse -Force', 'Remove-Item "$env:LOCALAPPDATA\\CrashDumps\\*" -Recurse -Force'],
+      chkSpotlight: ['# Spotlight Assets', 'Remove-Item "$env:LOCALAPPDATA\\Packages\\Microsoft.Windows.ContentDeliveryManager*_LocalState\\Assets\\*" -Recurse -Force'],
+      chkClipboard: ['# Clear Clipboard', 'Set-Clipboard -Value $null'],
+      chkIconCache: ['# Rebuild IconCache', 'Stop-Process explorer -Force', 'Remove-Item "$env:LocalAppData\\IconCache.db" -Force', 'Start-Process explorer'],
+      chkHibernate: ['# Disable Hibernate', 'powercfg -h off'],
+      chkSSD: ['# SSD Optimization', 'Optimize-Volume -DriveLetter C -ReTrim -Verbose', 'Disable-ScheduledTask -TaskPath "Microsoft\\Windows\\Defrag\\" -TaskName "ScheduledDefrag"'],
+      chkFonts: ['# FontCache Cleanup', 'Stop-Service FontCache -Force', 'Remove-Item "$env:WinDir\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache*" -Recurse -Force', 'Start-Service FontCache'],
+      chkSFC: ['# SFC Scan', 'sfc /scannow'],
+      chkDISM: ['# DISM RestoreHealth', 'Dism.exe /Online /Cleanup-Image /RestoreHealth'],
+      chkWindowsOld: ['# Delete Windows.old', 'Remove-Item "C:\\Windows.old\\*" -Recurse -Force'],
+      chkTelemetry: ['# Disable Telemetry', 'Stop-Service DiagTrack -Force', 'Start-Service DiagTrack'],
+      chkStoreCache: ['# Store Cache', 'Start-Process wsreset.exe -Wait'],
+      chkDeliveryCache: ['# Delivery Optimization Cache', 'Stop-Service dosvc -Force', 'Remove-Item "C:\\Windows\\SoftwareDistribution\\DeliveryOptimization\\*" -Recurse -Force', 'Start-Service dosvc'],
+      chkXbox: ['# Remove Xbox App', 'Get-AppxPackage *XboxApp* | Remove-AppxPackage'],
+      chkGameBar: ['# Remove Game Bar', 'Get-AppxPackage *XboxGameBar* | Remove-AppxPackage'],
+      chk3DBuilder: ['# Remove 3D Builder', 'Get-AppxPackage *3DBuilder* | Remove-AppxPackage'],
+      chkCortana: ['# Remove Cortana', 'Get-AppxPackage *Microsoft.Windows.Cortana* | Remove-AppxPackage'],
+      chkOneNote: ['# Remove OneNote', 'Get-AppxPackage *OneNote* | Remove-AppxPackage'],
+      chkSolitaire: ['# Remove Solitaire', 'Get-AppxPackage *SolitaireCollection* | Remove-AppxPackage'],
+      chkSpotify: ['# Remove Spotify', 'Get-AppxPackage *Spotify* | Remove-AppxPackage'],
+      chkMail: ['# Remove Mail & Calendar', 'Get-AppxPackage *WindowsCommunicationsApps* | Remove-AppxPackage']
+    };
+
+    const scriptArea = document.getElementById('script');
+    document.getElementById('selectAll').addEventListener('click', () => {
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
     });
+
+    document.getElementById('generate').addEventListener('click', () => {
+      const lines = ['# Windows Cleaner ULTRA Serie - Expanded'];
+      lines.push('if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { Write-Warning "Ejecute como Administrador"; Exit }', '');
+      Object.entries(sections).forEach(([id, cmds]) => {
+        if (document.getElementById(id).checked) {
+          lines.push(...cmds, '');
+        }
+      });
+      lines.push('Write-Host "Limpieza completada." -ForegroundColor Green');
+      scriptArea.value = lines.join('\r\n');
+    });
+
+    document.getElementById('copyAll').addEventListener('click', () => {
+      // Try Clipboard API, fallback to execCommand
+      const text = scriptArea.value;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Script copiado al portapapeles');
+      }).catch(() => {
+        scriptArea.select();
+        document.execCommand('copy');
+        alert('Script copiado (fallback)');
+      });
+    });
+  });
   </script>
 </body>
 </html>
