@@ -3,80 +3,114 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Script de Limpieza para Windows</title>
+  <title>Script de Limpieza Seguro para Windows</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; background: #fafafa; color: #333; }
     h1 { text-align: center; }
-    pre { background: #f0f0f0; padding: 20px; border-radius: 4px; overflow-x: auto; }
+    #script { background: #f0f0f0; padding: 20px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; }
     button { display: block; margin: 20px auto; padding: 10px 20px; font-size: 16px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h1>Script de Limpieza para Windows (PowerShell)</h1>
-  <p>Copia el siguiente código y pégalo en tu consola de PowerShell con permisos de administrador:</p>
+  <h1>Script de Limpieza Seguro para Windows</h1>
+  <p>Copia el siguiente código y pégalo en tu consola de PowerShell <strong>ejecutada como administrador</strong>:</p>
   <pre id="script">
-# Limpieza segura de archivos temporales y cachés en Windows
+# ==============================================
+# Limpieza Segura y Optimizada de Windows
+# ==============================================
 
-# Eliminar archivos temporales del usuario
-Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
+# Verificar privilegios de administrador
+$mr = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $mr.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Warning "Este script debe ejecutarse con permisos de Administrador."
+    exit 1
+}
 
-# Eliminar archivos temporales del sistema
-Remove-Item "C:\Windows\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+# Función para limpiar y reportar estado
+function Invoke-Clean {
+    param(
+        [string]$Name,
+        [scriptblock]$Action
+    )
+    Write-Host "Iniciando: $Name"
+    try {
+        & $Action
+        Write-Host "✔ $Name completado."
+    } catch {
+        Write-Warning "✖ Error en $Name: $_"
+    }
+}
 
-# Vaciar la papelera de reciclaje
-Clear-RecycleBin -Force -ErrorAction SilentlyContinue
+# Opciones de ejecución
+$WhatIfPreference = $false  # Cambiar a $true para simular acciones
+$VerbosePreference = 'Continue'
 
-# Limpiar caché de actualizaciones de Windows
-Stop-Service wuauserv -Force
-Remove-Item "C:\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
-Start-Service wuauserv
+Invoke-Clean "Archivos temporales de usuario" {
+    Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "Archivos temporales del sistema" {
+    Remove-Item "C:\Windows\Temp\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "Papelera de reciclaje" {
+    Clear-RecycleBin -Force -ErrorAction Stop
+}
+Invoke-Clean "Caché de actualizaciones de Windows" {
+    Stop-Service wuauserv -Force -ErrorAction Stop
+    Remove-Item "C:\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction Stop
+    Start-Service wuauserv -ErrorAction Stop
+}
+Invoke-Clean "Caché Prefetch" {
+    Remove-Item "C:\Windows\Prefetch\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "Accesos directos recientes" {
+    Remove-Item "$env:APPDATA\Microsoft\Windows\Recent\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "Caché de miniaturas" {
+    ie4uinit.exe -ClearIconCache
+}
+Invoke-Clean "Historial de PowerShell" {
+    Remove-Item (Get-PSReadlineOption).HistorySavePath -ErrorAction Stop
+}
+Invoke-Clean "Caché de navegadores (Chrome, Edge)" {
+    $localApp = $env:LOCALAPPDATA
+    Remove-Item "$localApp\Google\Chrome\User Data\Default\Cache\*" -Recurse -Force -ErrorAction Stop
+    Remove-Item "$localApp\Microsoft\Edge\User Data\Default\Cache\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "Logs de eventos" {
+    wevtutil el | Foreach-Object { wevtutil cl $_ }
+}
+Invoke-Clean "Caché DNS" {
+    ipconfig /flushdns
+}
+Invoke-Clean "ComponentStoreCleanup" {
+    Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
+}
+Invoke-Clean "Puntos de restauración antiguos" {
+    vssadmin delete shadows /for=C: /oldest
+}
+Invoke-Clean "Caché instalación de controladores" {
+    Remove-Item "C:\Windows\System32\DriverStore\Temp\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "Archivos de diagnóstico" {
+    Remove-Item "$env:ProgramData\Microsoft\Diagnosis\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "Caché de minivolcado de fallos" {
+    Remove-Item "$env:LOCALAPPDATA\CrashDumps\*" -Recurse -Force -ErrorAction Stop
+}
+Invoke-Clean "OneDrive y sync leftovers" {
+    Remove-Item "$env:UserProfile\OneDriveTemp\*" -Recurse -Force -ErrorAction SilentlyContinue
+}
 
-# Limpiar carpeta Prefetch
-Remove-Item "C:\Windows\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-# Eliminar accesos directos recientes
-Remove-Item "$env:APPDATA\Microsoft\Windows\Recent\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-# Limpiar caché de miniaturas
-ie4uinit.exe -ClearIconCache
-
-# Borrar historial de PowerShell
-Remove-Item (Get-PSReadlineOption).HistorySavePath -ErrorAction SilentlyContinue
-
-# Limpiar caché de navegadores (Chrome y Edge)
-$localAppData = $env:LOCALAPPDATA
-Remove-Item "$localAppData\Google\Chrome\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$localAppData\Microsoft\Edge\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-# Limpiar logs de errores del sistema
-Remove-Item "C:\Windows\Logs\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-# Limpiar caché de instalación de controladores
-Remove-Item "C:\Windows\System32\DriverStore\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-# Limpiar archivos de diagnóstico
-Remove-Item "$env:ProgramData\Microsoft\Diagnosis\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-# Limpiar caché de reportes de fallos
-Remove-Item "$env:LOCALAPPDATA\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-# Eliminar archivos de instalación antiguos de Windows Update
-Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
-
-# Eliminar puntos de restauración antiguos (mantiene el más reciente)
-vssadmin delete shadows /for=C: /oldest
-
-Write-Host "Limpieza completada correctamente."
+Write-Host ""
+Write-Host "🎉 Limpieza completa. ¡Tu sistema está listo!"
   </pre>
   <button id="copyBtn">Copiar al portapapeles</button>
   <script>
     document.getElementById('copyBtn').addEventListener('click', function() {
       const scriptText = document.getElementById('script').innerText;
-      navigator.clipboard.writeText(scriptText).then(() => {
-        alert('Código copiado al portapapeles');
-      }).catch(err => {
-        alert('Error al copiar: ' + err);
-      });
+      navigator.clipboard.writeText(scriptText)
+        .then(() => alert('Código copiado al portapapeles'))
+        .catch(err => alert('Error al copiar: ' + err));
     });
   </script>
 </body>
