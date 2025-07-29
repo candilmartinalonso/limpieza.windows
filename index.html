@@ -6,14 +6,13 @@
   <title>Windows Cleaner ULTRA V5 Pro Supertasks (Optimizado para SSD) - Sin Reinicio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Custom styles for aesthetics */
-    body { font-family: 'Inter', sans-serif; margin: 0; background-color: #f0f0f0; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #f0f0f0; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
     h1 { text-align: center; color: #0078d7; margin: 20px 0; font-weight: bold; }
     .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 0 20px; }
     .controls button { padding: 10px 15px; font-size: 15px; border-radius: 6px; border: none; background-color: #0078d7; color: #fff; cursor: pointer; }
     .controls button:hover { background-color: #005a9e; }
     #count { text-align: center; margin: 10px 0; }
-    .progress-bar { width: 80%; margin: 0 auto 20px; height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+    .progress-bar { width: 80%; height: 10px; margin: 0 auto 20px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
     .progress-bar div { height: 100%; width: 0; background: linear-gradient(to right, #e81123, #ff6b6b); }
     .options { max-height: 400px; overflow-y: auto; margin: 0 auto 20px; width: 90%; background: #fff; border-radius: 8px; padding: 15px; }
     .options details { margin-bottom: 8px; }
@@ -60,6 +59,7 @@
       // Registros y Diagnósticos
       {cat:'Registros', id:'clear-eventlogs', lbl:'Limpiar registros de eventos', cmd:['wevtutil el | Foreach-Object { wevtutil cl $_ }']},
       {cat:'Registros', id:'clear-wer', lbl:'Borrar registros WER', cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+      {cat:'Registros', id:'clear-wmi-logs', lbl:'Borrar registros WMI', cmd:['Remove-Item "$env:SystemRoot\\System32\\LogFiles\\WMI\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
 
       // Sistema
       {cat:'Sistema', id:'sfc', lbl:'SFC /scannow', cmd:['sfc /scannow']},
@@ -70,9 +70,19 @@
       // Drivers
       {cat:'Drivers', id:'cleanup-drivers', lbl:'Eliminar controladores antiguos', cmd:['dism.exe /online /cleanup-image /startcomponentcleanup /resetbase']},
 
+      // Red
+      {cat:'Red', id:'flush-dns', lbl:'Vaciar caché DNS', cmd:['ipconfig /flushdns']},
+      {cat:'Red', id:'reset-winsock', lbl:'Restablecer Winsock', cmd:['netsh winsock reset']},
+      {cat:'Red', id:'reset-tcp', lbl:'Restablecer TCP/IP', cmd:['netsh int ip reset']},
+
+      // Cache Visores
+      {cat:'Cache Visores', id:'clear-thumbnails', lbl:'Borrar caché de miniaturas', cmd:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\\thumbcache_*.db" -Force -ErrorAction SilentlyContinue']},
+
       // Aplicaciones de Usuario
       {cat:'Apps', id:'chrome-cache', lbl:'Limpiar cache Chrome', cmd:['Remove-Item "$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Default\\Cache\\*" -Recurse -Force']},
+      {cat:'Apps', id:'chrome-cookies', lbl:'Borrar cookies Chrome', cmd:['Remove-Item "$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Default\\Cookies" -Force']},
       {cat:'Apps', id:'firefox-cache', lbl:'Limpiar cache Firefox', cmd:['Remove-Item "$env:APPDATA\\Mozilla\\Firefox\\Profiles\\*\\cache2\\*" -Recurse -Force']},
+      {cat:'Apps', id:'firefox-cookies', lbl:'Borrar cookies Firefox', cmd:['Remove-Item "$env:APPDATA\\Mozilla\\Firefox\\Profiles\\*\\cookies.sqlite" -Force']},
 
       // Junk Windows
       {cat:'Junk Windows', id:'clean-store', lbl:'Restablecer cache Microsoft Store', cmd:['wsreset.exe']},
