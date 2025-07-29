@@ -3,527 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Windows Cleaner ULTRA V5 Pro Supertasks (Optimizado para SSD)</title>
+  <title>Windows Cleaner ULTRA V5 Pro Supertasks (Optimizado para SSD) - Sin Reinicio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Custom styles for general aesthetics */
-    body {
-      font-family: 'Inter', sans-serif; /* Using Inter font */
-      margin: 0;
-      background-color: #f0f0f0;
-      color: #333;
-      transition: background-color 0.3s, color 0.3s;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    h1 {
-      text-align: center;
-      color: #0078d7;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px auto;
-      max-width: 90%;
-    }
-    .controls button, .controls input {
-      padding: 10px 15px;
-      font-size: 15px;
-      border-radius: 8px; /* Rounded corners */
-      border: 1px solid #ccc;
-      background-color: #fff;
-      color: #333;
-      cursor: pointer;
-      transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
-    }
-    .controls button:hover {
-      background-color: #e2e8f0;
-      transform: translateY(-1px);
-    }
-    .controls button:active {
-      transform: translateY(0);
-    }
-    #count {
-      text-align: center;
-      margin: 10px 0;
-      font-size: 1.1em;
-    }
-    .progress-bar {
-      background: #e0e0e0;
-      height: 12px;
-      border-radius: 6px;
-      overflow: hidden;
-      margin: 0 auto 20px;
-      max-width: 80%;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .progress-bar div {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(to right, #e81123, #ff6b6b); /* Gradient for progress */
-      transition: width .3s ease-out;
-      border-radius: 6px;
-    }
-    .options {
-      max-height: 400px; /* Increased height for more options */
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 0 auto 20px;
-      max-width: 80%;
-      background-color: #fff;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .options details {
-      margin-bottom: 8px;
-      background-color: #f9f9f9;
-      border-radius: 6px;
-      padding: 8px 12px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .options summary {
-      font-weight: bold;
-      cursor: pointer;
-      color: #0078d7;
-      padding: 5px 0;
-    }
-    .options label {
-      display: flex; /* Use flexbox for alignment */
-      align-items: center;
-      margin: 6px 0;
-      cursor: pointer;
-      padding: 4px 0;
-    }
-    .options input[type="checkbox"] {
-      margin-right: 8px;
-      transform: scale(1.2); /* Slightly larger checkboxes */
-    }
-    textarea {
-      width: calc(100% - 40px); /* Adjust width for padding */
-      height: 350px; /* Increased height */
-      font-family: 'Consolas', 'monospace';
-      margin: 0 auto 20px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      resize: vertical; /* Allow vertical resizing */
-      background-color: #fff;
-      color: #333;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-      display: block; /* Ensure it takes full width */
-    }
-
-    /* Message box for copy confirmation */
-    .message-box {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 15px 25px;
-      border-radius: 10px;
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.3s ease-in-out;
-      font-size: 1.1em;
-    }
-    .message-box.show {
-      opacity: 1;
-    }
+    /* Custom styles for aesthetics */
+    body { font-family: 'Inter', sans-serif; margin: 0; background-color: #f0f0f0; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+    h1 { text-align: center; color: #0078d7; margin: 20px 0; font-weight: bold; }
+    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 0 20px; }
+    .controls button { padding: 10px 15px; font-size: 15px; border-radius: 6px; border: none; background-color: #0078d7; color: #fff; cursor: pointer; }
+    .controls button:hover { background-color: #005a9e; }
+    #count { text-align: center; margin: 10px 0; }
+    .progress-bar { width: 80%; margin: 0 auto 20px; height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+    .progress-bar div { height: 100%; width: 0; background: linear-gradient(to right, #e81123, #ff6b6b); }
+    .options { max-height: 400px; overflow-y: auto; margin: 0 auto 20px; width: 90%; background: #fff; border-radius: 8px; padding: 15px; }
+    .options details { margin-bottom: 8px; }
+    .options summary { font-weight: bold; color: #0078d7; cursor: pointer; }
+    .options label { display: flex; align-items: center; margin: 5px 0; }
+    .options input { margin-right: 8px; transform: scale(1.2); }
+    textarea { width: calc(100% - 40px); height: 360px; margin: 0 auto 20px; padding: 15px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Consolas', monospace; }
+    .message-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: #fff; padding: 12px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; }
+    .message-box.show { opacity: 1; }
   </style>
 </head>
 <body>
-  <h1>Windows Cleaner ULTRA V5 Pro Supertasks (Optimizado para SSD)</h1>
+  <h1>Windows Cleaner ULTRA V5 Pro Supertasks (Optimizado para SSD) - Sin Reinicio</h1>
   <div class="controls">
-    <button data-action="select-all" class="bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md">Sel. Todo</button>
-    <button data-action="deselect-all" class="bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-md">Desel. Todo</button>
-    <button data-action="gen" class="bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-md">Generar</button>
-    <button data-action="copy" class="bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow-md">Copiar</button>
+    <button data-action="select-all">Sel. Todo</button>
+    <button data-action="deselect-all">Desel. Todo</button>
+    <button data-action="gen">Generar</button>
+    <button data-action="copy">Copiar</button>
   </div>
   <div class="progress-bar"><div id="progress"></div></div>
   <p id="count">0/0</p>
   <div class="options"></div>
   <textarea id="script" readonly placeholder="El script aparecerá aquí..."></textarea>
-
-  <!-- Custom message box -->
   <div id="messageBox" class="message-box"></div>
 
   <script>
-    // Define the cleaning and optimization sections with their categories, IDs, labels, and PowerShell commands.
-    // Optimized for SSDs: Removed defragmentation.
     const sections = [
-      {cat:'Archivos Temporales',id:'temp',lbl:'Archivos TEMP de Usuario',cmd:['Remove-Item "$env:TEMP\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'windows-temp',lbl:'Archivos TEMP de Windows',cmd:['Remove-Item "C:\\Windows\\Temp\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'prefetch',lbl:'Archivos Prefetch',cmd:['Remove-Item "C:\\Windows\\Prefetch\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'temp-internet',lbl:'Archivos Temporales de Internet',cmd:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Windows\\INetCache\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'delivery-opt',lbl:'Archivos de Optimización de Entrega',cmd:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Windows\\DeliveryOptimization\\Cache\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'thumbnails',lbl:'Caché de Miniaturas',cmd:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\\thumbcache_*.db" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'recycle',lbl:'Papelera de Reciclaje',cmd:['Clear-RecycleBin -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'windows-log-files',lbl:'Archivos de Registro de Windows',cmd:['Remove-Item "C:\\Windows\\*.log" -Force -ErrorAction SilentlyContinue', 'Remove-Item "C:\\Windows\\Logs\\*.log" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'error-reporting',lbl:'Archivos de Informe de Errores',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'mrt-logs',lbl:'Registros de la Herramienta de Eliminación de Software Malintencionado',cmd:['Remove-Item "$env:SystemRoot\\debug\\mrt.log" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'temp-msi-files',lbl:'Archivos Temporales de Instalador (MSI)',cmd:['Remove-Item "$env:SystemRoot\\Installer\\*.msi" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'dump-files',lbl:'Archivos de Volcado de Memoria',cmd:['Remove-Item "$env:SystemRoot\\Minidump\\*" -Recurse -Force -ErrorAction SilentlyContinue', 'Remove-Item "$env:SystemRoot\\MEMORY.DMP" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'windows-old',lbl:'Eliminar Windows.old (Después de una actualización)',cmd:['Remove-Item "$env:SystemDrive\\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'package-cache',lbl:'Caché de Paquetes de Instalación (Installer Cache)',cmd:['Get-ChildItem "C:\\Windows\\Installer\\*.msi" -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $_.Delete() }', 'Get-ChildItem "C:\\Windows\\Installer\\*.msp" -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $_.Delete() }']},
-      {cat:'Archivos Temporales',id:'temp-system-files',lbl:'Archivos Temporales del Sistema',cmd:['Remove-Item "$env:SystemRoot\\Temp\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'font-cache',lbl:'Reconstruir Caché de Fuentes',cmd:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\FontCache\\*" -Recurse -Force -ErrorAction SilentlyContinue', 'Remove-Item "$env:SystemRoot\\System32\\FNTCACHE.DAT" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Archivos Temporales',id:'event-viewer-cache',lbl:'Borrar Caché del Visor de Eventos',cmd:['Remove-Item "$env:SystemRoot\\System32\\Winevt\\Logs\\*.evtx" -Force -ErrorAction SilentlyContinue']},
+      // Archivos Temporales y Prefetch
+      {cat:'Archivos Temporales', id:'temp-user', lbl:'Limpiar %TEMP% de Usuario', cmd:['Remove-Item "$env:TEMP\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+      {cat:'Archivos Temporales', id:'temp-win', lbl:'Limpiar C:\\Windows\\Temp', cmd:['Remove-Item "C:\\Windows\\Temp\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+      {cat:'Archivos Temporales', id:'prefetch', lbl:'Limpiar Prefetch', cmd:['Remove-Item "C:\\Windows\\Prefetch\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
 
-      {cat:'Sistema',id:'sfc',lbl:'SFC /scannow (Verificar integridad del sistema)',cmd:['sfc /scannow']},
-      {cat:'Sistema',id:'dism',lbl:'DISM RestoreHealth (Reparar imagen de Windows)',cmd:['Dism.exe /Online /Cleanup-Image /RestoreHealth']},
-      {cat:'Sistema',id:'windows-update-cache',lbl:'Caché de Windows Update',cmd:['Stop-Service wuauserv -ErrorAction SilentlyContinue', 'Remove-Item "$env:SystemRoot\\SoftwareDistribution\\Download\\*" -Recurse -Force -ErrorAction SilentlyContinue', 'Start-Service wuauserv -ErrorAction SilentlyContinue']},
-      {cat:'Sistema',id:'disk-cleanup',lbl:'Limpieza de Disco (Cleanmgr)',cmd:['cleanmgr.exe /sagerun:1']},
-      {cat:'Sistema',id:'winsxs-cleanup',lbl:'Limpieza de WinSxS (Component Store)',cmd:['Dism.exe /Online /Cleanup-Image /StartComponentCleanup']},
-      {cat:'Sistema',id:'power-cfg',lbl:'Análisis de Eficiencia Energética',cmd:['powercfg /energy']},
-      {cat:'Sistema',id:'system-restore-cleanup',lbl:'Limpieza de Puntos de Restauración (solo los más antiguos)',cmd:['vssadmin delete shadows /for=C: /olDEST /quiet']},
-      {cat:'Sistema',id:'chkdsk-fix',lbl:'Ejecutar CHKDSK (Reparar errores de disco)',cmd:['chkdsk C: /f /r /x']},
-      {cat:'Sistema',id:'windows-update-check',lbl:'Buscar Actualizaciones de Windows',cmd:['# Este comando requiere el módulo PSWindowsUpdate. Se instalará automáticamente si no está presente.', 'If (-NOT (Get-Module -ListAvailable -Name PSWindowsUpdate)) { Install-Module -Name PSWindowsUpdate -Force -Scope CurrentUser -ErrorAction SilentlyContinue }', 'Get-WindowsUpdate -ErrorAction SilentlyContinue']},
-      {cat:'Sistema',id:'windows-update-install',lbl:'Instalar Actualizaciones de Windows Pendientes',cmd:['# Este comando requiere el módulo PSWindowsUpdate. Se instalará automáticamente si no está presente.', 'If (-NOT (Get-Module -ListAvailable -Name PSWindowsUpdate)) { Install-Module -Name PSWindowsUpdate -Force -Scope CurrentUser -ErrorAction SilentlyContinue }', 'Install-WindowsUpdate -AcceptAll -AutoReboot -ErrorAction SilentlyContinue']},
-      {cat:'Sistema',id:'windows-update-restart',lbl:'Reiniciar después de Actualizaciones de Windows (si es necesario)',cmd:['# Solo reinicia si el sistema lo requiere después de instalar actualizaciones.', 'Restart-Computer -Force -Confirm:$false -ErrorAction SilentlyContinue']},
-      {cat:'Sistema',id:'optimize-services',lbl:'Optimizar Servicios de Windows (Desactivar innecesarios)',cmd:['# Esto es una optimización avanzada y debe hacerse con precaución, ya que deshabilitar servicios críticos puede causar inestabilidad.', '# Se recomienda revisar manualmente los servicios en services.msc y deshabilitar solo los que no se utilicen (ej: Fax, Impresión si no se usa impresora).']},
-      {cat:'Sistema',id:'disable-telemetry-services',lbl:'Desactivar Servicios de Telemetría Adicionales',cmd:['Stop-Service "dmwappushsvc" -ErrorAction SilentlyContinue -Force; Set-Service "dmwappushsvc" -StartupType Disabled -ErrorAction SilentlyContinue', 'Stop-Service "DiagTrack" -ErrorAction SilentlyContinue -Force; Set-Service "DiagTrack" -StartupType Disabled -ErrorAction SilentlyContinue']},
+      // Bloatware
+      {cat:'Bloatware', id:'remove-xbox', lbl:'Eliminar Xbox Game Bar', cmd:['Get-AppxPackage Microsoft.XboxGamingOverlay | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+      {cat:'Bloatware', id:'remove-sportsbar', lbl:'Eliminar Xbox Game Bar Companion', cmd:['Get-AppxPackage Microsoft.GamingOverlay | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+      {cat:'Bloatware', id:'remove-ads', lbl:'Desactivar sugerencias del sistema', cmd:['Reg Delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager" /v SubscribedContent-338387Enabled /f']},
 
-      {cat:'Red',id:'dns',lbl:'Flush DNS (Vaciar caché DNS)',cmd:['ipconfig /flushdns']},
-      {cat:'Red',id:'netsh-reset',lbl:'Restablecer Winsock y TCP/IP',cmd:['netsh winsock reset', 'netsh int ip reset']},
-      {cat:'Red',id:'network-cache-clear',lbl:'Borrar Caché de Red',cmd:['ipconfig /release', 'ipconfig /renew']},
-      {cat:'Red',id:'clear-arp-cache',lbl:'Borrar Caché ARP',cmd:['arp -d *']},
-      {cat:'Red',id:'reset-net-config',lbl:'Restablecer Configuración de Red',cmd:['netcfg -d']},
+      // SSD Optimización
+      {cat:'SSD Optimización', id:'disable-defrag', lbl:'Deshabilitar Desfragmentación SSD', cmd:['Disable-ScheduledTask -TaskName "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag"']},
+      {cat:'SSD Optimización', id:'enable-trim', lbl:'Habilitar TRIM', cmd:['fsutil behavior set DisableDeleteNotify 0']},
+      {cat:'SSD Optimización', id:'disable-sysmain', lbl:'Desactivar SysMain (Superfetch)', cmd:['Stop-Service SysMain -ErrorAction SilentlyContinue; Set-Service SysMain -StartupType Disabled']},
+      {cat:'SSD Optimización', id:'disable-search', lbl:'Desactivar Indexación de Búsqueda', cmd:['Stop-Service WSearch -ErrorAction SilentlyContinue; Set-Service WSearch -StartupType Disabled']},
 
-      {cat:'Registros y Diagnósticos',id:'event',lbl:'Registros de Eventos de Windows',cmd:['wevtutil el | ForEach-Object { try { wevtutil cl $_ } catch { Write-Warning "No se pudo limpiar el registro: $_" } }']},
-      {cat:'Registros y Diagnósticos',id:'wer-logs',lbl:'Registros de Informes de Errores de Windows',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\ReportArchive\\*" -Recurse -Force -ErrorAction SilentlyContinue', 'Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\ReportQueue\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Registros y Diagnósticos',id:'diag-data',lbl:'Registros de Datos de Diagnóstico',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Diagnosis\\ETLLogs\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Registros y Diagnósticos',id:'defender-logs',lbl:'Historial de Escaneo de Windows Defender',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Scans\\History\\Service\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Registros y Diagnósticos',id:'chkdsk-logs',lbl:'Registros Antiguos de Chkdsk',cmd:['Remove-Item "$env:SystemRoot\\System32\\LogFiles\\Chkdsk\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+      // Registros y Diagnósticos
+      {cat:'Registros', id:'clear-eventlogs', lbl:'Limpiar registros de eventos', cmd:['wevtutil el | Foreach-Object { wevtutil cl $_ }']},
+      {cat:'Registros', id:'clear-wer', lbl:'Borrar registros WER', cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
 
-      {cat:'Drivers',id:'drivestore',lbl:'Limpieza de Driver Store (Controladores Antiguos)',cmd:['pnputil.exe /enum-drivers | ForEach-Object {$_.PublishedName} | ForEach-Object { try { pnputil.exe /delete-driver $_ /uninstall /force } catch { Write-Warning "No se pudo eliminar el controlador: $_" } }']},
-      {cat:'Drivers',id:'driver-update-check',lbl:'Buscar Actualizaciones de Drivers (Vía Windows Update)',cmd:['# Este comando requiere el módulo PSWindowsUpdate. Se instalará automáticamente si no está presente.', 'If (-NOT (Get-Module -ListAvailable -Name PSWindowsUpdate)) { Install-Module -Name PSWindowsUpdate -Force -Scope CurrentUser -ErrorAction SilentlyContinue }', 'Get-WindowsUpdate -MicrosoftUpdate -ErrorAction SilentlyContinue']},
-      {cat:'Drivers',id:'driver-rollback',lbl:'Revertir Driver (Requiere intervención manual)',cmd:['# Para revertir un driver, debe hacerse desde el Administrador de Dispositivos.', '# Seleccione el dispositivo > Propiedades > Pestaña Controlador > "Revertir controlador".']},
-      {cat:'Drivers',id:'driver-cleanup-old',lbl:'Limpiar Paquetes de Drivers Antiguos',cmd:['dism.exe /online /cleanup-image /startcomponentcleanup /resetbase']},
-      {cat:'Drivers',id:'driver-booster-note',lbl:'Nota: Considerar herramientas de terceros para drivers (con precaución)',cmd:['# Herramientas como "Driver Booster" o "Snappy Driver Installer Origin" pueden ayudar a encontrar drivers más recientes, pero siempre descargue de fuentes oficiales del fabricante y con precaución.']},
+      // Sistema
+      {cat:'Sistema', id:'sfc', lbl:'SFC /scannow', cmd:['sfc /scannow']},
+      {cat:'Sistema', id:'dism', lbl:'DISM RestoreHealth', cmd:['Dism.exe /Online /Cleanup-Image /RestoreHealth']},
+      {cat:'Sistema', id:'powercfg', lbl:'Informe de eficiencia energética', cmd:['powercfg /energy /output "%USERPROFILE%\\energy-report.html"']},
+      {cat:'Sistema', id:'cleanup-winsxs', lbl:'Limpieza WinSxS', cmd:['Dism.exe /Online /Cleanup-Image /StartComponentCleanup']},
 
-      {cat:'Extras y Optimización',id:'telemetry',lbl:'Desactivar Servicio de Telemetría (DiagTrack)',cmd:['Stop-Service DiagTrack -ErrorAction SilentlyContinue -Force','Set-Service DiagTrack -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'hibernation',lbl:'Desactivar Hibernación (Eliminar hiberfil.sys)',cmd:['powercfg /h off']},
-      {cat:'Extras y Optimización',id:'visual-effects',lbl:'Optimizar Efectos Visuales (Rendimiento)',cmd:['# Este comando requiere configuración manual o un script más complejo para modificar el registro.', '# Se recomienda ajustar esto desde Propiedades del Sistema > Configuración avanzada del sistema > Rendimiento > Configuración.', '# Alternativamente, puede usar:', '# Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects" -Name "VisualFXSetting" -Value 2']},
-      {cat:'Extras y Optimización',id:'startup-apps',lbl:'Gestionar Aplicaciones de Inicio',cmd:['# Este comando abrirá el Administrador de Tareas en la pestaña de inicio.', '# Se recomienda deshabilitar manualmente las aplicaciones innecesarias.', 'start taskmgr']},
-      {cat:'Extras y Optimización',id:'temp-user-profiles',lbl:'Eliminar Perfiles de Usuario Antiguos/Inactivos',cmd:['# Este comando listará los perfiles de usuario. Se recomienda eliminar manualmente los no deseados.', '# Get-WmiObject -Class Win32_UserProfile | Select-Object LocalPath, SID, Loaded', '# Para eliminar un perfil (usar con precaución):', '# (Get-WmiObject -Class Win32_UserProfile | Where-Object {$_.LocalPath -eq "C:\\Users\\<nombre_de_usuario>"}).Delete()']},
-      {cat:'Extras y Optimización',id:'store-cache',lbl:'Restablecer Caché de Microsoft Store',cmd:['wsreset.exe']},
-      {cat:'Extras y Optimización',id:'clear-clip-history',lbl:'Borrar Historial del Portapapeles',cmd:['Set-Clipboard -Clear']},
-      {cat:'Extras y Optimización',id:'remove-old-restore-points',lbl:'Eliminar Puntos de Restauración Antiguos (Excepto el más reciente)',cmd:['vssadmin delete shadows /for=C: /olDEST']},
-      {cat:'Extras y Optimización',id:'clear-run-history',lbl:'Borrar Historial de Ejecución de la Barra de Búsqueda',cmd:['Remove-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU" -Name "*" -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'compact-os',lbl:'Compactar Sistema Operativo (Compact OS)',cmd:['compact.exe /CompactOS:always']},
-      {cat:'Extras y Optimización',id:'game-bar-disable',lbl:'Desactivar Xbox Game Bar',cmd:['Get-AppxPackage Microsoft.XboxGamingOverlay | Remove-AppxPackage -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'cortana-disable',lbl:'Desactivar Cortana (Si está presente)',cmd:['Get-AppxPackage -Name Microsoft.Windows.Cortana | Remove-AppxPackage -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'onedrive-disable',lbl:'Desactivar OneDrive',cmd:['taskkill /f /im OneDrive.exe -ErrorAction SilentlyContinue', 'RD "%SystemDrive%\\Users\\%UserName%\\OneDrive" /Q /S -ErrorAction SilentlyContinue', 'RD "%SystemDrive%\\OneDriveTemp" /Q /S -ErrorAction SilentlyContinue', 'REG Delete "HKCU\\Software\\Microsoft\\OneDrive" /f -ErrorAction SilentlyContinue', 'REG Delete "HKCR\\CLSID\\{018D5C66-4533-4307-9B53-2AD65EE83CCB}" /f -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'background-apps-disable',lbl:'Desactivar Aplicaciones en Segundo Plano',cmd:['# Este comando no puede deshabilitar directamente todas las aplicaciones en segundo plano de forma global.', '# Se recomienda ajustar esto desde Configuración > Privacidad > Aplicaciones en segundo plano.', '# Para un control más granular, se pueden usar GPO o el registro, pero es más complejo.']},
-      {cat:'Extras y Optimización',id:'disable-sysmain-service',lbl:'Deshabilitar Superfetch/SysMain (Para SSDs)',cmd:['Stop-Service SysMain -ErrorAction SilentlyContinue -Force', 'Set-Service SysMain -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-tips',lbl:'Desactivar Sugerencias de Windows',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-search-highlights',lbl:'Desactivar Destacados de Búsqueda',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings" -Name "IsDynamicSearchHighlightsEnabled" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-telemetry-tasks',lbl:'Desactivar Tareas de Telemetría Programadas',cmd:['Get-ScheduledTask | Where-Object {$_.TaskPath -like "*Microsoft\\Windows\\Customer Experience Improvement Program*" -or $_.TaskPath -like "*Microsoft\\Windows\\Application Experience*"} | Disable-ScheduledTask -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-diagnostic-feedback',lbl:'Desactivar Comentarios de Diagnóstico',cmd:['Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy" -Name "TailoredExperiencesWithDiagnosticDataEnabled" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-error-reporting',lbl:'Desactivar Informe de Errores de Windows',cmd:['Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting" -Name "Disabled" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-compat-telemetry',lbl:'Desactivar Telemetría de Compatibilidad de Aplicaciones',cmd:['Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection" -Name "AllowTelemetry" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-location-service',lbl:'Desactivar Servicio de Ubicación',cmd:['Stop-Service lfsvc -ErrorAction SilentlyContinue -Force', 'Set-Service lfsvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-registry',lbl:'Desactivar Registro Remoto',cmd:['Stop-Service RemoteRegistry -ErrorAction SilentlyContinue -Force', 'Set-Service RemoteRegistry -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-print-spooler',lbl:'Desactivar Cola de Impresión (Si no se usa impresora)',cmd:['Stop-Service Spooler -ErrorAction SilentlyContinue -Force', 'Set-Service Spooler -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-fax-service',lbl:'Desactivar Servicio de Fax (Si no se usa fax)',cmd:['Stop-Service Fax -ErrorAction SilentlyContinue -Force', 'Set-Service Fax -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender',lbl:'Desactivar Windows Defender (Solo si usas otro AV - ¡Precaución!)',cmd:['# Desactivar Windows Defender puede dejar tu sistema vulnerable si no tienes otro antivirus activo.', 'Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue', 'Set-Service WinDefend -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-search-indexing',lbl:'Desactivar Indexación de Búsqueda (Para SSDs)',cmd:['Stop-Service WSearch -ErrorAction SilentlyContinue -Force', 'Set-Service WSearch -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-system-sounds',lbl:'Desactivar Sonidos del Sistema',cmd:['Set-ItemProperty -Path "HKCU:\\AppEvents\\Schemes\\Apps\\.Default\\.Current" -Name "(Default)" -Value "" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-user-account-control',lbl:'Desactivar UAC (No recomendado para seguridad - ¡Precaución!)',cmd:['# Desactivar UAC reduce la seguridad del sistema. Úsalo bajo tu propio riesgo.', 'Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System" -Name "EnableLUA" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-cloud',lbl:'Desactivar Protección Basada en la Nube de Defender',cmd:['Set-MpPreference -MAPSReporting Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-sample',lbl:'Desactivar Envío Automático de Muestras de Defender',cmd:['Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-smartscreen',lbl:'Desactivar SmartScreen para Aplicaciones y Archivos',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AppHost" -Name "EnableWebContentEvaluation" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-feedback-frequency',lbl:'Desactivar Frecuencia de Comentarios de Windows',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feedback" -Name "FeedbackFrequency" -Value 3 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-live-tiles',lbl:'Desactivar Live Tiles del Menú Inicio',cmd:['Get-StartApps | Where-Object {$_.TileType -eq "LiveTile"} | ForEach-Object { $_.DisableLiveTile() } -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-onedrive-startup',lbl:'Desactivar OneDrive al Inicio',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "OneDrive" -Value "" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'clear-recent-files',lbl:'Borrar Archivos Recientes y Elementos Frecuentes',cmd:['Clear-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs" -Name "*" -ErrorAction SilentlyContinue', 'Clear-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths" -Name "*" -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-fast-startup',lbl:'Desactivar Inicio Rápido (Recomendado para SSDs)',cmd:['powercfg /h off']}, // Hibernation off also disables fast startup
-      {cat:'Extras y Optimización',id:'disable-game-mode',lbl:'Desactivar Modo Juego',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\GameBar" -Name "AllowAutoGameMode" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-background-sync',lbl:'Desactivar Sincronización en Segundo Plano',cmd:['# Esto es más complejo y a menudo se gestiona por aplicación. No hay un comando global directo de PowerShell para esto.', '# Se recomienda revisar la configuración de privacidad de cada aplicación.']},
-      {cat:'Extras y Optimización',id:'disable-remote-assistance',lbl:'Desactivar Asistencia Remota',cmd:['Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services" -Name "fAllowToGetHelp" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-desktop',lbl:'Desactivar Escritorio Remoto (Si no se usa)',cmd:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" -Name "fDenyTSConnections" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-system-restore',lbl:'Desactivar Restaurar Sistema (Libera espacio, con precaución)',cmd:['Disable-ComputerRestore -Drive "C:" -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-search',lbl:'Desactivar Servicio de Búsqueda de Windows (Para SSDs)',cmd:['Stop-Service WSearch -ErrorAction SilentlyContinue -Force', 'Set-Service WSearch -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-diagnostics-tracking',lbl:'Desactivar Seguimiento de Diagnóstico',cmd:['Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection" -Name "AllowTelemetry" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'clear-windows-store-cache',lbl:'Borrar Caché de la Tienda de Windows',cmd:['wsreset.exe']},
-      {cat:'Extras y Optimización',id:'clear-dns-cache',lbl:'Borrar Caché DNS',cmd:['ipconfig /flushdns']},
-      {cat:'Extras y Optimización',id:'reset-network-adapters',lbl:'Restablecer Adaptadores de Red',cmd:['netcfg -d']},
-      {cat:'Extras y Optimización',id:'optimize-boot-order',lbl:'Optimizar Orden de Arranque (Requiere BIOS/UEFI)',cmd:['# Esta optimización se realiza en la configuración del BIOS/UEFI, no a través de PowerShell.']},
-      {cat:'Extras y Optimización',id:'disable-printer-sharing',lbl:'Desactivar Compartir Impresoras',cmd:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Print" -Name "RpcAuthnLevelPrivacyEnabled" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-media-streaming',lbl:'Desactivar Transmisión de Medios',cmd:['Set-NetFirewallRule -DisplayName "Windows Media Player Network Sharing Service (UPnP-Out)" -Enabled False -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-assistance-firewall',lbl:'Desactivar Reglas de Firewall de Asistencia Remota',cmd:['Disable-NetFirewallRule -DisplayName "Remote Assistance (DCOM-In)" -ErrorAction SilentlyContinue', 'Disable-NetFirewallRule -DisplayName "Remote Assistance (RA Server-In)" -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-firewall',lbl:'Desactivar Firewall de Windows Defender (Solo si usas otro FW)',cmd:['Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-bluetooth-service',lbl:'Desactivar Servicio Bluetooth (Si no se usa)',cmd:['Stop-Service bthserv -ErrorAction SilentlyContinue -Force', 'Set-Service bthserv -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-fax-printer',lbl:'Desactivar Impresora de Fax',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Fax -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-work-folders',lbl:'Desactivar Carpetas de Trabajo',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName WorkFoldersClient -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-differential-compression',lbl:'Desactivar Compresión Diferencial Remota',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName RDC -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-smb1',lbl:'Desactivar SMB 1.0/CIFS File Sharing Support',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-hello',lbl:'Desactivar Windows Hello (Si no se usa)',cmd:['Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Microsoft\\WindowsSelfHost\\Applicability" -Name "EnablePreviewBuilds" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-widgets',lbl:'Desactivar Widgets de la Barra de Tareas',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "TaskbarDa" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-news-interests',lbl:'Desactivar Noticias e Intereses',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-system-sounds-scheme',lbl:'Desactivar Esquema de Sonidos del Sistema',cmd:['Set-ItemProperty -Path "HKCU:\\AppEvents\\Schemes" -Name ".Current" -Value "No Sounds" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-game-dvr',lbl:'Desactivar Game DVR',cmd:['Set-ItemProperty -Path "HKCU:\\System\\GameConfigStore" -Name "GameDVR_Enabled" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-background-apps-gpo',lbl:'Desactivar Aplicaciones en Segundo Plano (GPO - Solo Pro/Enterprise)',cmd:['# Para versiones Pro/Enterprise, se puede configurar a través de la Política de Grupo (gpedit.msc).', '# Ruta: Configuración del equipo > Plantillas administrativas > Componentes de Windows > Privacidad de la aplicación > "Permitir que las aplicaciones se ejecuten en segundo plano".']},
-      {cat:'Extras y Optimización',id:'disable-windows-tips-gpo',lbl:'Desactivar Sugerencias de Windows (GPO - Solo Pro/Enterprise)',cmd:['# Para versiones Pro/Enterprise, se puede configurar a través de la Política de Grupo (gpedit.msc).', '# Ruta: Configuración del equipo > Plantillas administrativas > Componentes de Windows > Contenido de la nube > "Desactivar todas las características de la nube de consumo de Microsoft".']},
-      {cat:'Extras y Optimización',id:'disable-automatic-updates',lbl:'Desactivar Actualizaciones Automáticas (No recomendado, con precaución)',cmd:['Stop-Service wuauserv -ErrorAction SilentlyContinue -Force', 'Set-Service wuauserv -StartupType Disabled -ErrorAction SilentlyContinue', 'Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU" -Name "NoAutoUpdate" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-power-throttling',lbl:'Desactivar Limitación de Energía (Power Throttling)',cmd:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling" -Name "PowerThrottlingOff" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-sleep-study',lbl:'Desactivar Sleep Study',cmd:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling" -Name "SleepStudyOff" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-usb-selective-suspend',lbl:'Desactivar Suspensión Selectiva de USB',cmd:['# Esto se ajusta en las Opciones de Energía.', '# Ruta: Panel de control > Opciones de energía > Cambiar la configuración del plan > Cambiar la configuración avanzada de energía > Configuración de USB > Configuración de suspensión selectiva de USB.']},
-      {cat:'Extras y Optimización',id:'disable-fast-boot-bios',lbl:'Desactivar Fast Boot en BIOS/UEFI',cmd:['# Esta opción se configura en la BIOS/UEFI de tu sistema, no a través de PowerShell.']},
-      {cat:'Extras y Optimización',id:'disable-driver-signature-enforcement',lbl:'Desactivar Cumplimiento de Firma de Controladores (Solo para drivers no firmados)',cmd:['# Esto requiere arrancar Windows en modo de recuperación avanzado para deshabilitarlo temporalmente.', '# No se recomienda deshabilitarlo permanentemente por razones de seguridad.']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-periodic-scanning',lbl:'Desactivar Escaneo Periódico de Windows Defender',cmd:['Set-MpPreference -DisableScanningForFilesAndFolders $true -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-cloud-protection',lbl:'Desactivar Protección Basada en la Nube de Windows Defender',cmd:['Set-MpPreference -MAPSReporting Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-sample-submission',lbl:'Desactivar Envío de Muestras de Windows Defender',cmd:['Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-tamper-protection',lbl:'Desactivar Protección contra Manipulaciones de Windows Defender',cmd:['# Esto requiere acceso al Centro de seguridad de Windows Defender > Protección contra virus y amenazas > Administrar la configuración > Protección contra manipulaciones. No hay un comando directo de PowerShell.']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-firewall-notifications',lbl:'Desactivar Notificaciones del Firewall de Windows Defender',cmd:['Set-NetFirewallProfile -Profile Domain,Public,Private -NotifyOnStatusChange Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-firewall-logging',lbl:'Desactivar Registro del Firewall de Windows Defender',cmd:['Set-NetFirewallProfile -Profile Domain,Public,Private -LogFileName "" -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-firewall-rules-all',lbl:'Desactivar Todas las Reglas de Firewall de Windows Defender (Extremo)',cmd:['Get-NetFirewallRule | Disable-NetFirewallRule -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-firewall-default-inbound',lbl:'Desactivar Reglas de Entrada Predeterminadas del Firewall',cmd:['Set-NetFirewallProfile -Profile Domain,Public,Private -DefaultInboundAction Block -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-firewall-default-outbound',lbl:'Desactivar Reglas de Salida Predeterminadas del Firewall',cmd:['Set-NetFirewallProfile -Profile Domain,Public,Private -DefaultOutboundAction Block -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-firewall-service',lbl:'Desactivar Servicio del Firewall de Windows Defender',cmd:['Stop-Service MpsSvc -ErrorAction SilentlyContinue -Force', 'Set-Service MpsSvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-error-reporting-service',lbl:'Desactivar Servicio de Informe de Errores de Windows',cmd:['Stop-Service WerSvc -ErrorAction SilentlyContinue -Force', 'Set-Service WerSvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-search-service',lbl:'Desactivar Servicio de Búsqueda de Windows',cmd:['Stop-Service WSearch -ErrorAction SilentlyContinue -Force', 'Set-Service WSearch -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-update-service',lbl:'Desactivar Servicio de Windows Update (No recomendado)',cmd:['Stop-Service wuauserv -ErrorAction SilentlyContinue -Force', 'Set-Service wuauserv -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-superfetch-service',lbl:'Desactivar Servicio Superfetch/SysMain',cmd:['Stop-Service SysMain -ErrorAction SilentlyContinue -Force', 'Set-Service SysMain -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-diagnostic-policy-service',lbl:'Desactivar Servicio de Directivas de Diagnóstico',cmd:['Stop-Service DPS -ErrorAction SilentlyContinue -Force', 'Set-Service DPS -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-connected-devices-platform-service',lbl:'Desactivar Servicio de Plataforma de Dispositivos Conectados',cmd:['Stop-Service CDPUserSvc -ErrorAction SilentlyContinue -Force', 'Set-Service CDPUserSvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-dmwappushsvc',lbl:'Desactivar Servicio de Administración de Dispositivos Conectados (dmwappushsvc)',cmd:['Stop-Service dmwappushsvc -ErrorAction SilentlyContinue -Force', 'Set-Service dmwappushsvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-xbox-services',lbl:'Desactivar Servicios de Xbox',cmd:['Get-Service -DisplayName "*Xbox*" | Stop-Service -ErrorAction SilentlyContinue -Force', 'Get-Service -DisplayName "*Xbox*" | Set-Service -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-game-bar-presence-writer',lbl:'Desactivar Escritor de Presencia de Game Bar',cmd:['Stop-Service XblGameSave -ErrorAction SilentlyContinue -Force', 'Set-Service XblGameSave -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-game-mode-service',lbl:'Desactivar Servicio de Modo Juego',cmd:['Stop-Service GamingServices -ErrorAction SilentlyContinue -Force', 'Set-Service GamingServices -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-biometric-service',lbl:'Desactivar Servicio Biométrico de Windows (Si no se usa Windows Hello)',cmd:['Stop-Service WbioSrvc -ErrorAction SilentlyContinue -Force', 'Set-Service WbioSrvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-sensor-monitoring-service',lbl:'Desactivar Servicio de Monitoreo de Sensores',cmd:['Stop-Service SvcHost -ErrorAction SilentlyContinue -Force', 'Set-Service SvcHost -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-program-compatibility-assistant',lbl:'Desactivar Asistente para Compatibilidad de Programas',cmd:['Stop-Service PcaSvc -ErrorAction SilentlyContinue -Force', 'Set-Service PcaSvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-desktop-configuration',lbl:'Desactivar Configuración de Escritorio Remoto',cmd:['Stop-Service SessionEnv -ErrorAction SilentlyContinue -Force', 'Set-Service SessionEnv -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-desktop-services',lbl:'Desactivar Servicios de Escritorio Remoto',cmd:['Stop-Service TermService -ErrorAction SilentlyContinue -Force', 'Set-Service TermService -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-push-notifications',lbl:'Desactivar Servicio de Notificaciones Push de Windows',cmd:['Stop-Service WpnService -ErrorAction SilentlyContinue -Force', 'Set-Service WpnService -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-time-service',lbl:'Desactivar Servicio de Hora de Windows (Si usas NTP externo)',cmd:['Stop-Service W32Time -ErrorAction SilentlyContinue -Force', 'Set-Service W32Time -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-branchcache',lbl:'Desactivar BranchCache',cmd:['Disable-BCache -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-client-for-nfs',lbl:'Desactivar Cliente para NFS',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName ClientForNFS -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-data-deduplication',lbl:'Desactivar Deduplicación de Datos',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Data-Deduplication -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-iis',lbl:'Desactivar IIS (Internet Information Services)',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-hyper-v',lbl:'Desactivar Hyper-V (Si no se usa virtualización)',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-subsystem-for-linux',lbl:'Desactivar Subsistema de Windows para Linux (WSL)',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-sandbox',lbl:'Desactivar Windows Sandbox',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Sandbox -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-storage-spaces',lbl:'Desactivar Espacios de Almacenamiento',cmd:['# Esto es una característica de Windows para agrupar discos. No hay un comando directo de PowerShell para deshabilitarlo globalmente sin eliminar los espacios existentes.']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-exploit-protection',lbl:'Desactivar Protección contra Explotaciones de Windows Defender',cmd:['Set-ProcessMitigation -Policy Disable -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-application-guard',lbl:'Desactivar Windows Defender Application Guard',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Windows-Defender-ApplicationGuard -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-controlled-folder-access',lbl:'Desactivar Acceso Controlado a Carpetas de Windows Defender',cmd:['Set-MpPreference -EnableControlledFolderAccess Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-attack-surface-reduction',lbl:'Desactivar Reglas de Reducción de Superficie de Ataque (ASR)',cmd:['Set-MpPreference -AttackSurfaceReductionRules_Actions Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-network-protection',lbl:'Desactivar Protección de Red de Windows Defender',cmd:['Set-MpPreference -EnableNetworkProtection Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-ransomware-protection',lbl:'Desactivar Protección contra Ransomware de Windows Defender',cmd:['# Esto se gestiona a través del Acceso Controlado a Carpetas.']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-cloud-delivered-protection',lbl:'Desactivar Protección Entregada en la Nube de Windows Defender',cmd:['Set-MpPreference -CloudBlockLevel Off -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-defender-real-time-protection',lbl:'Desactivar Protección en Tiempo Real de Windows Defender',cmd:['Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'clear-defender-scan-history',lbl:'Borrar Historial de Escaneo de Windows Defender',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Scans\\History\\Service\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'clear-defender-quarantine',lbl:'Borrar Cuarentena de Windows Defender',cmd:['Remove-MpThreatDetection -All -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-definitions-update',lbl:'Desactivar Actualizaciones de Definiciones de Windows Defender',cmd:['Set-MpPreference -SignatureUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-scheduled-scan',lbl:'Desactivar Escaneos Programados de Windows Defender',cmd:['Get-ScheduledTask | Where-Object {$_.TaskPath -like "*Microsoft\\Windows\\Windows Defender*"} | Disable-ScheduledTask -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'hide-defender-ui',lbl:'Ocultar Icono de Windows Defender en la Bandeja del Sistema',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "Windows Defender Notification Icon" -Value "" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-smartscreen-url-check',lbl:'Desactivar SmartScreen para URLs y Aplicaciones',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AppHost" -Name "EnableWebContentEvaluation" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-smartscreen-app-check',lbl:'Desactivar SmartScreen para Aplicaciones y Archivos',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer" -Name "SmartScreenEnabled" -Value "Off" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-security-intelligence-updates',lbl:'Desactivar Actualizaciones de Inteligencia de Seguridad de Defender',cmd:['Set-MpPreference -SignatureUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-platform-updates',lbl:'Desactivar Actualizaciones de Plataforma de Windows Defender',cmd:['Set-MpPreference -PlatformUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-engine-updates',lbl:'Desactivar Actualizaciones del Motor de Windows Defender',cmd:['Set-MpPreference -EngineUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'set-defender-cloud-block-level-low',lbl:'Establecer Nivel de Bloqueo en la Nube de Defender en Básico',cmd:['Set-MpPreference -CloudBlockLevel Low -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-power-throttling-reg',lbl:'Desactivar Limitación de Energía (Registro)',cmd:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling" -Name "PowerThrottlingOff" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-sleep-study-reg',lbl:'Desactivar Sleep Study (Registro)',cmd:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling" -Name "SleepStudyOff" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-usb-selective-suspend-reg',lbl:'Desactivar Suspensión Selectiva de USB (Registro)',cmd:['Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\USB\\USBPORT\\Legacy" -Name "DisableSelectiveSuspend" -Value 1 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-driver-signing-enforcement-reg',lbl:'Desactivar Cumplimiento de Firma de Controladores (Registro - No recomendado)',cmd:['# Desactivar esto permanentemente es un riesgo de seguridad. Solo para uso temporal y avanzado.', 'Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Driver Signing" -Name "Behavior" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-registry-service',lbl:'Desactivar Servicio de Registro Remoto',cmd:['Stop-Service RemoteRegistry -ErrorAction SilentlyContinue -Force', 'Set-Service RemoteRegistry -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-print-spooler-service',lbl:'Desactivar Servicio de Cola de Impresión',cmd:['Stop-Service Spooler -ErrorAction SilentlyContinue -Force', 'Set-Service Spooler -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-fax-service-service',lbl:'Desactivar Servicio de Fax',cmd:['Stop-Service Fax -ErrorAction SilentlyContinue -Force', 'Set-Service Fax -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-bluetooth-service-service',lbl:'Desactivar Servicio Bluetooth',cmd:['Stop-Service bthserv -ErrorAction SilentlyContinue -Force', 'Set-Service bthserv -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-time-service-service',lbl:'Desactivar Servicio de Hora de Windows',cmd:['Stop-Service W32Time -ErrorAction SilentlyContinue -Force', 'Set-Service W32Time -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-diagnostic-policy-service-service',lbl:'Desactivar Servicio de Directivas de Diagnóstico',cmd:['Stop-Service DPS -ErrorAction SilentlyContinue -Force', 'Set-Service DPS -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-connected-devices-platform-service-service',lbl:'Desactivar Servicio de Plataforma de Dispositivos Conectados',cmd:['Stop-Service CDPUserSvc -ErrorAction SilentlyContinue -Force', 'Set-Service CDPUserSvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-dmwappushsvc-service',lbl:'Desactivar Servicio de Administración de Dispositivos Conectados (dmwappushsvc)',cmd:['Stop-Service dmwappushsvc -ErrorAction SilentlyContinue -Force', 'Set-Service dmwappushsvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-program-compatibility-assistant-service',lbl:'Desactivar Asistente para Compatibilidad de Programas',cmd:['Stop-Service PcaSvc -ErrorAction SilentlyContinue -Force', 'Set-Service PcaSvc -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-desktop-configuration-service',lbl:'Desactivar Configuración de Escritorio Remoto',cmd:['Stop-Service SessionEnv -ErrorAction SilentlyContinue -Force', 'Set-Service SessionEnv -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-remote-desktop-services-service',lbl:'Desactivar Servicios de Escritorio Remoto',cmd:['Stop-Service TermService -ErrorAction SilentlyContinue -Force', 'Set-Service TermService -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-push-notifications-service',lbl:'Desactivar Servicio de Notificaciones Push de Windows',cmd:['Stop-Service WpnService -ErrorAction SilentlyContinue -Force', 'Set-Service WpnService -StartupType Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-branchcache-feature',lbl:'Desactivar Característica BranchCache',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName BranchCache -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-client-for-nfs-feature',lbl:'Desactivar Característica Cliente para NFS',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName ClientForNFS -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-data-deduplication-feature',lbl:'Desactivar Característica Deduplicación de Datos',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Data-Deduplication -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-iis-feature',lbl:'Desactivar Característica IIS (Internet Information Services)',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-hyper-v-feature',lbl:'Desactivar Característica Hyper-V',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-wsl-feature',lbl:'Desactivar Característica Subsistema de Windows para Linux (WSL)',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-windows-sandbox-feature',lbl:'Desactivar Característica Windows Sandbox',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Sandbox -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-storage-spaces-feature',lbl:'Desactivar Característica Espacios de Almacenamiento',cmd:['# Esto es una característica de Windows para agrupar discos. No hay un comando directo de PowerShell para deshabilitarlo globalmente sin eliminar los espacios existentes.']},
-      {cat:'Extras y Optimización',id:'disable-defender-exploit-protection-feature',lbl:'Desactivar Protección contra Explotaciones de Windows Defender',cmd:['Set-ProcessMitigation -Policy Disable -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-application-guard-feature',lbl:'Desactivar Windows Defender Application Guard',cmd:['Disable-WindowsOptionalFeature -Online -FeatureName Windows-Defender-ApplicationGuard -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-controlled-folder-access-feature',lbl:'Desactivar Acceso Controlado a Carpetas de Windows Defender',cmd:['Set-MpPreference -EnableControlledFolderAccess Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-attack-surface-reduction-feature',lbl:'Desactivar Reglas de Reducción de Superficie de Ataque (ASR)',cmd:['Set-MpPreference -AttackSurfaceReductionRules_Actions Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-network-protection-feature',lbl:'Desactivar Protección de Red de Windows Defender',cmd:['Set-MpPreference -EnableNetworkProtection Disabled -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-cloud-delivered-protection-feature',lbl:'Desactivar Protección Entregada en la Nube de Windows Defender',cmd:['Set-MpPreference -CloudBlockLevel Off -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-real-time-protection-feature',lbl:'Desactivar Protección en Tiempo Real de Windows Defender',cmd:['Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'clear-defender-scan-history-feature',lbl:'Borrar Historial de Escaneo de Windows Defender',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows Defender\\Scans\\History\\Service\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'clear-defender-quarantine-feature',lbl:'Borrar Cuarentena de Windows Defender',cmd:['Remove-MpThreatDetection -All -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-definitions-update-feature',lbl:'Desactivar Actualizaciones de Definiciones de Windows Defender',cmd:['Set-MpPreference -SignatureUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-scheduled-scan-feature',lbl:'Desactivar Escaneos Programados de Windows Defender',cmd:['Get-ScheduledTask | Where-Object {$_.TaskPath -like "*Microsoft\\Windows\\Windows Defender*"} | Disable-ScheduledTask -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'hide-defender-ui-feature',lbl:'Ocultar Icono de Windows Defender en la Bandeja del Sistema',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "Windows Defender Notification Icon" -Value "" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-smartscreen-url-check-feature',lbl:'Desactivar SmartScreen para URLs y Aplicaciones',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AppHost" -Name "EnableWebContentEvaluation" -Value 0 -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-smartscreen-app-check-feature',lbl:'Desactivar SmartScreen para Aplicaciones y Archivos',cmd:['Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer" -Name "SmartScreenEnabled" -Value "Off" -Force -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-security-intelligence-updates-feature',lbl:'Desactivar Actualizaciones de Inteligencia de Seguridad de Defender',cmd:['Set-MpPreference -SignatureUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-platform-updates-feature',lbl:'Desactivar Actualizaciones de Plataforma de Windows Defender',cmd:['Set-MpPreference -PlatformUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'disable-defender-engine-updates-feature',lbl:'Desactivar Actualizaciones del Motor de Windows Defender',cmd:['Set-MpPreference -EngineUpdateInterval 0 -ErrorAction SilentlyContinue']},
-      {cat:'Extras y Optimización',id:'set-defender-cloud-block-level-low-feature',lbl:'Establecer Nivel de Bloqueo en la Nube de Defender en Básico',cmd:['Set-MpPreference -CloudBlockLevel Low -ErrorAction SilentlyContinue']},
+      // Drivers
+      {cat:'Drivers', id:'cleanup-drivers', lbl:'Eliminar controladores antiguos', cmd:['dism.exe /online /cleanup-image /startcomponentcleanup /resetbase']},
+
+      // Aplicaciones de Usuario
+      {cat:'Apps', id:'chrome-cache', lbl:'Limpiar cache Chrome', cmd:['Remove-Item "$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Default\\Cache\\*" -Recurse -Force']},
+      {cat:'Apps', id:'firefox-cache', lbl:'Limpiar cache Firefox', cmd:['Remove-Item "$env:APPDATA\\Mozilla\\Firefox\\Profiles\\*\\cache2\\*" -Recurse -Force']},
+
+      // Junk Windows
+      {cat:'Junk Windows', id:'clean-store', lbl:'Restablecer cache Microsoft Store', cmd:['wsreset.exe']},
+      {cat:'Junk Windows', id:'clean-recent', lbl:'Borrar archivos recientes', cmd:['Clear-ItemProperty -Path "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs" -Name "*"']},
+
+      // Actualizaciones
+      {cat:'Actualizaciones', id:'update-windows', lbl:'Actualizar Windows', cmd:['If (-NOT (Get-Module -ListAvailable -Name PSWindowsUpdate)) { Install-Module PSWindowsUpdate -Force -Scope CurrentUser -ErrorAction SilentlyContinue }; Get-WindowsUpdate -AcceptAll -Install -AutoReboot:$false']},
+      {cat:'Actualizaciones', id:'update-choco', lbl:'Actualizar apps Chocolatey', cmd:['choco upgrade all -y']}
     ];
 
-    // Get references to DOM elements
     const opts = document.querySelector('.options');
     const scriptArea = document.getElementById('script');
     const countDisplay = document.getElementById('count');
     const progressBar = document.getElementById('progress');
     const messageBox = document.getElementById('messageBox');
+    const categories = [...new Set(sections.map(s => s.cat))];
 
-    // Extract unique categories from the sections
-    const categories = [...new Set(sections.map(x => x.cat))];
-
-    /**
-     * Renders the options dynamically based on the 'sections' array.
-     * Each category gets a collapsible 'details' element.
-     */
     function renderOptions() {
-      opts.innerHTML = ''; // Clear existing options
-      categories.forEach(category => {
-        const details = document.createElement('details');
-        details.open = true; // Keep categories open by default
-        const summary = document.createElement('summary');
-        summary.textContent = category;
+      opts.innerHTML = '';
+      categories.forEach(cat => {
+        const details = document.createElement('details'); details.open = true;
+        const summary = document.createElement('summary'); summary.textContent = cat;
         details.append(summary);
-
-        // Add checkboxes for tasks within each category
-        sections.filter(x => x.cat === category).forEach(task => {
+        sections.filter(s => s.cat === cat).forEach(task => {
           const label = document.createElement('label');
-          const input = document.createElement('input');
-          input.type = 'checkbox';
-          input.id = task.id;
-          input.checked = true; // All options are checked by default
-
+          const input = document.createElement('input'); input.type = 'checkbox'; input.id = task.id; input.checked = true;
           label.append(input, ' ', task.lbl);
           details.append(label);
         });
         opts.append(details);
       });
-      updateSelectionCount(); // Update count and progress bar after rendering
+      updateCount();
     }
 
-    /**
-     * Updates the displayed count of selected tasks and the progress bar.
-     */
-    function updateSelectionCount() {
-      const totalTasks = sections.length;
-      const selectedTasks = sections.filter(x => document.getElementById(x.id) && document.getElementById(x.id).checked).length;
-      countDisplay.textContent = `${selectedTasks}/${totalTasks}`;
-      progressBar.style.width = `${Math.round((selectedTasks / totalTasks) * 100)}%`;
+    function updateCount() {
+      const total = sections.length;
+      const sel = sections.filter(s => document.getElementById(s.id)?.checked).length;
+      countDisplay.textContent = `${sel}/${total}`;
+      progressBar.style.width = `${Math.round((sel/total)*100)}%`;
     }
 
-    /**
-     * Generates the PowerShell script based on selected options.
-     */
     function generateScript() {
-      let output = [
-        '# Windows Cleaner ULTRA V5 Pro Supertasks Script (Optimizado para SSD)',
-        '# Generado por tu Asistente de IA',
-        '',
-        '# Comprobar si se ejecuta como Administrador',
+      const out = [
+        '# Windows Cleaner ULTRA V5 Pro Supertasks',
+        '# Generado por tu Asistente',
         'if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {',
-        '    Write-Warning "Este script debe ejecutarse con privilegios de Administrador. Por favor, ejecútelo de nuevo como Administrador.";',
-        '    Start-Sleep -Seconds 5;', // Give user time to read message
-        '    Exit;',
+        '  Write-Warning "Ejecutar como Administrador."; Exit;',
         '}',
         ''
       ];
-
-      // Add commands for selected tasks
       sections.forEach(task => {
-        if (document.getElementById(task.id) && document.getElementById(task.id).checked) {
-          output.push(`# --- ${task.lbl} ---`);
-          output.push(...task.cmd);
-          output.push(''); // Add a blank line for readability
+        if (document.getElementById(task.id)?.checked) {
+          out.push(`# --- ${task.lbl} ---`, ...task.cmd, '');
         }
       });
-
-      output.push('Write-Host "Script de limpieza y optimización completado."');
-      scriptArea.value = output.join('\r\n'); // Use CRLF for PowerShell script
-      updateSelectionCount();
+      out.push('Write-Host "¡Limpieza y optimización completadas!"');
+      scriptArea.value = out.join('\r\n');
+      updateCount();
     }
 
-    /**
-     * Displays a temporary message box.
-     * @param {string} message - The message to display.
-     */
-    function showMessageBox(message) {
-      messageBox.textContent = message;
-      messageBox.classList.add('show');
-      setTimeout(() => {
-        messageBox.classList.remove('show');
-      }, 2000); // Message disappears after 2 seconds
-    }
-
-    /**
-     * Copies the generated script to the clipboard.
-     * Always uses document.execCommand('copy') for better compatibility in sandboxed environments.
-     */
     function copyScript() {
-      scriptArea.select();
-      try {
-        document.execCommand('copy');
-        showMessageBox('¡Copiado al portapapeles!');
-      } catch (err) {
-        console.error('Error al usar execCommand para copiar:', err);
-        showMessageBox('Error al copiar. Por favor, copie manualmente.');
-      }
-      window.getSelection().removeAllRanges(); // Deselect text
+      scriptArea.select(); document.execCommand('copy');
+      messageBox.textContent = '¡Copiado!'; messageBox.classList.add('show');
+      setTimeout(() => messageBox.classList.remove('show'), 2000);
     }
 
-    // Event listener for all control buttons
     document.querySelector('.controls').addEventListener('click', e => {
-      const action = e.target.dataset.action;
-      if (!action) return; // Not a button with a data-action
-
-      switch (action) {
-        case 'select-all':
-          sections.forEach(task => {
-            const checkbox = document.getElementById(task.id);
-            if (checkbox) checkbox.checked = true;
-          });
-          break;
-        case 'deselect-all':
-          sections.forEach(task => {
-            const checkbox = document.getElementById(task.id);
-            if (checkbox) checkbox.checked = false;
-          });
-          break;
-        case 'gen':
-          generateScript();
-          return; // Do not update count immediately after generation, it's done within gen()
-        case 'copy':
-          copyScript();
-          return;
-        default:
-          break;
-      }
-      updateSelectionCount(); // Update count for selection changes
+      const act = e.target.dataset.action;
+      if (act === 'select-all') sections.forEach(s => document.getElementById(s.id).checked = true);
+      if (act === 'deselect-all') sections.forEach(s => document.getElementById(s.id).checked = false);
+      if (act === 'gen') { generateScript(); return; }
+      if (act === 'copy') { copyScript(); return; }
+      updateCount();
     });
 
-    // Initial render when the page loads
-    renderOptions();
-    // Add event listeners to all checkboxes to update the count dynamically
-    opts.addEventListener('change', (event) => {
-        if (event.target.type === 'checkbox') {
-            updateSelectionCount();
-        }
-    });
+    renderOptions(); opts.addEventListener('change', e => e.target.type === 'checkbox' && updateCount());
   </script>
 </body>
 </html>
