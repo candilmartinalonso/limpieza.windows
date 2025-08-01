@@ -1,173 +1,39 @@
 <!DOCTYPE html>
-<html lang="es" >
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Windows Cleaner ULTRA V5 Pro Supertasks + IObit ASC</title>
+  <title>Windows Cleaner ULTRA V5 Pro + Actualizador Full EXTENDED</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      background: #f0f0f0;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-    h1 {
-      text-align: center;
-      color: #0078d7;
-      margin-bottom: 1rem;
-      font-weight: 700;
-      font-size: 1.75rem;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    .controls button {
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
-      border-radius: 0.375rem;
-      border: none;
-      background: #0078d7;
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    .controls button:hover {
-      background: #005a9e;
-    }
-    #count {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-weight: 600;
-      color: #0078d7;
-    }
-    .progress-bar {
-      width: 80%;
-      height: 12px;
-      margin: 0 auto 1rem;
-      background: #e0e0e0;
-      border-radius: 0.3125rem;
-      overflow: hidden;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-    }
-    .progress-bar > div {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(to right, #e81123, #ff6b6b);
-      transition: width 0.3s ease;
-    }
-    .options {
-      max-height: 400px;
-      overflow-y: auto;
-      margin: 0 auto 1.5rem;
-      width: 90%;
-      background: #fff;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-      scrollbar-width: thin;
-      scrollbar-color: #0078d7 #e0e0e0;
-      position: relative;
-    }
-    .options::-webkit-scrollbar {
-      width: 8px;
-    }
-    .options::-webkit-scrollbar-track {
-      background: #e0e0e0;
-      border-radius: 4px;
-    }
-    .options::-webkit-scrollbar-thumb {
-      background-color: #0078d7;
-      border-radius: 4px;
-    }
-    .options details {
-      margin-bottom: 0.7rem;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 0.4rem;
-    }
-    .options details summary {
-      font-weight: 700;
-      color: #0078d7;
-      cursor: pointer;
-      outline: none;
-      user-select: none;
-    }
-    .options label {
-      display: flex;
-      align-items: center;
-      margin: 0.3rem 0;
-      cursor: pointer;
-      user-select: none;
-    }
-    .options input[type="checkbox"] {
-      margin-right: 0.5rem;
-      transform: scale(1.2);
-      cursor: pointer;
-    }
-    textarea {
-      width: 90%;
-      height: 380px;
-      margin: 0 auto 1.5rem;
-      padding: 1rem;
-      border-radius: 0.375rem;
-      border: 1px solid #ccc;
-      font-family: 'Consolas', monospace;
-      font-size: 0.9rem;
-      resize: vertical;
-      background: #fff;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
-    }
-    .message-box {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      background: #0078d7;
-      color: #fff;
-      padding: 0.75rem 1.25rem;
-      border-radius: 0.5rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      z-index: 1000;
-    }
-    .message-box.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .message-icon {
-      width: 20px; height: 20px;
-      fill: currentColor;
-    }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #f0f0f0; color: #333; display: flex; flex-direction: column; min-height: 100vh; padding: 1rem;}
+    h1 { text-align: center; color: #0078d7; margin-bottom: 1rem; font-weight: 700; font-size: 1.75rem;}
+    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-bottom: 1rem;}
+    .controls button { padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 0.375rem; border: none; background: #0078d7; color: #fff; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 0.25rem;}
+    .controls button:hover { background: #005a9e;}
+    #count { text-align: center; margin-bottom: 1rem; font-weight: 600; color: #0078d7;}
+    .progress-bar { width: 80%; height: 12px; margin: 0 auto 1rem; background: #e0e0e0; border-radius: 0.3125rem; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);}
+    .progress-bar > div { height: 100%; width: 0; background: linear-gradient(to right, #e81123, #ff6b6b); transition: width 0.3s ease;}
+    .options { max-height: 400px; overflow-y: auto; margin: 0 auto 1.5rem; width: 90%; background: #fff; border-radius: 0.5rem; padding: 1rem; box-shadow: 0 0 10px rgb(0 0 0 / 0.1); scrollbar-width: thin; scrollbar-color: #0078d7 #e0e0e0; position: relative;}
+    .options::-webkit-scrollbar { width: 8px;}
+    .options::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 4px;}
+    .options::-webkit-scrollbar-thumb { background-color: #0078d7; border-radius: 4px;}
+    .options details { margin-bottom: 0.7rem; border-bottom: 1px solid #ddd; padding-bottom: 0.4rem;}
+    .options details summary { font-weight: 700; color: #0078d7; cursor: pointer; outline: none; user-select: none;}
+    .options label { display: flex; align-items: center; margin: 0.3rem 0; cursor: pointer; user-select: none;}
+    .options input[type="checkbox"] { margin-right: 0.5rem; transform: scale(1.2); cursor: pointer;}
+    textarea { width: 90%; height: 380px; margin: 0 auto 1.5rem; padding: 1rem; border-radius: 0.375rem; border: 1px solid #ccc; font-family: 'Consolas', monospace; font-size: 0.9rem; resize: vertical; background: #fff; box-shadow: inset 0 0 5px rgba(0,0,0,0.05);}
+    .message-box { position: fixed; top: 1rem; right: 1rem; background: #0078d7; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.5rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 1000;}
+    .message-box.show { opacity: 1; pointer-events: auto;}
+    .message-icon { width: 20px; height: 20px; fill: currentColor;}
     @media (max-width: 600px) {
-      .controls {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      textarea, .options {
-        width: 100%;
-      }
+      .controls { flex-direction: column; gap: 0.5rem;}
+      textarea, .options { width: 100%;}
     }
   </style>
 </head>
 <body>
-  <h1>Windows Cleaner ULTRA V5 Pro Supertasks + IObit ASC</h1>
-
+  <h1>Windows Cleaner ULTRA V5 Pro + Actualizador Full EXTENDED</h1>
   <div class="controls" role="group" aria-label="Controles del script">
     <button data-action="select-all" aria-label="Seleccionar todo">Sel. Todo</button>
     <button data-action="deselect-all" aria-label="Deseleccionar todo">Desel. Todo</button>
@@ -175,246 +41,257 @@
     <button data-action="gen" aria-label="Generar script">Generar Script</button>
     <button data-action="copy" aria-label="Copiar script">Copiar Script</button>
   </div>
-
-  <div class="progress-bar" aria-label="Barra de progreso">
-    <div id="progress"></div>
-  </div>
+  <div class="progress-bar" aria-label="Barra de progreso"><div id="progress"></div></div>
   <p id="count" aria-live="polite" aria-atomic="true">0/0</p>
-
   <section class="options" aria-label="Opciones de limpieza y optimización" tabindex="0"></section>
-
   <textarea id="script" readonly placeholder="El script aparecerá aquí..." aria-label="Área de texto con el script generado"></textarea>
-
   <div id="messageBox" class="message-box" role="alert" aria-live="assertive" aria-atomic="true">
     <svg class="message-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 0C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10S15.523 0 10 0zm.75 15a.75.75 0 11-1.5 0v-1.5a.75.75 0 011.5 0V15zm0-3a.75.75 0 01-1.5 0V5a.75.75 0 011.5 0v7z"/></svg>
     <span id="msgText"></span>
   </div>
-
 <script>
-  const sections=[
-    {cat:'Archivos Temporales',id:'temp-user',lbl:'Limpiar %TEMP% de Usuario',cmd:['Remove-Item "$env:TEMP\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-    {cat:'Archivos Temporales',id:'temp-win',lbl:'Limpiar C:/Windows/Temp',cmd:['Remove-Item "C:\\Windows\\Temp\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-    {cat:'Archivos Temporales',id:'prefetch',lbl:'Limpiar Prefetch',cmd:['Remove-Item "C:\\Windows\\Prefetch\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-    {cat:'Archivos Temporales',id:'memory-dumps',lbl:'Borrar volcados de memoria',cmd:['Remove-Item "$env:SystemRoot\\MEMORY.DMP" -Force -ErrorAction SilentlyContinue','Remove-Item "$env:SystemRoot\\Minidump\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-    {cat:'Archivos Temporales',id:'installer-cache',lbl:'Limpiar caché Installer',cmd:['Get-ChildItem "C:\\Windows\\Installer\\*.msi" -Recurse | Remove-Item -Force','Get-ChildItem "C:\\Windows\\Installer\\*.msp" -Recurse | Remove-Item -Force']},
-    {cat:'Archivos Temporales',id:'windows-old',lbl:'Eliminar Windows.old',cmd:['Remove-Item "$env:SystemDrive\\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue']},
-    
-    {cat:'Bloatware',id:'remove-xbox',lbl:'Eliminar Xbox Game Bar',cmd:['Get-AppxPackage Microsoft.XboxGamingOverlay | Remove-AppxPackage -ErrorAction SilentlyContinue']},
-    {cat:'Bloatware',id:'remove-onedrive',lbl:'Desinstalar OneDrive',cmd:['%SystemRoot%\\SysWOW64\\OneDriveSetup.exe /uninstall']},
-    {cat:'Bloatware',id:'remove-cortana',lbl:'Eliminar Cortana',cmd:['Get-AppxPackage -Name Microsoft.549981C3F5F10 | Remove-AppxPackage -ErrorAction SilentlyContinue']},
-    {cat:'Bloatware',id:'remove-ads',lbl:'Desactivar sugerencias y anuncios',cmd:['Reg Delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager" /v SubscribedContent-338387Enabled /f']},
+const sections=[
+  // ACTUALIZACIONES
+  {cat:'Actualizaciones',id:'win-update',lbl:'Actualizar Windows a la última versión',cmd:[
+    'Install-Module PSWindowsUpdate -Force -ErrorAction SilentlyContinue',
+    'Import-Module PSWindowsUpdate',
+    'Get-WindowsUpdate -AcceptAll -Install -AutoReboot'
+  ]},
+  {cat:'Actualizaciones',id:'winget-update',lbl:'Actualizar todas las apps instaladas (winget)',cmd:[
+    'winget upgrade --all --silent --accept-source-agreements --accept-package-agreements'
+  ]},
+  {cat:'Drivers',id:'drivers-wu',lbl:'Actualizar drivers vía Windows Update',cmd:[
+    'Install-Module PSWindowsUpdate -Force -ErrorAction SilentlyContinue',
+    'Import-Module PSWindowsUpdate',
+    'Get-WindowsUpdate -MicrosoftUpdate -Category Drivers -AcceptAll -Install -AutoReboot'
+  ]},
+  // RESTAURACIÓN Y ESPACIO
+  {cat:'Sistema',id:'create-restore-point',lbl:'Crear punto de restauración antes',cmd:[
+    'Checkpoint-Computer -Description "Antes de limpieza Windows Cleaner ULTRA" -RestorePointType MODIFY_SETTINGS'
+  ]},
+  {cat:'Extras',id:'show-diskspace',lbl:'Mostrar espacio libre antes y después',cmd:[
+    'Write-Host "Espacio libre antes:"',
+    'Get-PSDrive -PSProvider FileSystem | Where-Object {$_.Free -gt 0} | Select Name,Free'
+  ]},
+  // LIMPIEZA AVANZADA DE BASURA Y LOGS
+  {cat:'Archivos Temporales',id:'temp-user',lbl:'Limpiar %TEMP% de Usuario',cmd:['Remove-Item "$env:TEMP\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  {cat:'Archivos Temporales',id:'temp-win',lbl:'Limpiar C:/Windows/Temp',cmd:['Remove-Item "C:\\Windows\\Temp\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  {cat:'Archivos Temporales',id:'prefetch',lbl:'Limpiar Prefetch',cmd:['Remove-Item "C:\\Windows\\Prefetch\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  {cat:'Archivos Temporales',id:'recent-mru',lbl:'Limpiar archivos recientes/MRU',cmd:['Remove-Item "$env:APPDATA\\Microsoft\\Windows\\Recent\\*" -Recurse -Force']},
+  {cat:'Archivos Temporales',id:'run-mru',lbl:'Limpiar historial de Ejecutar',cmd:['reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU" /va /f']},
+  {cat:'Archivos Temporales',id:'memory-dumps',lbl:'Borrar volcados de memoria',cmd:['Remove-Item "$env:SystemRoot\\MEMORY.DMP" -Force -ErrorAction SilentlyContinue','Remove-Item "$env:SystemRoot\\Minidump\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  {cat:'Archivos Temporales',id:'installer-cache',lbl:'Limpiar caché Installer',cmd:['Get-ChildItem "C:\\Windows\\Installer\\*.msi" -Recurse | Remove-Item -Force','Get-ChildItem "C:\\Windows\\Installer\\*.msp" -Recurse | Remove-Item -Force']},
+  {cat:'Archivos Temporales',id:'windows-old',lbl:'Eliminar Windows.old (ADVERTENCIA)',cmd:[
+    '# ADVERTENCIA: Solo si ya no necesitás volver a la versión anterior de Windows.',
+    'if (Test-Path "$env:SystemDrive\\Windows.old") { Remove-Item "$env:SystemDrive\\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue }'
+  ]},
+  {cat:'Archivos Temporales',id:'clear-thumb',lbl:'Borrar caché de miniaturas',cmd:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\\thumbcache_*.db" -Force']},
+  {cat:'Archivos Temporales',id:'clear-msstore-cache',lbl:'Limpiar caché Microsoft Store',cmd:[
+    'Remove-Item "$env:LOCALAPPDATA\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalCache\\*" -Recurse -Force -ErrorAction SilentlyContinue'
+  ]},
+  {cat:'Archivos Temporales',id:'temp-allusers',lbl:'Limpiar Temp de todos los usuarios',cmd:[
+    'Get-ChildItem "C:\\Users" | ForEach-Object { Remove-Item "$($_.FullName)\\AppData\\Local\\Temp\\*" -Recurse -Force -ErrorAction SilentlyContinue }'
+  ]},
+  {cat:'Archivos Temporales',id:'clear-fontcache',lbl:'Borrar caché de fuentes',cmd:['Remove-Item "$env:WINDIR\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  {cat:'Archivos Temporales',id:'clear-iconcache',lbl:'Borrar caché de iconos',cmd:['Remove-Item "$env:LOCALAPPDATA\\IconCache.db" -Force -ErrorAction SilentlyContinue']},
+  {cat:'Archivos Temporales',id:'clear-printer',lbl:'Limpiar caché de impresoras',cmd:['Remove-Item "$env:WINDIR\\System32\\spool\\PRINTERS\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  // LIMPIEZA DE LOGS Y REGISTROS
+  {cat:'Registros',id:'clear-eventlogs',lbl:'Limpiar Event Logs',cmd:['wevtutil el | ForEach-Object { wevtutil cl $_ }']},
+  {cat:'Registros',id:'clear-wer',lbl:'Borrar registros WER',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\*" -Recurse -Force']},
+  {cat:'Registros',id:'clear-wmi',lbl:'Borrar logs WMI',cmd:['Remove-Item "$env:SystemRoot\\System32\\LogFiles\\WMI\\*" -Recurse -Force']},
+  {cat:'Registros',id:'clear-power',lbl:'Borrar logs de energía',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Power\\*" -Recurse -Force']},
+  {cat:'Registros',id:'clear-wu-cache',lbl:'Limpiar caché Windows Update',cmd:[
+    'Stop-Service wuauserv',
+    'Remove-Item "$env:SystemRoot\\SoftwareDistribution\\Download\\*" -Recurse -Force',
+    'Start-Service wuauserv'
+  ]},
+  {cat:'Registros',id:'wu-temp-extra',lbl:'Limpiar temp Windows Update extra',cmd:['Remove-Item "$env:SystemRoot\\SoftwareDistribution\\DataStore\\Logs\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  {cat:'Registros',id:'clear-dism',lbl:'Limpiar logs de DISM',cmd:['Remove-Item "$env:SystemRoot\\Logs\\DISM\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
+  // LIMPIEZA DE HISTORIALES
+  {cat:'Historial',id:'explorer-history',lbl:'Limpiar historial del Explorador de archivos',cmd:['reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths" /va /f']},
+  {cat:'Historial',id:'search-history',lbl:'Limpiar historial de búsquedas Windows',cmd:['reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\WordWheelQuery" /va /f']},
+  // RESTAURAR COMPONENTES, SFC/DISM
+  {cat:'Sistema',id:'sfc',lbl:'SFC /scannow',cmd:['sfc /scannow']},
+  {cat:'Sistema',id:'dism',lbl:'DISM RestoreHealth',cmd:['Dism.exe /Online /Cleanup-Image /RestoreHealth']},
+  {cat:'Sistema',id:'cleanup-winsxs',lbl:'Cleanup WinSxS',cmd:['Dism.exe /Online /Cleanup-Image /StartComponentCleanup']},
+  {cat:'Sistema',id:'cleanup-drivers',lbl:'Cleanup Drivers',cmd:['Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase']},
+  // OPTIMIZACIÓN RED
+  {cat:'Red',id:'flush-dns',lbl:'Flush DNS',cmd:['ipconfig /flushdns']},
+  {cat:'Red',id:'reset-winsock',lbl:'Reset Winsock',cmd:['netsh winsock reset']},
+  {cat:'Red',id:'reset-tcp',lbl:'Reset TCP/IP',cmd:['netsh int ip reset']},
+  {cat:'Red',id:'clear-arp',lbl:'Clear ARP',cmd:['arp -d *']},
+  {cat:'Red',id:'internet-boost',lbl:'Optimizar parámetros TCP (Internet Boost)',cmd:['netsh int tcp set global autotuninglevel=normal']},
+  // NAVEGADORES
+  {cat:'Navegadores',id:'chrome-cache',lbl:'Chrome Cache',cmd:['Remove-Item "$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Default\\Cache\\*" -Recurse -Force']},
+  {cat:'Navegadores',id:'chrome-cookies',lbl:'Chrome Cookies',cmd:['Remove-Item "$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Default\\Cookies" -Force']},
+  {cat:'Navegadores',id:'firefox-cache',lbl:'Firefox Cache',cmd:['Remove-Item "$env:APPDATA\\Mozilla\\Firefox\\Profiles\\*\\cache2\\*" -Recurse -Force']},
+  {cat:'Navegadores',id:'firefox-cookies',lbl:'Firefox Cookies',cmd:['Remove-Item "$env:APPDATA\\Mozilla\\Firefox\\Profiles\\*\\cookies.sqlite" -Force']},
+  {cat:'Navegadores', id:'edge-cache', lbl:'Edge Cache', cmd:[
+    'Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Edge\\User Data\\Default\\Cache\\*" -Recurse -Force -ErrorAction SilentlyContinue',
+    'Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Edge\\User Data\\Default\\Code Cache\\*" -Recurse -Force -ErrorAction SilentlyContinue'
+  ]},
+  // OPTIMIZACIÓN Y BLOQUEO DE SERVICIOS
+  {cat:'SSD Optimización',id:'disable-defrag',lbl:'Deshabilitar desfragmentación',cmd:['Disable-ScheduledTask -TaskName "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag"']},
+  {cat:'SSD Optimización',id:'enable-trim',lbl:'Habilitar TRIM',cmd:['fsutil behavior set DisableDeleteNotify 0']},
+  {cat:'SSD Optimización',id:'disable-sysmain',lbl:'Desactivar SysMain',cmd:['Stop-Service SysMain; Set-Service SysMain -StartupType Disabled']},
+  {cat:'SSD Optimización',id:'disable-search',lbl:'Desactivar indexación',cmd:['Stop-Service WSearch; Set-Service WSearch -StartupType Disabled']},
+  {cat:'SSD Optimización',id:'compact-os',lbl:'Compactar OS',cmd:['compact.exe /CompactOS:always']},
+  // MÁS BLOATWARE (SEGURO)
+  {cat:'Bloatware',id:'remove-xbox',lbl:'Eliminar Xbox Game Bar',cmd:['Get-AppxPackage Microsoft.XboxGamingOverlay | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-xboxapp',lbl:'Eliminar Xbox App',cmd:['Get-AppxPackage Microsoft.XboxApp | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-xboxidentity',lbl:'Eliminar Xbox Identity Provider',cmd:['Get-AppxPackage Microsoft.XboxIdentityProvider | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-mixedreality',lbl:'Eliminar Mixed Reality Portal',cmd:['Get-AppxPackage Microsoft.MixedReality.Portal | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-3dviewer',lbl:'Eliminar 3D Viewer',cmd:['Get-AppxPackage Microsoft.Microsoft3DViewer | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-zune',lbl:'Eliminar Groove Music y Movies & TV',cmd:[
+    'Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage -ErrorAction SilentlyContinue',
+    'Get-AppxPackage Microsoft.ZuneVideo | Remove-AppxPackage -ErrorAction SilentlyContinue'
+  ]},
+  {cat:'Bloatware',id:'remove-maps',lbl:'Eliminar Mapas',cmd:['Get-AppxPackage Microsoft.WindowsMaps | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-weather',lbl:'Eliminar Weather',cmd:['Get-AppxPackage Microsoft.BingWeather | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-news',lbl:'Eliminar News',cmd:['Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-candycrush',lbl:'Eliminar Candy Crush',cmd:['Get-AppxPackage king.com.CandyCrush* | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-skype',lbl:'Eliminar Skype App',cmd:['Get-AppxPackage Microsoft.SkypeApp | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-onedrive',lbl:'Desinstalar OneDrive',cmd:['%SystemRoot%\\SysWOW64\\OneDriveSetup.exe /uninstall']},
+  {cat:'Bloatware',id:'remove-cortana',lbl:'Eliminar Cortana',cmd:['Get-AppxPackage -Name Microsoft.549981C3F5F10 | Remove-AppxPackage -ErrorAction SilentlyContinue']},
+  {cat:'Bloatware',id:'remove-ads',lbl:'Desactivar sugerencias y anuncios',cmd:['Reg Delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager" /v SubscribedContent-338387Enabled /f']},
+  // EXTRAS Y OTROS
+  {cat:'Extras',id:'clear-recyclebin',lbl:'Vaciar Papelera de reciclaje',cmd:['Clear-RecycleBin -Force -ErrorAction SilentlyContinue']},
+  {cat:'Extras',id:'show-diskspace-end',lbl:'Mostrar espacio libre después',cmd:[
+    'Write-Host "Espacio libre después:"',
+    'Get-PSDrive -PSProvider FileSystem | Where-Object {$_.Free -gt 0} | Select Name,Free'
+  ]}
+];
 
-    {cat:'SSD Optimización',id:'disable-defrag',lbl:'Deshabilitar desfragmentación',cmd:['Disable-ScheduledTask -TaskName "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag"']},
-    {cat:'SSD Optimización',id:'enable-trim',lbl:'Habilitar TRIM',cmd:['fsutil behavior set DisableDeleteNotify 0']},
-    {cat:'SSD Optimización',id:'disable-sysmain',lbl:'Desactivar SysMain',cmd:['Stop-Service SysMain; Set-Service SysMain -StartupType Disabled']},
-    {cat:'SSD Optimización',id:'disable-search',lbl:'Desactivar indexación',cmd:['Stop-Service WSearch; Set-Service WSearch -StartupType Disabled']},
-    {cat:'SSD Optimización',id:'compact-os',lbl:'Compactar OS',cmd:['compact.exe /CompactOS:always']},
+const opts = document.querySelector('.options');
+const countEl = document.getElementById('count');
+const progressBar = document.getElementById('progress');
+const scriptArea = document.getElementById('script');
+const messageBox = document.getElementById('messageBox');
+const msgText = document.getElementById('msgText');
 
-    {cat:'IObit ASC',id:'asc-turbo',lbl:'Turbo Boost (detener servicios)',cmd:['Stop-Service BITS -ErrorAction SilentlyContinue','Stop-Service WSearch -ErrorAction SilentlyContinue','Stop-Service Fax -ErrorAction SilentlyContinue']},
-    {cat:'IObit ASC',id:'asc-internet',lbl:'Internet Boost (optimizar TCP)',cmd:['netsh int tcp set global autotuninglevel=normal']},
-    {cat:'IObit ASC',id:'asc-startup',lbl:'Optimizar Inicio (limpiar startup)',cmd:['Get-CimInstance -ClassName Win32_StartupCommand | Where-Object { $_.User -ne "NT AUTHORITY\\SYSTEM" } | ForEach-Object { $_.Delete() }']},
-    {cat:'IObit ASC',id:'asc-regclean',lbl:'Limpieza de Registro básica',cmd:['reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU" /va /f']},
-    {cat:'IObit ASC',id:'asc-privacy',lbl:'Privacy Sweep (borrar recientes)',cmd:['Remove-Item "$env:APPDATA\\Microsoft\\Windows\\Recent\\*" -Recurse -Force']},
-
-    {cat:'Registros',id:'clear-eventlogs',lbl:'Limpiar Event Logs',cmd:['wevtutil el | ForEach-Object { wevtutil cl $_ }']},
-    {cat:'Registros',id:'clear-wer',lbl:'Borrar registros WER',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Windows\\WER\\*" -Recurse -Force']},
-    {cat:'Registros',id:'clear-wmi',lbl:'Borrar logs WMI',cmd:['Remove-Item "$env:SystemRoot\\System32\\LogFiles\\WMI\\*" -Recurse -Force']},
-    {cat:'Registros',id:'clear-power',lbl:'Borrar logs de energía',cmd:['Remove-Item "$env:ProgramData\\Microsoft\\Power\\*" -Recurse -Force']},
-
-    {cat:'Sistema',id:'sfc',lbl:'SFC /scannow',cmd:['sfc /scannow']},
-    {cat:'Sistema',id:'dism',lbl:'DISM RestoreHealth',cmd:['Dism.exe /Online /Cleanup-Image /RestoreHealth']},
-    {cat:'Sistema',id:'powercfg',lbl:'Informe energía',cmd:['powercfg /energy /output "%USERPROFILE%\\energy-report.html"']},
-    {cat:'Sistema',id:'cleanup-winsxs',lbl:'Cleanup WinSxS',cmd:['Dism.exe /Online /Cleanup-Image /StartComponentCleanup']},
-
-    {cat:'Drivers',id:'cleanup-drivers',lbl:'Cleanup Drivers',cmd:['Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase']},
-
-    {cat:'Red',id:'flush-dns',lbl:'Flush DNS',cmd:['ipconfig /flushdns']},
-    {cat:'Red',id:'reset-winsock',lbl:'Reset Winsock',cmd:['netsh winsock reset']},
-    {cat:'Red',id:'reset-tcp',lbl:'Reset TCP/IP',cmd:['netsh int ip reset']},
-    {cat:'Red',id:'clear-arp',lbl:'Clear ARP',cmd:['arp -d *']},
-
-    {cat:'Cache Miniaturas',id:'clear-thumb',lbl:'Clear Thumbnails',cmd:['Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\\thumbcache_*.db" -Force']},
-
-    {cat:'Apps',id:'chrome-cache',lbl:'Chrome Cache',cmd:['Remove-Item "$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Default\\Cache\\*" -Recurse -Force']},
-    {cat:'Apps',id:'chrome-cookies',lbl:'Chrome Cookies',cmd:['Remove-Item "$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Default\\Cookies" -Force']},
-    {cat:'Apps',id:'firefox-cache',lbl:'Firefox Cache',cmd:['Remove-Item "$env:APPDATA\\Mozilla\\Firefox\\Profiles\\*\\cache2\\*" -Recurse -Force']},
-    {cat:'Apps',id:'firefox-cookies',lbl:'Firefox Cookies',cmd:['Remove-Item "$env:APPDATA\\Mozilla\\Firefox\\Profiles\\*\\cookies.sqlite" -Force']},
-
-    {cat:'Windows Update',id:'clear-wu-cache',lbl:'Limpiar caché WU',cmd:['Stop-Service wuauserv','Remove-Item "$env:SystemRoot\\SoftwareDistribution\\Download\\*" -Recurse -Force','Start-Service wuauserv']},
-    {cat:'Windows Update',id:'wu-temp-extra',lbl:'Limpiar temp Windows Update extra',cmd:['Remove-Item "$env:SystemRoot\\SoftwareDistribution\\DataStore\\Logs\\*" -Recurse -Force -ErrorAction SilentlyContinue']},
-
-    {cat:'Restore',id:'clear-restore',lbl:'Borrar Restore Points',cmd:['vssadmin delete shadows /for=C: /oldest /quiet']},
-
-    {cat:'Perfiles',id:'remove-profiles',lbl:'Eliminar perfiles antiguos',cmd:['Get-WmiObject Win32_UserProfile | Where-Object { !$_.Loaded -and $_.LastUseTime -lt ((Get-Date).AddDays(-30)) } | ForEach-Object { $_.Delete() }']},
-
-    {cat:'Extras',id:'disable-telemetry',lbl:'Desactivar Telemetry',cmd:['Stop-Service DiagTrack','Set-Service DiagTrack -StartupType Disabled']},
-    {cat:'Extras',id:'disable-err',lbl:'Desactivar Error Reporting',cmd:['Reg Add "HKLM\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting" /v Disabled /t REG_DWORD /d 1 /f']},
-    {cat:'Extras',id:'disable-feedback',lbl:'Desactivar Feedback',cmd:['Reg Add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f']},
-
-    // Nuevas tareas agregadas:
-    {cat:'Apps', id:'edge-cache', lbl:'Limpiar caché Microsoft Edge', cmd:[
-      'Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Edge\\User Data\\Default\\Cache\\*" -Recurse -Force -ErrorAction SilentlyContinue',
-      'Remove-Item "$env:LOCALAPPDATA\\Microsoft\\Edge\\User Data\\Default\\Code Cache\\*" -Recurse -Force -ErrorAction SilentlyContinue'
-    ]},
-    {cat:'Apps', id:'chrome-dns-cache', lbl:'Limpiar caché DNS Chrome', cmd:[
-      'ipconfig /flushdns' 
-    ]},
-    {cat:'Sistema', id:'clear-standby-memory', lbl:'Limpiar memoria Standby (ejemplo)', cmd:[
-      '# Nota: limpiar standby memory requiere herramientas externas o scripts específicos'
-    ]},
-    {cat:'Apps', id:'msstore-temp', lbl:'Limpiar archivos temporales Microsoft Store', cmd:[
-      'Remove-Item "$env:LOCALAPPDATA\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalCache\\*" -Recurse -Force -ErrorAction SilentlyContinue'
-    ]},
-    {cat:'Extras', id:'disable-wsearch', lbl:'Desactivar servicio Windows Search', cmd:[
-      'Stop-Service WSearch -ErrorAction SilentlyContinue',
-      'Set-Service WSearch -StartupType Disabled'
-    ]},
-    {cat:'Extras', id:'disable-diagtrack', lbl:'Desactivar servicio DiagTrack (Telemetry)', cmd:[
-      'Stop-Service DiagTrack -ErrorAction SilentlyContinue',
-      'Set-Service DiagTrack -StartupType Disabled'
-    ]}
+function saveSelection(){
+  const sel = {};
+  sections.forEach(s=>{
+    const cb = document.getElementById(s.id);
+    if(cb) sel[s.id] = cb.checked;
+  });
+  localStorage.setItem('winCleanerSelection', JSON.stringify(sel));
+}
+function loadSelection(){
+  const sel = JSON.parse(localStorage.getItem('winCleanerSelection')||'{}');
+  sections.forEach(s=>{
+    const cb = document.getElementById(s.id);
+    if(cb && sel.hasOwnProperty(s.id)){
+      cb.checked = sel[s.id];
+    }
+  });
+}
+function renderOptions(){
+  opts.innerHTML = '';
+  const cats = [...new Set(sections.map(s => s.cat))];
+  cats.forEach(cat=>{
+    const details = document.createElement('details');
+    details.open = true;
+    const summary = document.createElement('summary');
+    summary.textContent = cat;
+    details.appendChild(summary);
+    sections.filter(s=>s.cat===cat).forEach(task=>{
+      const label = document.createElement('label');
+      label.setAttribute('for', task.id);
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.id = task.id;
+      cb.checked = true;
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(' ' + task.lbl));
+      details.appendChild(label);
+    });
+    opts.appendChild(details);
+  });
+  loadSelection();
+  updateCount();
+}
+function updateCount(){
+  const total = sections.length;
+  const selected = sections.filter(s=>document.getElementById(s.id)?.checked).length;
+  countEl.textContent = `${selected}/${total}`;
+  progressBar.style.width = `${Math.round(selected/total*100)}%`;
+  saveSelection();
+}
+function generateScript(){
+  const lines = [
+    '# Windows Cleaner ULTRA V5 Pro EXTENDED',
+    `# Generado: ${new Date().toLocaleString()}`,
+    'if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {',
+    '  Write-Warning "Ejecutar como administrador."',
+    '  Exit',
+    '}',
+    ''
   ];
-
-  const opts = document.querySelector('.options');
-  const countEl = document.getElementById('count');
-  const progressBar = document.getElementById('progress');
-  const scriptArea = document.getElementById('script');
-  const messageBox = document.getElementById('messageBox');
-  const msgText = document.getElementById('msgText');
-
-  function saveSelection(){
-    const sel = {};
-    sections.forEach(s=>{
-      const cb = document.getElementById(s.id);
-      if(cb) sel[s.id] = cb.checked;
-    });
-    localStorage.setItem('winCleanerSelection', JSON.stringify(sel));
-  }
-
-  function loadSelection(){
-    const sel = JSON.parse(localStorage.getItem('winCleanerSelection')||'{}');
-    sections.forEach(s=>{
-      const cb = document.getElementById(s.id);
-      if(cb && sel.hasOwnProperty(s.id)){
-        cb.checked = sel[s.id];
-      }
-    });
-  }
-
-  function renderOptions(){
-    opts.innerHTML = '';
-    const cats = [...new Set(sections.map(s => s.cat))];
-    cats.forEach(cat=>{
-      const details = document.createElement('details');
-      details.open = true;
-      const summary = document.createElement('summary');
-      summary.textContent = cat;
-      details.appendChild(summary);
-      sections.filter(s=>s.cat===cat).forEach(task=>{
-        const label = document.createElement('label');
-        label.setAttribute('for', task.id);
-        const cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.id = task.id;
-        cb.checked = true;
-        label.appendChild(cb);
-        label.appendChild(document.createTextNode(' ' + task.lbl));
-        details.appendChild(label);
-      });
-      opts.appendChild(details);
-    });
-    loadSelection();
-    updateCount();
-  }
-
-  function updateCount(){
-    const total = sections.length;
-    const selected = sections.filter(s=>document.getElementById(s.id)?.checked).length;
-    countEl.textContent = `${selected}/${total}`;
-    progressBar.style.width = `${Math.round(selected/total*100)}%`;
-    saveSelection();
-  }
-
-  function generateScript(){
-    const lines = [
-      '# Windows Cleaner ULTRA V5 Pro Supertasks',
-      `# Generado: ${new Date().toLocaleString()}`,
-      'if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {',
-      '  Write-Warning "Ejecutar como administrador."',
-      '  Exit',
-      '}',
-      ''
-    ];
-    let anySelected = false;
-    sections.forEach(task=>{
-      const cb = document.getElementById(task.id);
-      if(cb?.checked){
-        anySelected = true;
-        lines.push(`# --- ${task.lbl} ---`);
-        lines.push(...task.cmd);
-        lines.push('');
-      }
-    });
-    if(!anySelected){
-      showMsg('Selecciona al menos una tarea para generar script');
-      return;
+  let anySelected = false;
+  sections.forEach(task=>{
+    const cb = document.getElementById(task.id);
+    if(cb?.checked){
+      anySelected = true;
+      lines.push(`# --- ${task.lbl} ---`);
+      lines.push(...task.cmd);
+      lines.push('');
     }
-    lines.push('Write-Host "¡Limpieza y optimización completadas!"');
-    scriptArea.value = lines.join('\r\n');
-    updateCount();
-    showMsg('Script generado correctamente');
+  });
+  if(!anySelected){
+    showMsg('Selecciona al menos una tarea para generar script');
+    return;
   }
-
-  async function copyScript(){
-    const txt = scriptArea.value;
-    if(!txt){
-      showMsg('Genera el script primero');
-      return;
-    }
-    try{
-      await navigator.clipboard.writeText(txt);
-      showMsg('¡Copiado al portapapeles!');
-    } catch(e){
-      scriptArea.select();
-      document.execCommand('copy');
-      showMsg('Copiado (fallback)');
-    }
+  lines.push('Write-Host "¡Limpieza, actualización y optimización completadas!"');
+  scriptArea.value = lines.join('\r\n');
+  updateCount();
+  showMsg('Script generado correctamente');
+}
+async function copyScript(){
+  const txt = scriptArea.value;
+  if(!txt){
+    showMsg('Genera el script primero');
+    return;
   }
-
-  function invertSelection(){
-    sections.forEach(s=>{
-      const cb = document.getElementById(s.id);
-      if(cb) cb.checked = !cb.checked;
-    });
-    updateCount();
+  try{
+    await navigator.clipboard.writeText(txt);
+    showMsg('¡Copiado al portapapeles!');
+  } catch(e){
+    scriptArea.select();
+    document.execCommand('copy');
+    showMsg('Copiado (fallback)');
   }
-
-  let msgTimeout;
-  function showMsg(text){
-    clearTimeout(msgTimeout);
-    msgText.textContent = text;
-    messageBox.classList.add('show');
-    msgTimeout = setTimeout(() => {
-      messageBox.classList.remove('show');
-    }, 2500);
-  }
-
-  document.querySelector('.controls').addEventListener('click', e=>{
-    const act = e.target.getAttribute('data-action');
-    if(!act) return;
-    if(act==='select-all') sections.forEach(t=>document.getElementById(t.id).checked=true);
-    else if(act==='deselect-all') sections.forEach(t=>document.getElementById(t.id).checked=false);
-    else if(act==='invert-selection') invertSelection();
-    else if(act==='gen') generateScript();
-    else if(act==='copy') copyScript();
-    updateCount();
-  }, {passive:true});
-
-  opts.addEventListener('change', e=>{
-    if(e.target.type==='checkbox') updateCount();
-  }, {passive:true});
-
-  renderOptions();
+}
+function invertSelection(){
+  sections.forEach(s=>{
+    const cb = document.getElementById(s.id);
+    if(cb) cb.checked = !cb.checked;
+  });
+  updateCount();
+}
+let msgTimeout;
+function showMsg(text){
+  clearTimeout(msgTimeout);
+  msgText.textContent = text;
+  messageBox.classList.add('show');
+  msgTimeout = setTimeout(() => {
+    messageBox.classList.remove('show');
+  }, 2500);
+}
+document.querySelector('.controls').addEventListener('click', e=>{
+  const act = e.target.getAttribute('data-action');
+  if(!act) return;
+  if(act==='select-all') sections.forEach(t=>document.getElementById(t.id).checked=true);
+  else if(act==='deselect-all') sections.forEach(t=>document.getElementById(t.id).checked=false);
+  else if(act==='invert-selection') invertSelection();
+  else if(act==='gen') generateScript();
+  else if(act==='copy') copyScript();
+  updateCount();
+}, {passive:true});
+opts.addEventListener('change', e=>{
+  if(e.target.type==='checkbox') updateCount();
+}, {passive:true});
+renderOptions();
 </script>
 </body>
 </html>
