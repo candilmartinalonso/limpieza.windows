@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optimizador Definitivo para Windows v7.2</title>
+    <title>Optimizador Definitivo para Windows v7.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@
 
     <div class="w-full max-w-6xl mx-auto">
         <header class="text-center mb-8">
-            <h1 class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-blue-500">Script de Optimización v7.2</h1>
+            <h1 class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-blue-500">Script de Optimización v7.3</h1>
             <p class="text-slate-400 mt-3 text-lg">La Edición Definitiva para limpiar, acelerar y asegurar tu Windows.</p>
         </header>
 
@@ -56,13 +56,13 @@
                     <li>Sigue las instrucciones del menú para elegir las optimizaciones que desees aplicar.</li>
                 </ol>
 
-                <h2 class="text-2xl font-bold text-green-400 mt-8 mb-4">Novedades v7.2</h2>
+                <h2 class="text-2xl font-bold text-green-400 mt-8 mb-4">Novedades v7.3</h2>
                 <ul class="space-y-2 text-slate-300">
-                    <li class="changelog-item text-yellow-300"><strong>Corrección de color:</strong> Solucionado un error que causaba un fallo por un color no válido ('Teal') en la consola.</li>
+                    <li class="changelog-item text-yellow-300"><strong>Corrección Crítica:</strong> Solucionado error que hacía que el modo desatendido pidiera confirmación.</li>
+                    <li class="changelog-item text-yellow-300"><strong>Corrección Crítica:</strong> El script ya no falla si una característica opcional a eliminar no existe.</li>
+                    <li class="changelog-item">Corrección de error de color en la consola.</li>
                     <li class="changelog-item">Corrección de error de sintaxis ('ParserError').</li>
                     <li class="changelog-item">Menú Interactivo para un control total y sencillo.</li>
-                    <li class="changelog-item">Módulo de optimización de programas de inicio.</li>
-                    <li class="changelog-item">Limpieza de cachés de apps (Discord, Steam).</li>
                 </ul>
                  <div class="mt-8 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-300">
                     <p class="font-bold">¡ADVERTENCIA!</p>
@@ -75,7 +75,7 @@
                 <div class="bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
                     <!-- Barra de título del código -->
                     <div class="bg-slate-700/50 flex items-center justify-between p-3 border-b border-slate-600">
-                        <span class="text-sm font-medium text-slate-300">PowerShell - Edición Definitiva v7.2</span>
+                        <span class="text-sm font-medium text-slate-300">PowerShell - Edición Definitiva v7.3</span>
                         <button id="copyButton" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400">
                             <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
@@ -92,9 +92,9 @@
                     <!-- Bloque de Código -->
                     <pre class="p-4 text-sm overflow-x-auto max-h-[70vh]"><code id="powershellCode"><#
 .SYNOPSIS
-    Script de Optimización "Definitive Edition" para Windows 10/11 (v7.2).
+    Script de Optimización "Definitive Edition" para Windows 10/11 (v7.3).
     Diseñado para ser copiado y pegado directamente en una consola de PowerShell (Administrador).
-    Esta versión corrige errores de sintaxis y color.
+    Esta versión corrige errores críticos del modo desatendido y la eliminación de características.
 
 .DESCRIPTION
     ADVERTENCIA: Este script realiza cambios profundos en el sistema. Úsalo bajo tu propia responsabilidad.
@@ -122,7 +122,7 @@ if (-not (Test-Path -Path $Global:LogPath)) {
     try { New-Item -Path $Global:LogPath -ItemType Directory -Force | Out-Null } 
     catch { Write-Error "No se pudo crear el directorio de logs en C:\Windows\Temp."; exit 1 } 
 }
-$Global:LogFile = Join-Path $Global:LogPath "Win-Optimization-v7.2-$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss').log"
+$Global:LogFile = Join-Path $Global:LogPath "Win-Optimization-v7.3-$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss').log"
 $Global:StartTime = Get-Date
 
 # --- Objeto de Reporte Global ---
@@ -221,9 +221,9 @@ function Confirm-Action {
 function New-RestorePoint {
     Write-Log "Creando punto de restauración del sistema..." -Level "TITLE"
     if (Confirm-Action "crear un punto de restauración del sistema (Recomendado)" 'S') {
-        if ($PSCmdlet.ShouldProcess("Sistema Operativo", "Crear Punto de Restauración 'Antes de Optimización v7.2'")) {
+        if ($PSCmdlet.ShouldProcess("Sistema Operativo", "Crear Punto de Restauración 'Antes de Optimización v7.3'")) {
             try {
-                $restorePoint = Checkpoint-Computer -Description "Antes de Optimización v7.2" -ErrorAction Stop
+                $restorePoint = Checkpoint-Computer -Description "Antes de Optimización v7.3" -ErrorAction Stop
                 Write-Log "Punto de restauración creado con éxito. Estado: $($restorePoint.State)" -Level "SUCCESS"
             } catch {
                 Write-Log "FALLO CRÍTICO al crear el punto de restauración. Verifica que el servicio 'Instantáneas de volumen' esté activo." -Level "ERROR"
@@ -364,9 +364,15 @@ function Invoke-Debloat {
         foreach ($featureName in $Global:OptionalWindowsFeaturesToRemove.Keys) {
             $featureId = $Global:OptionalWindowsFeaturesToRemove[$featureName]
             if (Confirm-Action "deshabilitar la característica '$featureName'") {
-                if ($PSCmdlet.ShouldProcess($featureId, "Deshabilitar característica de Windows")) {
-                    Disable-WindowsOptionalFeature -Online -FeatureName $featureId -NoRestart
-                    $Global:Report.AppsRemoved.Add("Feature: $featureName") | Out-Null
+                # CORRECTED: Check if feature exists and is enabled before trying to disable it.
+                $feature = Get-WindowsOptionalFeature -Online -FeatureName $featureId
+                if ($feature -and $feature.State -ne 'Disabled') {
+                    if ($PSCmdlet.ShouldProcess($featureId, "Deshabilitar característica de Windows")) {
+                        Disable-WindowsOptionalFeature -Online -FeatureName $featureId -NoRestart
+                        $Global:Report.AppsRemoved.Add("Feature: $featureName") | Out-Null
+                    }
+                } else {
+                    Write-Log "La característica '$featureName' no existe o ya está deshabilitada. Omitiendo." -Level "INFO"
                 }
             }
         }
@@ -583,7 +589,7 @@ function Write-FinalReport {
     
     $summary = @"
 ======================================================================
-         INFORME DE OPTIMIZACIÓN DE WINDOWS (v7.2)
+         INFORME DE OPTIMIZACIÓN DE WINDOWS (v7.3)
 ======================================================================
 Fecha: $($endTime.ToString('yyyy-MM-dd HH:mm:ss')) | Duración: $($duration.ToString('g'))
 ----------------------------------------------------------------------
@@ -605,9 +611,8 @@ Log completo guardado en: $($Global:LogFile)
 
 function Show-Menu {
     Clear-Host
-    # CORRECTED: Changed "Teal" to "Green" as it's a valid ConsoleColor
     Write-Host "=====================================================================" -ForegroundColor "Green"
-    Write-Host "      Script de Optimización 'Edición Definitiva' v7.2" -ForegroundColor "White"
+    Write-Host "      Script de Optimización 'Edición Definitiva' v7.3" -ForegroundColor "White"
     Write-Host "=====================================================================" -ForegroundColor "Green"
     Write-Host ""
     Write-Host " Por favor, elige una opción:" -ForegroundColor "Yellow"
@@ -640,6 +645,7 @@ function Main {
     
     $runAll = $false
     $unattended = $false
+    $originalConfirmPreference = $global:ConfirmPreference
 
     do {
         if (-not $runAll) { Show-Menu }
@@ -671,7 +677,8 @@ function Main {
             'b' {
                 $runAll = $true
                 $unattended = $true
-                # Sobreescribir la función de confirmación para que siempre devuelva $true
+                # CORRECTED: Properly set preferences for unattended mode
+                $global:ConfirmPreference = 'None'
                 function global:Confirm-Action { param([string]$Action, [string]$Default = 'N') return $true }
                 Write-Log "MODO DESATENDIDO ACTIVADO. SE APLICARÁN TODAS LAS OPTIMIZACIONES SIN CONFIRMACIÓN." -Level "WARN"
                 Invoke-DeepCleanup
@@ -693,6 +700,8 @@ function Main {
 
     Write-FinalReport
     Write-Log "Ejecución finalizada. Se recomienda encarecidamente reiniciar el equipo para aplicar todos los cambios." -Level "TITLE"
+    # Restore original preference
+    $global:ConfirmPreference = $originalConfirmPreference
 }
 
 # -- Iniciar la ejecución --
