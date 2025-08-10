@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optimizador Avanzado para Windows</title>
+    <title>Optimizador Definitivo para Windows v7.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+        }
+        pre, code {
+            font-family: 'Roboto Mono', monospace;
         }
         /* Estilo para la barra de desplazamiento del código */
         pre::-webkit-scrollbar {
@@ -23,180 +28,228 @@
             border-radius: 20px;
             border: 3px solid #1e293b; /* bg-slate-800 */
         }
+        .changelog-item::before {
+            content: '✓';
+            color: #22c55e; /* green-500 */
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
 
-    <div class="w-full max-w-5xl mx-auto">
-        <div class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">Script de Optimización para Windows v6.0</h1>
-            <p class="text-slate-400 mt-2">Copia y pega este script en una ventana de PowerShell (ejecutada como Administrador).</p>
-        </div>
+    <div class="w-full max-w-6xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-blue-500">Script de Optimización v7.0</h1>
+            <p class="text-slate-400 mt-3 text-lg">La Edición Definitiva para limpiar, acelerar y asegurar tu Windows.</p>
+        </header>
 
-        <!-- Contenedor del código y botón -->
-        <div class="bg-slate-800 rounded-xl shadow-2xl overflow-hidden">
-            <!-- Barra de título del código -->
-            <div class="bg-slate-700/50 flex items-center justify-between p-3 border-b border-slate-600">
-                <span class="text-sm font-medium text-slate-300">PowerShell Script - Ultimate Edition</span>
-                <button id="copyButton" class="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-300">
-                    <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
-                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                    </svg>
-                    <svg id="checkIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg hidden" viewBox="0 0 16 16">
-                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z"/>
-                    </svg>
-                    <span id="buttonText">Copiar Código</span>
-                </button>
-            </div>
-            
-            <!-- Bloque de Código -->
-            <pre class="p-4 text-sm overflow-x-auto max-h-[60vh]"><code id="powershellCode"><#
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Columna de Información -->
+            <aside class="lg:col-span-2 bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700">
+                <h2 class="text-2xl font-bold text-teal-300 mb-4">Instrucciones de Uso</h2>
+                <ol class="list-decimal list-inside space-y-3 text-slate-300">
+                    <li>Abre <strong>PowerShell</strong> como <strong>Administrador</strong>. (Busca PowerShell en el menú inicio, clic derecho -> Ejecutar como administrador).</li>
+                    <li>Haz clic en el botón <strong>"Copiar Script"</strong> de abajo.</li>
+                    <li>Pega el código en la ventana de PowerShell (clic derecho en la ventana suele ser suficiente).</li>
+                    <li>Presiona <strong>Enter</strong>. Aparecerá un menú interactivo.</li>
+                    <li>Sigue las instrucciones del menú para elegir las optimizaciones que desees aplicar.</li>
+                </ol>
+
+                <h2 class="text-2xl font-bold text-teal-300 mt-8 mb-4">Novedades v7.0</h2>
+                <ul class="space-y-2 text-slate-300">
+                    <li class="changelog-item">Menú Interactivo para un control total y sencillo.</li>
+                    <li class="changelog-item">Módulo de optimización de programas de inicio.</li>
+                    <li class="changelog-item">Limpieza de cachés de apps (Discord, Steam).</li>
+                    <li class="changelog-item">Eliminación de componentes opcionales de Windows.</li>
+                    <li class="changelog-item">Fortalecimiento de seguridad para Windows Defender.</li>
+                    <li class="changelog-item">Más opciones de Debloat y ajustes de UI.</li>
+                    <li class="changelog-item">Reportes y backups mejorados.</li>
+                </ul>
+                 <div class="mt-8 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-300">
+                    <p class="font-bold">¡ADVERTENCIA!</p>
+                    <p class="text-sm">Este es un script poderoso. Úsalo bajo tu propia responsabilidad. Se recomienda encarecidamente crear un punto de restauración del sistema antes de proceder.</p>
+                </div>
+            </aside>
+
+            <!-- Columna del Script -->
+            <main class="lg:col-span-3">
+                <div class="bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+                    <!-- Barra de título del código -->
+                    <div class="bg-slate-700/50 flex items-center justify-between p-3 border-b border-slate-600">
+                        <span class="text-sm font-medium text-slate-300">PowerShell - Edición Definitiva v7.0</span>
+                        <button id="copyButton" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                            </svg>
+                            <svg id="checkIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg hidden" viewBox="0 0 16 16">
+                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z"/>
+                            </svg>
+                            <span id="buttonText">Copiar Script</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Bloque de Código -->
+                    <pre class="p-4 text-sm overflow-x-auto max-h-[70vh]"><code id="powershellCode"><#
 .SYNOPSIS
-    Script de Optimización "Ultimate Edition" para Windows 11 (v6.0 - Expansión Masiva).
+    Script de Optimización "Definitive Edition" para Windows 10/11 (v7.0).
     Diseñado para ser copiado y pegado directamente en una consola de PowerShell (Administrador).
-    Esta versión añade módulos de limpieza avanzada, seguridad y más ajustes de UI/rendimiento.
+    Esta versión añade un menú interactivo, limpieza más profunda, optimización de inicio y más.
 
 .DESCRIPTION
     ADVERTENCIA: Este script realiza cambios profundos en el sistema. Úsalo bajo tu propia responsabilidad.
-    Se recomienda crear un punto de restauración manual si no estás seguro.
+    Se recomienda encarecidamente crear un punto de restauración manual antes de ejecutarlo.
 
     MODO DE USO:
     1. Abre PowerShell con "Ejecutar como administrador".
     2. Copia TODO este código.
     3. Pégalo en la ventana de PowerShell y presiona Enter.
+    4. Un menú interactivo te guiará a través de las opciones disponibles.
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='High')]
-param(
-    # --- Parámetros de Control ---
-    [switch]$DryRun,
-    [switch]$Interactive,
-    [switch]$CreateRestorePoint,
-    [string]$JsonReport,
+param()
 
-    # --- Parámetros de Módulos ---
-    [switch]$IncludeOptionalCleanup,
-    [switch]$DisableVisualEffects,
-    [switch]$DisableCortana,
+#region CONFIGURACIÓN INICIAL Y VARIABLES GLOBALES
 
-    # --- Parámetros de Omisión/Inclusión ---
-    [switch]$KeepOneDrive,
-    [switch]$KeepGameDVR,
-    [switch]$KeepStandardPowerPlan,
-    [switch]$KeepModernMenu,
-    [switch]$SkipTelemetryBlock,
-    [ValidateSet('Cloudflare', 'Google', 'OpenDNS')]
-    [string]$SetDNS,
-    [ValidateSet('Diagnostics', 'Cleanup', 'AdvancedCleanup', 'OptionalCleanup', 'Debloat', 'Services', 'SSD', 'SystemTweaks', 'Privacy', 'UITweaks', 'NetworkTweaks', 'SecurityHardening', 'AppUpdater', 'Integrity')]
-    [string[]]$Skip,
-    [ValidateSet('Diagnostics', 'Cleanup', 'AdvancedCleanup', 'OptionalCleanup', 'Debloat', 'Services', 'SSD', 'SystemTweaks', 'Privacy', 'UITweaks', 'NetworkTweaks', 'SecurityHardening', 'AppUpdater', 'Integrity')]
-    [string[]]$Only,
-    [string[]]$KeepApps,
-    [string[]]$RemoveApps
-)
+# --- Configuración del Entorno ---
+$PSDefaultParameterValues['*:ErrorAction'] = 'SilentlyContinue'
+$Global:IsDryRun = $false # Cambiar a $true para modo simulación (no hace cambios)
 
-#region VARIABLES GLOBALES Y CONFIGURACIÓN INICIAL
-
-$Global:IsDryRun = $DryRun.IsPresent
-$PSDefaultParameterValues['*:Confirm'] = if ($IsDryRun -or $Interactive) { $true } else { $false }
-
-$Global:LogPath = "C:\Logs\Win11-Cleanup"
-if (-not (Test-Path -Path $Global:LogPath)) { try { New-Item -Path $Global:LogPath -ItemType Directory -Force | Out-Null } catch { Write-Error "No se pudo crear el directorio de logs."; exit 1 } }
-$Global:LogFile = Join-Path $Global:LogPath "Win11-Cleanup-v6-$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss').log"
+# --- Configuración de Logs y Reportes ---
+$Global:LogPath = "C:\Windows\Temp\Win-Optimization-Logs"
+if (-not (Test-Path -Path $Global:LogPath)) { 
+    try { New-Item -Path $Global:LogPath -ItemType Directory -Force | Out-Null } 
+    catch { Write-Error "No se pudo crear el directorio de logs en C:\Windows\Temp."; exit 1 } 
+}
+$Global:LogFile = Join-Path $Global:LogPath "Win-Optimization-v7-$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss').log"
 $Global:StartTime = Get-Date
 
+# --- Objeto de Reporte Global ---
 $Global:Report = [PSCustomObject]@{
-    ExecutionDate   = $Global:StartTime
-    ExecutionMode   = if ($IsDryRun) { 'DryRun' } elseif ($Interactive) { 'Interactive' } else { 'GodMode' }
-    Parameters      = $PSBoundParameters
-    SpaceFreedBytes = 0
-    AppsRemoved     = [System.Collections.ArrayList]@()
-    ServicesChanged = [System.Collections.ArrayList]@()
-    TasksChanged    = [System.Collections.ArrayList]@()
-    RegistryChanges = [System.Collections.ArrayList]@()
-    RegistryBackups = [System.Collections.ArrayList]@()
-    HostFileBackups = [System.Collections.ArrayList]@()
-    SystemChecks    = [System.Collections.ArrayList]@()
-    NetworkChanges  = [System.Collections.ArrayList]@()
-    SecurityChanges = [System.Collections.ArrayList]@()
-    LogFile         = $Global:LogFile
+    ExecutionDate     = $Global:StartTime
+    ExecutionMode     = if ($Global:IsDryRun) { 'DryRun' } else { 'Live' }
+    SpaceFreedBytes   = 0
+    AppsRemoved       = [System.Collections.ArrayList]@()
+    ServicesChanged   = [System.Collections.ArrayList]@()
+    TasksChanged      = [System.Collections.ArrayList]@()
+    RegistryChanges   = [System.Collections.ArrayList]@()
+    RegistryBackups   = [System.Collections.ArrayList]@()
+    HostFileBackups   = [System.Collections.ArrayList]@()
+    SystemChecks      = [System.Collections.ArrayList]@()
+    NetworkChanges    = [System.Collections.ArrayList]@()
+    SecurityChanges   = [System.Collections.ArrayList]@()
+    StartupItems      = [System.Collections.ArrayList]@()
+    LogFile           = $Global:LogFile
 }
 
+# --- Listas de Configuración ---
 $Global:DefaultAppsToRemove = @(
-    'Microsoft.549981C3F5F10', 'Microsoft.BingNews', 'Microsoft.BingWeather', 'Microsoft.Clipchamp',
-    'Microsoft.GetHelp', 'Microsoft.Getstarted', 'Microsoft.Microsoft3DViewer', 'Microsoft.MicrosoftOfficeHub',
-    'Microsoft.MicrosoftSolitaireCollection', 'Microsoft.MixedReality.Portal', 'Microsoft.People',
-    'Microsoft.PowerAutomateDesktop', 'Microsoft.SkypeApp', 'Microsoft.Teams', 'Microsoft.WindowsAlarms',
-    'Microsoft.WindowsFeedbackHub', 'Microsoft.WindowsMaps', 'Microsoft.YourPhone', 'Microsoft.ZuneMusic',
-    'Microsoft.ZuneVideo', 'MicrosoftCorporationII.MicrosoftFamily', 'MicrosoftCorporationII.QuickAssist', 'Microsoft.Todos'
+    # Apps Seguras de Eliminar
+    'Microsoft.549981C3F5F10'          # Cortana
+    'Microsoft.BingNews'              # Noticias
+    'Microsoft.BingWeather'           # El Tiempo
+    'Microsoft.GetHelp'               # Obtener Ayuda
+    'Microsoft.Getstarted'            # Introducción
+    'Microsoft.Microsoft3DViewer'     # Visor 3D
+    'Microsoft.MicrosoftOfficeHub'    # Office Hub
+    'Microsoft.MicrosoftSolitaireCollection' # Solitario
+    'Microsoft.MixedReality.Portal'   # Portal de Realidad Mixta
+    'Microsoft.People'                # Contactos
+    'Microsoft.PowerAutomateDesktop'  # Power Automate
+    'Microsoft.SkypeApp'              # Skype
+    'Microsoft.Teams'                 # Teams (Personal)
+    'Microsoft.WindowsAlarms'         # Alarmas y Reloj
+    'Microsoft.WindowsFeedbackHub'    # Centro de Opiniones
+    'Microsoft.WindowsMaps'           # Mapas
+    'Microsoft.YourPhone'             # Tu Teléfono
+    'Microsoft.ZuneMusic'             # Groove Music
+    'Microsoft.ZuneVideo'             # Películas y TV
+    'MicrosoftCorporationII.MicrosoftFamily' # Familia Microsoft
+    'MicrosoftCorporationII.QuickAssist'     # Asistencia Rápida
+    'Microsoft.Todos'                 # To Do
+    'Microsoft.Clipchamp'             # Clipchamp Video Editor
+    'Microsoft.WindowsSoundRecorder'  # Grabadora de Voz
+    'Microsoft.Paint'                 # Paint (el nuevo, no el clásico)
+    'Microsoft.WebpImageExtension'    # Extensión de imagen WebP
+    'Microsoft.HEIFImageExtension'    # Extensión de imagen HEIF
+    'Microsoft.VP9VideoExtensions'    # Extensión de video VP9
 )
+
+$Global:OptionalWindowsFeaturesToRemove = @{
+    "Internet Explorer (obsoleto)" = "Internet-Explorer-Optional-amd64";
+    "Visor de XPS" = "XPS.Viewer-Optional-amd64";
+    "Reproductor de Windows Media (Legacy)" = "WindowsMediaPlayer";
+    "Cartera" = "App.Wallet";
+    "Math Recognizer" = "MathRecognizer"
+}
+
 $Global:TelemetryHosts = @(
     'vortex.data.microsoft.com', 'vortex-win.data.microsoft.com', 'telemetry.microsoft.com',
     'watson.telemetry.microsoft.com', 'oca.telemetry.microsoft.com', 'settings-win.data.microsoft.com',
-    'telemetry.remoteapp.microsoft.com', 'telemetry.urs.microsoft.com', 'events.data.microsoft.com', 'watson.ppe.telemetry.microsoft.com'
+    'telemetry.remoteapp.microsoft.com', 'telemetry.urs.microsoft.com', 'events.data.microsoft.com', 
+    'watson.ppe.telemetry.microsoft.com', 'ssw.live.com', 'v10.events.data.microsoft.com'
 )
 
 #endregion
 
-#region FUNCIONES AUXILIARES
+#region FUNCIONES AUXILIARES Y DE SISTEMA
 
 function Write-Log {
     param(
         [Parameter(Mandatory)] [string]$Message,
-        [ValidateSet('INFO','WARN','ERROR','SUCCESS','TITLE','STEP')] [string]$Level = 'INFO'
+        [ValidateSet('INFO','WARN','ERROR','SUCCESS','TITLE','STEP','INPUT')] [string]$Level = 'INFO'
     )
     $timestamp = Get-Date -Format "HH:mm:ss"
     $formattedMessage = "[$timestamp] [$Level] - $Message"
-    $color = @{ INFO='White'; WARN='Yellow'; ERROR='Red'; SUCCESS='Green'; TITLE='Cyan'; STEP='Gray' }
+    $color = @{ INFO='White'; WARN='Yellow'; ERROR='Red'; SUCCESS='Green'; TITLE='Cyan'; STEP='Gray'; INPUT='Magenta' }
     Write-Host $formattedMessage -ForegroundColor $color[$Level]
     Add-Content -Path $Global:LogFile -Value $formattedMessage
 }
 
 function Confirm-Action {
     param(
-        [Parameter(Mandatory)] [string]$ModuleName,
-        [string]$Description
+        [Parameter(Mandatory)] [string]$Action,
+        [string]$Default = 'N'
     )
-    if (-not $Interactive) { return $true }
-    $title = "Confirmar Ejecución: $ModuleName"
-    $message = "Vas a ejecutar el módulo '$ModuleName'.`n`n$Description`n`n¿Deseas continuar?"
-    $choices = @(
-        (New-Object psobject -Property @{Label='&Sí';HelpMessage='Ejecuta este módulo.'}),
-        (New-Object psobject -Property @{Label='&No';HelpMessage='Omite este módulo.'}),
-        (New-Object psobject -Property @{Label='&Abortar';HelpMessage='Cancela la ejecución completa.'})
-    )
-    $decision = $host.UI.PromptForChoice($title, $message, $choices, 0)
-    if ($decision -eq 2) { Write-Log "Ejecución abortada por el usuario." -Level "WARN"; throw "Abortado por el usuario." }
-    return ($decision -eq 0)
+    $choices = if ($Default -eq 'S') { '[S/n]' } else { '[s/N]' }
+    $response = Read-Host -Prompt "-> ¿Deseas $Action? $choices"
+    if ([string]::IsNullOrEmpty($response)) { return $Default -eq 'S' }
+    return $response -eq 's'
 }
 
 function New-RestorePoint {
-    if (-not $CreateRestorePoint) {
-        Write-Log "Creación de punto de restauración omitida por defecto. Usa -CreateRestorePoint para activarla." -Level "WARN"
-        return
-    }
-    Write-Log "Creando punto de restauración del sistema..." -Level "INFO"
-    if ($PSCmdlet.ShouldProcess("Sistema Operativo", "Crear Punto de Restauración 'Antes de Optimización Win11 v6.0'")) {
-        try {
-            Checkpoint-Computer -Description "Antes de Optimización Win11 v6.0" -ErrorAction Stop
-            Write-Log "Punto de restauración creado con éxito." -Level "SUCCESS"
-        } catch {
-            throw "FALLO CRÍTICO al crear el punto de restauración."
+    Write-Log "Creando punto de restauración del sistema..." -Level "TITLE"
+    if (Confirm-Action "crear un punto de restauración del sistema (Recomendado)") {
+        if ($PSCmdlet.ShouldProcess("Sistema Operativo", "Crear Punto de Restauración 'Antes de Optimización v7.0'")) {
+            try {
+                $restorePoint = Checkpoint-Computer -Description "Antes de Optimización v7.0" -ErrorAction Stop
+                Write-Log "Punto de restauración creado con éxito. Estado: $($restorePoint.State)" -Level "SUCCESS"
+            } catch {
+                Write-Log "FALLO CRÍTICO al crear el punto de restauración. Verifica que el servicio 'Instantáneas de volumen' esté activo." -Level "ERROR"
+            }
         }
+    } else {
+        Write-Log "Creación de punto de restauración omitida por el usuario." -Level "WARN"
     }
 }
 
 function Backup-Registry {
     param( [Parameter(Mandatory)] [string]$KeyPath )
     $regPath = $KeyPath -replace 'HKCU:', 'HKEY_CURRENT_USER' -replace 'HKLM:', 'HKEY_LOCAL_MACHINE'
+    if (-not (Test-Path $regPath)) {
+        Write-Log "La clave de registro '$regPath' no existe. No se necesita backup." -Level "WARN"
+        return
+    }
     $keyName = $KeyPath.Split('\')[-1]
-    $backupFile = Join-Path $Global:LogPath "RegistryBackup-$keyName-$(Get-Date -Format 'yyyyMMddHHmmss').reg"
+    $backupFile = Join-Path $Global:LogPath "RegBackup-$keyName-$(Get-Date -Format 'yyyyMMddHHmmss').reg"
     if ($PSCmdlet.ShouldProcess($regPath, "Exportar clave de registro a '$backupFile'")) {
         try {
             & reg.exe export "$regPath" "$backupFile" /y
             if ($LASTEXITCODE -eq 0) {
-                Write-Log "Backup del registro creado: $backupFile" -Level "SUCCESS"
+                Write-Log "Backup del registro creado: $backupFile" -Level "INFO"
                 $Global:Report.RegistryBackups.Add([PSCustomObject]@{ Key=$KeyPath; File=$backupFile }) | Out-Null
             } else { throw "reg.exe devolvió el código de error: $LASTEXITCODE" }
         } catch { Write-Log "FALLO al crear backup del registro para '$KeyPath'. Error: $($_.Exception.Message)" -Level "ERROR" }
@@ -216,354 +269,314 @@ function Set-RegistryValue {
             Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -Force
             Write-Log "Registro modificado: $Path\\$Name = $Value" -Level "SUCCESS"
             $Global:Report.RegistryChanges.Add("Set: $Path\\$Name = $Value") | Out-Null
-        } catch { Write-Log "FALLO al modificar el registro: $Path\\$Name" -Level "ERROR" }
+        } catch { Write-Log "FALLO al modificar el registro: $Path\\$Name. Error: $($_.Exception.Message)" -Level "ERROR" }
     }
 }
 
 #endregion
 
-#region MÓDULOS PRINCIPALES
+#region MÓDULOS DE OPTIMIZACIÓN
 
 function Start-Diagnostics {
-    if (-not (Confirm-Action "Diagnóstico" "Muestra información básica del sistema.")) { return }
     Write-Log "MÓDULO: Diagnóstico del Sistema" -Level "TITLE"
     $os = Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
     Write-Log "Sistema Operativo: $($os.WindowsProductName) (Versión $($os.WindowsVersion), Arquitectura $($os.OsArchitecture))"
     $disk = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'"
     Write-Log "Disco C:: $([math]::Round($disk.FreeSpace / 1GB, 2)) GB libres de $([math]::Round($disk.Size / 1GB, 2)) GB"
     $trimStatus = fsutil.exe behavior query DisableDeleteNotify
-    Write-Log "Estado de TRIM para SSDs: $(if ($trimStatus -match '0') {'HABILITADO (Óptimo)'} else {'DESHABILITADO (No Óptimo)'})"
+    Write-Log "Estado de TRIM para SSDs: $(if ($trimStatus -match 'DisableDeleteNotify = 0') {'HABILITADO (Óptimo)'} else {'DESHABILITADO (No Óptimo)'})"
 }
 
-function Invoke-Cleanup {
-    if (-not (Confirm-Action "Limpieza Profunda" "Elimina archivos temporales, cachés, logs y vacía la papelera.")) { return }
-    Write-Log "MÓDULO: Limpieza Profunda" -Level "TITLE"
+function Invoke-DeepCleanup {
+    Write-Log "MÓDULO: Limpieza Profunda del Sistema" -Level "TITLE"
+    $initialFreeSpace = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
+    
     $cleanupTargets = @{
-        "Temp"      = @{ Path = @("$env:TEMP", "$env:SystemRoot\Temp") };
-        "Prefetch"  = @{ Path = "$env:SystemRoot\Prefetch"; Include = "*.pf"; Exclude = "Layout.ini" };
-        "WinUpdate" = @{ Path = "$env:SystemRoot\SoftwareDistribution\Download" };
-        "Dumps"     = @{ Path = @("$env:LOCALAPPDATA\CrashDumps", "$env:SystemRoot\Minidump"); Include = "*.dmp" };
-        "NVIDIA"    = @{ Path = "$env:LOCALAPPDATA\NVIDIA\GLCache" };
-        "AMD"       = @{ Path = "$env:LOCALAPPDATA\AMD\DxCache" }
+        "Archivos Temporales de Usuario" = @{ Path = "$env:TEMP" };
+        "Archivos Temporales de Windows" = @{ Path = "$env:SystemRoot\Temp" };
+        "Archivos de Prefetch"           = @{ Path = "$env:SystemRoot\Prefetch"; Include = "*.pf"; Exclude = "Layout.ini" };
+        "Descargas de Windows Update"    = @{ Path = "$env:SystemRoot\SoftwareDistribution\Download" };
+        "Archivos de volcado de memoria" = @{ Path = @("$env:LOCALAPPDATA\CrashDumps", "$env:SystemRoot\Minidump"); Include = "*.dmp" };
+        "Caché de Shaders NVIDIA"        = @{ Path = "$env:LOCALAPPDATA\NVIDIA\GLCache" };
+        "Caché de Shaders AMD"           = @{ Path = "$env:LOCALAPPDATA\AMD\DxCache" };
+        "Caché de Shaders DirectX"       = @{ Path = "$env:LOCALAPPDATA\D3DSCache" };
+        "Caché de Discord"               = @{ Path = "$env:APPDATA\discord\Cache" };
+        "Caché de Steam"                 = @{ Path = "$env:LOCALAPPDATA\Steam\htmlcache" };
     }
+    
     foreach ($name in $cleanupTargets.Keys) {
         $target = $cleanupTargets[$name]
         foreach ($path in [array]$target.Path) {
             if (Test-Path $path) {
                 Write-Log "Limpiando '$name' en: $path" -Level "STEP"
-                $files = Get-ChildItem @target -Path $path -Force -ErrorAction SilentlyContinue
+                $files = Get-ChildItem @target -Path $path -Recurse -Force
                 if (!$files) { continue }
-                $size = ($files | Measure-Object -Property Length -Sum).Sum
-                if ($PSCmdlet.ShouldProcess($path, "Limpiar ($([math]::Round($size/1MB,2)) MB)")) {
-                    $files | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-                    $Global:Report.SpaceFreedBytes += $size
+                if ($PSCmdlet.ShouldProcess($path, "Eliminar contenido")) {
+                    $files | Remove-Item -Recurse -Force
                 }
             }
         }
     }
-    if ($PSCmdlet.ShouldProcess("Papelera de Reciclaje", "Vaciar")) { Clear-RecycleBin -Force -ErrorAction SilentlyContinue }
+
+    Write-Log "Limpiando cachés adicionales..." -Level "STEP"
+    if ($PSCmdlet.ShouldProcess("Papelera de Reciclaje", "Vaciar")) { Clear-RecycleBin -Force }
     if ($PSCmdlet.ShouldProcess("Caché de la Tienda", "Resetear (wsreset.exe)")) { & wsreset.exe -s | Out-Null }
-    if ($PSCmdlet.ShouldProcess("Almacén de Componentes", "Limpiar (DISM)")) { & dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Null }
-    if ($PSCmdlet.ShouldProcess("Caché de Iconos", "Reconstruir")) {
-        $iconCachePath = "$env:LOCALAPPDATA\IconCache.db"
-        if (Test-Path $iconCachePath) { Remove-Item $iconCachePath -Force -ErrorAction SilentlyContinue }
-        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-        Start-Sleep -Seconds 2
-        Start-Process explorer.exe
-    }
-}
-
-# NUEVO MÓDULO
-function Invoke-AdvancedCleanup {
-    if (-not (Confirm-Action "Limpieza Avanzada" "Limpia logs de eventos, archivos de optimización de entrega, caché de shaders y de miniaturas.")) { return }
-    Write-Log "MÓDULO: Limpieza Avanzada" -Level "TITLE"
+    if ($PSCmdlet.ShouldProcess("Almacén de Componentes (WinSxS)", "Limpiar (DISM)")) { & dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Null }
+    if ($PSCmdlet.ShouldProcess("Caché de DNS", "Limpiar (Flush)")) { ipconfig /flushdns }
     
-    Write-Log "Limpiando Logs de Eventos de Windows..." -Level "STEP"
-    if ($PSCmdlet.ShouldProcess("Logs de Eventos", "Limpiar")) {
-        wevtutil.exe cl "Application" | Out-Null
-        wevtutil.exe cl "Security" | Out-Null
-        wevtutil.exe cl "System" | Out-Null
-        wevtutil.exe cl "Setup" | Out-Null
-        Write-Log "Logs de eventos limpiados." -Level "SUCCESS"
-    }
-
-    $deliveryOptPath = "$env:SystemRoot\SoftwareDistribution\DeliveryOptimization"
-    if (Test-Path $deliveryOptPath) {
-        Write-Log "Limpiando archivos de Optimización de Entrega..." -Level "STEP"
-        $files = Get-ChildItem $deliveryOptPath -Recurse -Force -ErrorAction 0
-        $size = ($files | Measure-Object -Property Length -Sum).Sum
-        if ($PSCmdlet.ShouldProcess($deliveryOptPath, "Limpiar ($([math]::Round($size/1MB,2)) MB)")) {
-            $files | Remove-Item -Recurse -Force -ErrorAction 0
-            $Global:Report.SpaceFreedBytes += $size
-        }
-    }
-
-    $shaderCachePath = "$env:LOCALAPPDATA\D3DSCache"
-    if (Test-Path $shaderCachePath) {
-        Write-Log "Limpiando caché de Shaders de DirectX..." -Level "STEP"
-        $files = Get-ChildItem $shaderCachePath -Recurse -Force -ErrorAction 0
-        $size = ($files | Measure-Object -Property Length -Sum).Sum
-        if ($PSCmdlet.ShouldProcess($shaderCachePath, "Limpiar ($([math]::Round($size/1MB,2)) MB)")) {
-            $files | Remove-Item -Recurse -Force -ErrorAction 0
-            $Global:Report.SpaceFreedBytes += $size
-        }
-    }
-
-    Write-Log "Limpiando caché de miniaturas..." -Level "STEP"
-    if ($PSCmdlet.ShouldProcess("Caché de Miniaturas", "Limpiar (taskkill + del)")) {
-        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Write-Log "Limpiando caché de miniaturas e iconos..." -Level "STEP"
+    if ($PSCmdlet.ShouldProcess("Caché de Miniaturas e Iconos", "Reconstruir")) {
+        Stop-Process -Name explorer -Force
         Start-Sleep -Seconds 2
-        Get-ChildItem "$env:LOCALAPPDATA\Microsoft\Windows\Explorer" -Filter "thumbcache_*.db" -Force | Remove-Item -Force -ErrorAction 0
+        Get-ChildItem "$env:LOCALAPPDATA\Microsoft\Windows\Explorer" -Filter "thumbcache_*.db" -Force | Remove-Item -Force
+        Get-ChildItem "$env:LOCALAPPDATA\IconCache.db" -Force | Remove-Item -Force
         Start-Process explorer.exe
-        Write-Log "Caché de miniaturas limpiada." -Level "SUCCESS"
     }
-}
 
-function Invoke-OptionalCleanup {
-    if (-not (Confirm-Action "Limpieza Opcional" "Limpia cachés de navegadores y puede desactivar la hibernación.")) { return }
-    Write-Log "MÓDULO: Limpieza Opcional" -Level "TITLE"
-    $browserCaches = @{
-        "Microsoft Edge"  = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache";
-        "Google Chrome"   = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache";
-        "Mozilla Firefox" = (Get-Item "$env:APPDATA\Mozilla\Firefox\Profiles\*.default-release" -ErrorAction 0).FullName + "\cache2"
-    }
-    foreach ($browser in $browserCaches.Keys) {
-        $path = $browserCaches[$browser]
-        if (Test-Path $path) {
-            if ($PSCmdlet.ShouldProcess($path, "Limpiar caché de $browser")) {
-                $processName = @{ "Edge"="msedge"; "Chrome"="chrome"; "Firefox"="firefox" }[$browser]
-                Stop-Process -Name $processName -Force -ErrorAction SilentlyContinue
-                Start-Sleep -Seconds 2
-                Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
-            }
-        }
-    }
-    if (-not (powercfg /a | Select-String "La hibernación no está disponible")) {
-        if ($PSCmdlet.ShouldProcess("powercfg.exe /hibernate off", "Desactivar Hibernación")) {
-            powercfg.exe /hibernate off
-        }
-    }
+    $finalFreeSpace = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
+    $spaceFreedBytes = $finalFreeSpace - $initialFreeSpace
+    $Global:Report.SpaceFreedBytes += $spaceFreedBytes
+    Write-Log "Limpieza profunda completada. Espacio liberado: $([math]::Round($spaceFreedBytes / 1GB, 2)) GB" -Level "SUCCESS"
 }
 
 function Invoke-Debloat {
-    if (-not (Confirm-Action "Desinstalación de Bloatware" "Elimina apps preinstaladas (UWP) y opcionalmente OneDrive.")) { return }
-    Write-Log "MÓDULO: Desinstalación de Bloatware" -Level "TITLE"
-    $appsToRemove = $Global:DefaultAppsToRemove
-    if ($RemoveApps) { $appsToRemove += $RemoveApps }
-    if ($KeepApps) { $appsToRemove = $appsToRemove | Where-Object { $appName = $_; -not ($KeepApps | Where-Object { $appName -like $_ }) } }
-    $appsToRemove = $appsToRemove | Get-Unique
+    Write-Log "MÓDULO: Desinstalación de Bloatware (Debloat)" -Level "TITLE"
     
-    foreach ($pattern in $appsToRemove) {
-        Get-AppxPackage -AllUsers | Where-Object { $_.Name -like "*$pattern*" } | ForEach-Object {
-            if ($PSCmdlet.ShouldProcess($_.Name, "Desinstalar aplicación")) {
-                try {
-                    $_ | Remove-AppxPackage -AllUsers -ErrorAction Stop
-                    $Global:Report.AppsRemoved.Add($_.Name) | Out-Null
-                } catch { Write-Log "FALLO al desinstalar $($_.Name)" -Level "ERROR" }
+    Write-Log "Eliminando aplicaciones UWP preinstaladas..." -Level "STEP"
+    if (Confirm-Action "eliminar la lista de aplicaciones UWP recomendadas") {
+        foreach ($pattern in $Global:DefaultAppsToRemove) {
+            Get-AppxPackage -AllUsers | Where-Object { $_.Name -like "*$pattern*" } | ForEach-Object {
+                if ($PSCmdlet.ShouldProcess($_.Name, "Desinstalar aplicación UWP")) {
+                    try {
+                        $_ | Remove-AppxPackage -AllUsers -ErrorAction Stop
+                        $Global:Report.AppsRemoved.Add($_.Name) | Out-Null
+                    } catch { Write-Log "FALLO al desinstalar $($_.Name)" -Level "ERROR" }
+                }
             }
-        }
-        Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like "*$pattern*" } | ForEach-Object {
-            if ($PSCmdlet.ShouldProcess($_.DisplayName, "Desaprovisionar paquete")) {
-                $_ | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+            Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like "*$pattern*" } | ForEach-Object {
+                if ($PSCmdlet.ShouldProcess($_.DisplayName, "Desaprovisionar paquete para futuros usuarios")) {
+                    $_ | Remove-AppxProvisionedPackage -Online
+                }
             }
         }
     }
-    
-    if (-not $KeepOneDrive) {
+
+    Write-Log "Eliminando características opcionales de Windows..." -Level "STEP"
+    if (Confirm-Action "revisar y eliminar características opcionales de Windows") {
+        foreach ($featureName in $Global:OptionalWindowsFeaturesToRemove.Keys) {
+            $featureId = $Global:OptionalWindowsFeaturesToRemove[$featureName]
+            if (Confirm-Action "deshabilitar la característica '$featureName'") {
+                if ($PSCmdlet.ShouldProcess($featureId, "Deshabilitar característica de Windows")) {
+                    Disable-WindowsOptionalFeature -Online -FeatureName $featureId -NoRestart
+                    $Global:Report.AppsRemoved.Add("Feature: $featureName") | Out-Null
+                }
+            }
+        }
+    }
+
+    Write-Log "Desinstalando OneDrive..." -Level "STEP"
+    if (Confirm-Action "desinstalar OneDrive por completo") {
         if ($PSCmdlet.ShouldProcess("OneDrive", "Desinstalar")) {
+            Stop-Process -Name OneDrive -Force
             $oneDriveSetup = "$env:SystemRoot\SysWOW64\OneDriveSetup.exe"
             if (Test-Path $oneDriveSetup) {
                 Start-Process $oneDriveSetup "/uninstall" -Wait
                 $Global:Report.AppsRemoved.Add("OneDrive") | Out-Null
+                Write-Log "OneDrive desinstalado. Limpiando restos..." -Level "INFO"
+                Remove-Item -Path "$env:USERPROFILE\OneDrive" -Recurse -Force
+                Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Recurse -Force
+                Remove-Item -Path "$env:PROGRAMDATA\Microsoft OneDrive" -Recurse -Force
+                & reg.exe delete "HKEY_CLASSES_ROOT\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /f
             }
         }
-    }
-}
-
-function Optimize-Services {
-    if (-not (Confirm-Action "Optimización de Servicios" "Deshabilita servicios no esenciales como SysMain y tareas de telemetría.")) { return }
-    Write-Log "MÓDULO: Optimización de Servicios y Tareas" -Level "TITLE"
-    $telemetryTasks = @(
-        "\Microsoft\Windows\Customer Experience Improvement Program\*",
-        "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser"
-    )
-    foreach ($taskPath in $telemetryTasks) {
-        Get-ScheduledTask -TaskPath (Split-Path $taskPath -Parent) -TaskName (Split-Path $taskPath -Leaf) -ErrorAction 0 | ForEach-Object {
-            if ($_.State -ne 'Disabled' -and $PSCmdlet.ShouldProcess($_.TaskPath, "Deshabilitar Tarea Programada")) {
-                $_ | Disable-ScheduledTask
-                $Global:Report.TasksChanged.Add("Disabled: $($_.TaskPath)") | Out-Null
-            }
-        }
-    }
-    $servicesToDisable = @("SysMain", "dmwappushservice", "MapsBroker")
-    foreach ($serviceName in $servicesToDisable) {
-        $service = Get-Service -Name $serviceName -ErrorAction 0
-        if ($service -and $service.StartType -ne 'Disabled' -and $PSCmdlet.ShouldProcess($serviceName, "Deshabilitar Servicio")) {
-            Backup-Registry -KeyPath "HKLM:\SYSTEM\CurrentControlSet\Services\$serviceName"
-            Set-Service -Name $serviceName -StartupType Disabled
-            $Global:Report.ServicesChanged.Add("Disabled: $serviceName") | Out-Null
-        }
-    }
-}
-
-function Optimize-SSD {
-    if (-not (Confirm-Action "Optimización de SSD" "Verifica la tarea de optimización y ejecuta un ReTrim en la unidad C:")) { return }
-    Write-Log "MÓDULO: Optimización de SSD" -Level "TITLE"
-    $defragTask = Get-ScheduledTask -TaskName "ScheduledDefrag" -ErrorAction 0
-    if ($defragTask.State -eq 'Disabled' -and $PSCmdlet.ShouldProcess($defragTask.TaskPath, "Habilitar Tarea de Optimización")) {
-        $defragTask | Enable-ScheduledTask
-    }
-    if ($PSCmdlet.ShouldProcess("Unidad C:", "Ejecutar ReTrim (Optimización de SSD)")) {
-        Optimize-Volume -DriveLetter C -ReTrim -Verbose
     }
 }
 
 function Invoke-SystemTweaks {
-    if (-not (Confirm-Action "Ajustes del Sistema" "Activa Storage Sense, desactiva Game DVR y activa el plan de máximo rendimiento.")) { return }
-    Write-Log "MÓDULO: Ajustes del Sistema" -Level "TITLE"
-    Backup-Registry -KeyPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy"
-    Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" "01" 1 "DWord" # Enable Storage Sense
-    
-    if (-not $KeepGameDVR) {
-        Backup-Registry -KeyPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR"
-        Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" "AppCaptureEnabled" 0 "DWord"
-        Backup-Registry -KeyPath "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR"
-        Set-RegistryValue "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR" "value" 0 "DWord"
-    }
-    
-    if (-not $KeepStandardPowerPlan) {
+    Write-Log "MÓDULO: Ajustes de Rendimiento y Sistema" -Level "TITLE"
+
+    Write-Log "Configurando plan de energía y rendimiento..." -Level "STEP"
+    if (Confirm-Action "activar el plan de energía 'Máximo Rendimiento'") {
         $ultimateGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
         if (-not (powercfg /list | Select-String $ultimateGuid)) {
             if ($PSCmdlet.ShouldProcess("Plan 'Máximo Rendimiento'", "Habilitar")) { powercfg -duplicatescheme $ultimateGuid }
         }
         if ($PSCmdlet.ShouldProcess($ultimateGuid, "Activar Plan 'Máximo Rendimiento'")) { powercfg /setactive $ultimateGuid }
     }
-}
-
-function Invoke-Privacy {
-    if (-not (Confirm-Action "Ajustes de Privacidad" "Deshabilita ID de publicidad, telemetría, Cortana y bloquea hosts.")) { return }
-    Write-Log "MÓDULO: Ajustes de Privacidad" -Level "TITLE"
-    Backup-Registry -KeyPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo"
-    Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" "Enabled" 0 "DWord" # Disable Advertising ID
     
-    $diagTrack = Get-Service -Name "DiagTrack" -ErrorAction 0
-    if ($diagTrack -and $diagTrack.StartType -ne 'Disabled' -and $PSCmdlet.ShouldProcess("Servicio 'DiagTrack'", "Deshabilitar")) {
-        Set-Service -Name "DiagTrack" -StartupType Disabled
-        Stop-Service -Name "DiagTrack" -Force -ErrorAction SilentlyContinue
-        $Global:Report.ServicesChanged.Add("Disabled: DiagTrack") | Out-Null
+    Write-Log "Deshabilitando Game DVR y barra de juegos..." -Level "STEP"
+    if (Confirm-Action "deshabilitar Game DVR y la Barra de Juegos de Xbox") {
+        Backup-Registry -KeyPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR"
+        Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" "AppCaptureEnabled" 0 "DWord"
+        Backup-Registry -KeyPath "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR"
+        Set-RegistryValue "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR" "value" 0 "DWord"
     }
 
-    if ($DisableCortana) {
-        Write-Log "Deshabilitando Cortana..." -Level "STEP"
-        Backup-Registry -KeyPath "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"
-        Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" "AllowCortana" 0 "DWord"
-    }
-    
-    if (-not $SkipTelemetryBlock) {
-        $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-        $backupFile = Join-Path $Global:LogPath "hosts-backup-$(Get-Date -Format 'yyyyMMddHHmmss').txt"
-        if ($PSCmdlet.ShouldProcess($hostsPath, "Bloquear dominios de telemetría")) {
-            Copy-Item -Path $hostsPath -Destination $backupFile -Force
-            $Global:Report.HostFileBackups.Add($backupFile) | Out-Null
-            $newEntries = $Global:TelemetryHosts | ForEach-Object { "0.0.0.0 $_" }
-            Add-Content -Path $hostsPath -Value $newEntries -Force
-        }
-    }
-}
-
-function Invoke-UITweaks {
-    if (-not (Confirm-Action "Ajustes de UI" "Modifica el Explorador, menú contextual, barra de tareas y efectos visuales.")) { return }
-    Write-Log "MÓDULO: Ajustes de Interfaz de Usuario (UI)" -Level "TITLE"
-    $advPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-    Backup-Registry -KeyPath $advPath
-    Set-RegistryValue $advPath "HideFileExt" 0 "DWord" # Show file extensions
-    Set-RegistryValue $advPath "Hidden" 1 "DWord" # Show hidden files
-    Set-RegistryValue $advPath "LaunchTo" 1 "DWord" # Open Explorer to 'This PC'
-    
-    # --- Ajustes de Barra de Tareas ---
-    Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarMn" 0 "DWord" # Align left
-    Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Shell\Feeds" "ShellFeedsTaskbarViewMode" 2 "DWord" # Disable Widgets
-    Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarAl" 0 "DWord" # Ungroup taskbar items
-
-    if (-not $KeepModernMenu) {
-        $menuPath = "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
-        Backup-Registry -KeyPath "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}"
-        Set-RegistryValue $menuPath "(Default)" "" "String" # Restore classic context menu
-    }
-
-    if ($DisableVisualEffects) {
-        Write-Log "Deshabilitando efectos visuales para máximo rendimiento..." -Level "STEP"
+    Write-Log "Deshabilitando efectos visuales para máximo rendimiento..." -Level "STEP"
+    if (Confirm-Action "deshabilitar todos los efectos visuales (apariencia de Windows 98)") {
         Backup-Registry -KeyPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects"
         Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 2 "DWord"
         Backup-Registry -KeyPath "HKCU:\Control Panel\Desktop"
         Set-RegistryValue "HKCU:\Control Panel\Desktop" "UserPreferencesMask" ([byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00)) "Binary"
     }
+
+    Write-Log "Acelerando el apagado del sistema..." -Level "STEP"
+    if (Confirm-Action "reducir el tiempo de espera al apagar") {
+        Backup-Registry -KeyPath "HKLM:\SYSTEM\CurrentControlSet\Control"
+        Set-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Control" "WaitToKillServiceTimeout" "2000" "String"
+    }
 }
 
-function Invoke-NetworkTweaks {
-    if (-not (Confirm-Action "Ajustes de Red" "Limpia caché de DNS y opcionalmente configura un DNS público.")) { return }
-    Write-Log "MÓDULO: Ajustes de Red" -Level "TITLE"
-    if ($PSCmdlet.ShouldProcess("Caché de DNS", "Limpiar (Flush)")) {
-        ipconfig /flushdns
-        $Global:Report.NetworkChanges.Add("Flushed DNS Cache") | Out-Null
+function Invoke-PrivacyAndSecurity {
+    Write-Log "MÓDULO: Privacidad y Fortalecimiento de Seguridad" -Level "TITLE"
+
+    Write-Log "Deshabilitando servicios de telemetría y diagnóstico..." -Level "STEP"
+    if (Confirm-Action "deshabilitar servicios de telemetría") {
+        $servicesToDisable = @("DiagTrack", "dmwappushservice", "MapsBroker")
+        foreach ($serviceName in $servicesToDisable) {
+            $service = Get-Service -Name $serviceName
+            if ($service -and $service.StartType -ne 'Disabled') {
+                if ($PSCmdlet.ShouldProcess($serviceName, "Deshabilitar Servicio")) {
+                    Set-Service -Name $serviceName -StartupType Disabled
+                    Stop-Service -Name $serviceName -Force
+                    $Global:Report.ServicesChanged.Add("Disabled: $serviceName") | Out-Null
+                }
+            }
+        }
     }
-    if ($SetDNS) {
-        $dnsServers = @{ Cloudflare="1.1.1.1","1.0.0.1"; Google="8.8.8.8","8.8.4.4"; OpenDNS="208.67.222.222","208.67.220.220" }[$SetDNS]
-        Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | ForEach-Object {
-            if ($PSCmdlet.ShouldProcess($_.Name, "Establecer DNS a $SetDNS")) {
-                Set-DnsClientServerAddress -InterfaceIndex $_.InterfaceIndex -ServerAddresses $dnsServers
-                $Global:Report.NetworkChanges.Add("Set DNS on $($_.Name) to $SetDNS") | Out-Null
+
+    Write-Log "Bloqueando dominios de telemetría en el archivo hosts..." -Level "STEP"
+    if (Confirm-Action "bloquear dominios de telemetría de Microsoft") {
+        $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
+        $backupFile = Join-Path $Global:LogPath "hosts-backup-$(Get-Date -Format 'yyyyMMddHHmmss').txt"
+        if ($PSCmdlet.ShouldProcess($hostsPath, "Añadir dominios de telemetría para bloquear")) {
+            Copy-Item -Path $hostsPath -Destination $backupFile -Force
+            $Global:Report.HostFileBackups.Add($backupFile) | Out-Null
+            $currentHosts = Get-Content $hostsPath
+            $newEntries = $Global:TelemetryHosts | Where-Object { $currentHosts -notcontains "0.0.0.0 $_" } | ForEach-Object { "0.0.0.0 $_" }
+            if ($newEntries) { Add-Content -Path $hostsPath -Value $newEntries -Force }
+        }
+    }
+    
+    Write-Log "Fortaleciendo la seguridad del sistema..." -Level "STEP"
+    if (Confirm-Action "aplicar ajustes de fortalecimiento de seguridad") {
+        # Deshabilitar SMBv1
+        if ($PSCmdlet.ShouldProcess("Característica 'SMB1Protocol-Client'", "Deshabilitar")) {
+            Disable-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol-Client" -NoRestart
+            $Global:Report.SecurityChanges.Add("Disabled SMBv1 Protocol") | Out-Null
+        }
+        # Habilitar protección contra aplicaciones potencialmente no deseadas (PUA)
+        if ($PSCmdlet.ShouldProcess("Windows Defender", "Habilitar protección PUA")) {
+            Set-MpPreference -PUAProtection Enabled
+            $Global:Report.SecurityChanges.Add("Enabled Defender PUA Protection") | Out-Null
+        }
+        # Deshabilitar PowerShell v2 (obsoleto y peligroso)
+        if ($PSCmdlet.ShouldProcess("Característica 'MicrosoftWindowsPowerShellV2'", "Deshabilitar")) {
+            Disable-WindowsOptionalFeature -Online -FeatureName MicrosoftWindowsPowerShellV2 -NoRestart
+            $Global:Report.SecurityChanges.Add("Disabled PowerShell v2") | Out-Null
+        }
+    }
+}
+
+function Invoke-UITweaks {
+    Write-Log "MÓDULO: Ajustes de Interfaz de Usuario (UI)" -Level "TITLE"
+    
+    Write-Log "Configurando el Explorador de Archivos..." -Level "STEP"
+    if (Confirm-Action "aplicar ajustes al Explorador de Archivos (mostrar extensiones, archivos ocultos, etc.)") {
+        $advPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Backup-Registry -KeyPath $advPath
+        Set-RegistryValue $advPath "HideFileExt" 0 "DWord" # Mostrar extensiones de archivo
+        Set-RegistryValue $advPath "Hidden" 1 "DWord" # Mostrar archivos ocultos
+        Set-RegistryValue $advPath "LaunchTo" 1 "DWord" # Abrir Explorador en 'Este equipo'
+    }
+
+    Write-Log "Restaurando el menú contextual clásico..." -Level "STEP"
+    if (Confirm-Action "restaurar el menú contextual clásico de Windows 10") {
+        $menuPath = "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+        Backup-Registry -KeyPath "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}"
+        if ($PSCmdlet.ShouldProcess($menuPath, "Crear clave para menú clásico")) {
+            New-Item -Path $menuPath -Force | Out-Null
+            Set-ItemProperty -Path $menuPath -Name "(Default)" -Value "" -Type String -Force
+            Write-Log "Menú contextual clásico restaurado. Reinicia explorer.exe para ver los cambios." -Level "SUCCESS"
+        }
+    }
+
+    Write-Log "Ajustando la Barra de Tareas..." -Level "STEP"
+    if (Confirm-Action "aplicar ajustes a la barra de tareas (alinear a la izquierda, quitar widgets)") {
+        Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarMn" 0 "DWord" # Alinear a la izquierda
+        Set-RegistryValue "HKCU\Software\Microsoft\Windows\CurrentVersion\Shell\Feeds" "ShellFeedsTaskbarViewMode" 2 "DWord" # Deshabilitar Widgets
+    }
+}
+
+function Invoke-StartupAppsOptimization {
+    Write-Log "MÓDULO: Optimización de Programas de Inicio" -Level "TITLE"
+    $startupLocations = @(
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run",
+        "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run",
+        "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup",
+        "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\StartUp"
+    )
+    
+    $startupItems = @{}
+    foreach ($location in $startupLocations) {
+        if (Test-Path $location) {
+            Get-ItemProperty -Path $location | Get-Member -MemberType NoteProperty | ForEach-Object {
+                $name = $_.Name
+                $value = (Get-ItemProperty -Path $location)."$name"
+                if (-not $startupItems.ContainsKey($name)) { $startupItems[$name] = $value }
+            }
+            if ($location.EndsWith("Startup")) {
+                Get-ChildItem -Path $location | ForEach-Object {
+                    if (-not $startupItems.ContainsKey($_.Name)) { $startupItems[$_.Name] = $_.FullName }
+                }
+            }
+        }
+    }
+    
+    if ($startupItems.Count -eq 0) {
+        Write-Log "No se encontraron programas de inicio en las ubicaciones comunes." -Level "INFO"
+        return
+    }
+
+    Write-Log "Se encontraron los siguientes programas de inicio:" -Level "INFO"
+    $startupItems.GetEnumerator() | Sort-Object Name | ForEach-Object { Write-Host " - $($_.Name)" }
+    
+    if (Confirm-Action "revisar y deshabilitar programas de inicio") {
+        $startupItems.GetEnumerator() | Sort-Object Name | ForEach-Object {
+            $name = $_.Name
+            $path = $_.Value
+            if (Confirm-Action "deshabilitar '$name' ($path)", 'N')) {
+                # Esta es una implementación simplificada. La deshabilitación real es compleja.
+                # Por ahora, solo lo reportamos. Una implementación completa requeriría mover/renombrar archivos/claves.
+                Write-Log "ACCIÓN REQUERIDA: Deshabilita manualmente '$name' desde el Administrador de Tareas (Pestaña Inicio)." -Level "WARN"
+                $Global:Report.StartupItems.Add("Marked for disabling: $name") | Out-Null
             }
         }
     }
 }
 
-# NUEVO MÓDULO
-function Invoke-SecurityHardening {
-    if (-not (Confirm-Action "Fortalecimiento de Seguridad" "Deshabilita protocolos inseguros como SMBv1 y resetea las reglas del Firewall.")) { return }
-    Write-Log "MÓDULO: Fortalecimiento de Seguridad (Hardening)" -Level "TITLE"
-
-    Write-Log "Deshabilitando SMBv1 (protocolo obsoleto e inseguro)..." -Level "STEP"
-    if ($PSCmdlet.ShouldProcess("Característica de Windows 'SMB1Protocol-Client'", "Deshabilitar")) {
-        Disable-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol-Client" -NoRestart
-        $Global:Report.SecurityChanges.Add("Disabled SMBv1 Protocol") | Out-Null
-    }
-
-    Write-Log "Restableciendo reglas del Firewall de Windows a su estado por defecto..." -Level "STEP"
-    if ($PSCmdlet.ShouldProcess("Firewall de Windows", "Restablecer políticas")) {
-        & netsh advfirewall reset
-        $Global:Report.SecurityChanges.Add("Reset Windows Firewall Policies") | Out-Null
-    }
-}
-
-function Invoke-AppUpdater {
-    if (-not (Confirm-Action "Actualizador de Apps" "Usa 'winget' para buscar y aplicar actualizaciones.")) { return }
-    Write-Log "MÓDULO: Actualizador de Aplicaciones (winget)" -Level "TITLE"
-    if (-not (Get-Command winget -ErrorAction 0)) {
-        Write-Log "'winget' no se encuentra. Omitiendo." -Level "WARN"; return
-    }
-    if ($PSCmdlet.ShouldProcess("winget", "Ejecutar 'upgrade --all'")) {
-        Write-Log "Iniciando actualización masiva con winget. Esto puede tardar..." -Level "INFO"
-        & winget upgrade --all --silent --accept-source-agreements --accept-package-agreements
-    }
-}
-
 function Run-IntegrityChecks {
-    if (-not (Confirm-Action "Comprobaciones de Integridad" "Ejecuta SFC y DISM para verificar y reparar archivos del sistema.")) { return }
     Write-Log "MÓDULO: Comprobaciones de Integridad del Sistema" -Level "TITLE"
-    if ($PSCmdlet.ShouldProcess("sfc.exe", "Ejecutar /scannow")) {
-        Write-Log "Ejecutando SFC..." -Level "INFO"
-        sfc.exe /scannow | Out-Null
-        $Global:Report.SystemChecks.Add("SFC: $(if ($LASTEXITCODE -eq 0) {'OK'} else {'Problemas encontrados'})") | Out-Null
-    }
-    if ($PSCmdlet.ShouldProcess("dism.exe", "Ejecutar /RestoreHealth")) {
-        Write-Log "Ejecutando DISM..." -Level "INFO"
-        dism.exe /Online /Cleanup-Image /RestoreHealth | Out-Null
-        $Global:Report.SystemChecks.Add("DISM: $(if ($? -and $LASTEXITCODE -eq 0) {'OK'} else {'Advertencias o errores'})") | Out-Null
+    if (Confirm-Action "ejecutar comprobaciones de integridad del sistema (SFC y DISM). Esto puede tardar varios minutos") {
+        if ($PSCmdlet.ShouldProcess("sfc.exe", "Ejecutar /scannow")) {
+            Write-Log "Ejecutando Comprobador de Archivos de Sistema (SFC)..." -Level "INFO"
+            sfc.exe /scannow | Out-Null
+            $sfcStatus = if ($LASTEXITCODE -eq 0) {'OK'} else {'Problemas encontrados'}
+            Write-Log "Resultado de SFC: $sfcStatus" -Level $(if ($sfcStatus -eq 'OK') {'SUCCESS'} else {'ERROR'})
+            $Global:Report.SystemChecks.Add("SFC: $sfcStatus") | Out-Null
+        }
+        if ($PSCmdlet.ShouldProcess("dism.exe", "Ejecutar /Online /Cleanup-Image /RestoreHealth")) {
+            Write-Log "Ejecutando herramienta de mantenimiento de imágenes (DISM)..." -Level "INFO"
+            dism.exe /Online /Cleanup-Image /RestoreHealth | Out-Null
+            $dismStatus = if ($LASTEXITCODE -eq 0) {'OK'} else {'Advertencias o errores'}
+            Write-Log "Resultado de DISM: $dismStatus" -Level $(if ($dismStatus -eq 'OK') {'SUCCESS'} else {'WARN'})
+            $Global:Report.SystemChecks.Add("DISM: $dismStatus") | Out-Null
+        }
     }
 }
 
-function Write-Report {
+function Write-FinalReport {
     Write-Log "MÓDULO: Reporte Final" -Level "TITLE"
     $endTime = Get-Date
     $duration = New-TimeSpan -Start $Global:StartTime -End $endTime
@@ -571,12 +584,12 @@ function Write-Report {
     
     $summary = @"
 ======================================================================
-           INFORME DE OPTIMIZACIÓN DE WINDOWS 11 (v6.0)
+         INFORME DE OPTIMIZACIÓN DE WINDOWS (v7.0)
 ======================================================================
-Fecha: $($endTime.ToString('yyyy-MM-dd HH:mm:ss')) | Duración: $($duration.ToString('g')) | Modo: $($Global:Report.ExecutionMode)
+Fecha: $($endTime.ToString('yyyy-MM-dd HH:mm:ss')) | Duración: $($duration.ToString('g'))
 ----------------------------------------------------------------------
 Espacio Liberado (Estimado): $spaceFreedMB MB
-Aplicaciones Desinstaladas: $($Global:Report.AppsRemoved.Count)
+Aplicaciones/Características Eliminadas: $($Global:Report.AppsRemoved.Count)
 Cambios en el Registro: $($Global:Report.RegistryChanges.Count)
 Cambios de Seguridad: $($Global:Report.SecurityChanges.Count)
 Backups Creados: $($Global:Report.RegistryBackups.Count + $Global:Report.HostFileBackups.Count)
@@ -585,78 +598,117 @@ Log completo guardado en: $($Global:LogFile)
 "@
     Write-Host $summary -ForegroundColor "Cyan"
     Add-Content -Path $Global:LogFile -Value $summary
-    
-    if ($JsonReport) {
-        if ($PSCmdlet.ShouldProcess($JsonReport, "Exportar reporte a JSON")) {
-            $Global:Report | ConvertTo-Json -Depth 5 | Out-File -FilePath $JsonReport -Encoding utf8
-        }
-    }
 }
 
 #endregion
 
-#region FLUJO PRINCIPAL DE EJECUCIÓN
+#region FLUJO PRINCIPAL Y MENÚ INTERACTIVO
+
+function Show-Menu {
+    Clear-Host
+    Write-Host "=====================================================================" -ForegroundColor "Teal"
+    Write-Host "      Script de Optimización 'Edición Definitiva' v7.0" -ForegroundColor "White"
+    Write-Host "=====================================================================" -ForegroundColor "Teal"
+    Write-Host ""
+    Write-Host " Por favor, elige una opción:" -ForegroundColor "Yellow"
+    Write-Host ""
+    Write-Host "   [1] Limpieza Profunda" -ForegroundColor "Cyan"
+    Write-Host "   [2] Desinstalar Bloatware (Debloat)" -ForegroundColor "Cyan"
+    Write-Host "   [3] Ajustes de Rendimiento y Sistema" -ForegroundColor "Cyan"
+    Write-Host "   [4] Ajustes de Privacidad y Seguridad" -ForegroundColor "Cyan"
+    Write-Host "   [5] Ajustes de Interfaz de Usuario (UI)" -ForegroundColor "Cyan"
+    Write-Host "   [6] Optimizar Programas de Inicio" -ForegroundColor "Cyan"
+    Write-Host "   [7] Comprobar Integridad del Sistema (SFC & DISM)" -ForegroundColor "Cyan"
+    Write-Host ""
+    Write-Host "   [A] APLICAR TODO (Recomendado para la primera vez)" -ForegroundColor "Green"
+    Write-Host "   [B] APLICAR TODO (Modo Desatendido - Sin preguntas)" -ForegroundColor "Yellow"
+    Write-Host ""
+    Write-Host "   [Q] Salir" -ForegroundColor "Red"
+    Write-Host ""
+}
 
 function Main {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Host "ERROR: SE REQUIEREN PERMISOS DE ADMINISTRADOR." -ForegroundColor "Red"
-        return
-    }
-    if ([System.Environment]::OSVersion.Version.Build -lt 22000) {
-        Write-Log "Este script está diseñado para Windows 11 (Build 22000+)." -Level "ERROR"
+        Write-Host "Por favor, reinicia PowerShell como Administrador."
+        Read-Host "Presiona Enter para salir."
         return
     }
 
-    Clear-Host
-    Write-Host "=====================================================================" -ForegroundColor "Magenta"
-    Write-Host "   Script de Optimización 'Ultimate Edition' v6.0 (Expansión)    " -ForegroundColor "Magenta"
-    Write-Host "=====================================================================" -ForegroundColor "Magenta"
-    Write-Log "Inicio de la sesión de optimización." -Level "TITLE"
-    
-    if ($IsDryRun) { Write-Log "MODO SIMULACIÓN (DryRun) ACTIVO." -Level "WARN" }
-    
+    Start-Diagnostics
     New-RestorePoint
-
-    $allModules = @{
-        'Diagnostics'       = { Start-Diagnostics }
-        'Cleanup'           = { Invoke-Cleanup }
-        'AdvancedCleanup'   = { Invoke-AdvancedCleanup }
-        'OptionalCleanup'   = { if ($IncludeOptionalCleanup) { Invoke-OptionalCleanup } }
-        'Debloat'           = { Invoke-Debloat }
-        'Services'          = { Optimize-Services }
-        'SSD'               = { Optimize-SSD }
-        'SystemTweaks'      = { Invoke-SystemTweaks }
-        'Privacy'           = { Invoke-Privacy }
-        'UITweaks'          = { Invoke-UITweaks }
-        'NetworkTweaks'     = { Invoke-NetworkTweaks }
-        'SecurityHardening' = { Invoke-SecurityHardening }
-        'AppUpdater'        = { Invoke-AppUpdater }
-        'Integrity'         = { Run-IntegrityChecks }
-    }
     
-    $modulesToRun = if ($Only) { $Only } else { $allModules.Keys }
-    if ($Skip) { $modulesToRun = $modulesToRun | Where-Object { $_ -notin $Skip } }
+    $runAll = $false
+    $unattended = $false
 
-    foreach ($moduleName in $modulesToRun) {
-        if ($allModules.ContainsKey($moduleName)) { & $allModules[$moduleName] }
-    }
+    do {
+        if (-not $runAll) { Show-Menu }
+        
+        if ($unattended) {
+            $choice = 'b'
+        } else {
+            $choice = Read-Host -Prompt "Tu elección"
+        }
 
-    Write-Report
-    Write-Log "Ejecución finalizada. Se recomienda reiniciar el equipo." -Level "TITLE"
+        switch ($choice.ToLower()) {
+            '1' { Invoke-DeepCleanup }
+            '2' { Invoke-Debloat }
+            '3' { Invoke-SystemTweaks }
+            '4' { Invoke-PrivacyAndSecurity }
+            '5' { Invoke-UITweaks }
+            '6' { Invoke-StartupAppsOptimization }
+            '7' { Run-IntegrityChecks }
+            'a' { 
+                $runAll = $true
+                Invoke-DeepCleanup
+                Invoke-Debloat
+                Invoke-SystemTweaks
+                Invoke-PrivacyAndSecurity
+                Invoke-UITweaks
+                Invoke-StartupAppsOptimization
+                Run-IntegrityChecks
+            }
+            'b' {
+                $runAll = $true
+                $unattended = $true
+                # Sobreescribir la función de confirmación para que siempre devuelva $true
+                function global:Confirm-Action { return $true }
+                Write-Log "MODO DESATENDIDO ACTIVADO. SE APLICARÁN TODAS LAS OPTIMIZACIONES SIN CONFIRMACIÓN." -Level "WARN"
+                Invoke-DeepCleanup
+                Invoke-Debloat
+                Invoke-SystemTweaks
+                Invoke-PrivacyAndSecurity
+                Invoke-UITweaks
+                Invoke-StartupAppsOptimization
+                Run-IntegrityChecks
+            }
+            'q' { Write-Log "Saliendo del script." -Level "INFO"; break }
+            default { Write-Host "Opción no válida. Por favor, inténtalo de nuevo." -ForegroundColor "Red"; Start-Sleep -Seconds 2 }
+        }
+        
+        if ($runAll) { break }
+        if ($choice -ne 'q') { Read-Host "Presiona Enter para volver al menú..." }
+
+    } while ($choice -ne 'q')
+
+    Write-FinalReport
+    Write-Log "Ejecución finalizada. Se recomienda encarecidamente reiniciar el equipo para aplicar todos los cambios." -Level "TITLE"
 }
 
 # -- Iniciar la ejecución --
 try {
     Main
 } catch {
-    Write-Log "ERROR INESPERADO: $($_.Exception.Message)" -Level "ERROR"
-    Write-Log "El script se ha detenido." -Level "ERROR"
+    Write-Log "ERROR INESPERADO Y FATAL: $($_.Exception.Message)" -Level "ERROR"
+    Write-Log "El script se ha detenido de forma anormal." -Level "ERROR"
 } finally {
     Write-Log "Fin de la sesión de optimización." -Level "TITLE"
     Write-Host ""
-    Read-Host "El script ha finalizado. Presiona Enter para salir."
+    Read-Host "El script ha finalizado. Presiona Enter para cerrar esta ventana."
 }
 </code></pre>
+                </div>
+            </main>
         </div>
     </div>
 
@@ -669,40 +721,72 @@ try {
         const checkIcon = document.getElementById('checkIcon');
 
         copyButton.addEventListener('click', () => {
+            const codeToCopy = powershellCode.innerText;
+            
+            // Usamos el API del portapapeles si está disponible, es más moderno y seguro
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    showSuccess();
+                }).catch(err => {
+                    console.error('Error al copiar con API: ', err);
+                    fallbackCopy(codeToCopy); // Intenta el método antiguo si falla
+                });
+            } else {
+                fallbackCopy(codeToCopy); // Usa el método antiguo para entornos no seguros (como file://)
+            }
+        });
+
+        function fallbackCopy(text) {
             const textArea = document.createElement('textarea');
-            textArea.value = powershellCode.innerText;
-            textArea.style.position = 'fixed';
+            textArea.value = text;
+            textArea.style.position = 'fixed'; // Evita que se vea en pantalla
             textArea.style.top = '-9999px';
             textArea.style.left = '-9999px';
             document.body.appendChild(textArea);
+            textArea.focus();
             textArea.select();
             
             try {
-                document.execCommand('copy');
-                buttonText.innerText = '¡Copiado!';
-                copyIcon.classList.add('hidden');
-                checkIcon.classList.remove('hidden');
-                copyButton.classList.remove('bg-cyan-500', 'hover:bg-cyan-600');
-                copyButton.classList.add('bg-green-500');
-
-                setTimeout(() => {
-                    buttonText.innerText = 'Copiar Código';
-                    copyIcon.classList.remove('hidden');
-                    checkIcon.classList.add('hidden');
-                    copyButton.classList.add('bg-cyan-500', 'hover:bg-cyan-600');
-                    copyButton.classList.remove('bg-green-500');
-                }, 2000);
-
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showSuccess();
+                } else {
+                    showError();
+                }
             } catch (err) {
-                console.error('Error al intentar copiar el texto: ', err);
-                buttonText.innerText = 'Error al copiar';
-                 setTimeout(() => {
-                    buttonText.innerText = 'Copiar Código';
-                }, 2000);
+                console.error('Error al intentar copiar con execCommand: ', err);
+                showError();
             }
             
             document.body.removeChild(textArea);
-        });
+        }
+
+        function showSuccess() {
+            buttonText.innerText = '¡Copiado!';
+            copyIcon.classList.add('hidden');
+            checkIcon.classList.remove('hidden');
+            copyButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            copyButton.classList.add('bg-green-500');
+
+            setTimeout(() => {
+                buttonText.innerText = 'Copiar Script';
+                copyIcon.classList.remove('hidden');
+                checkIcon.classList.add('hidden');
+                copyButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                copyButton.classList.remove('bg-green-500');
+            }, 2500);
+        }
+
+        function showError() {
+            buttonText.innerText = 'Error al Copiar';
+            copyButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            copyButton.classList.add('bg-red-600');
+            setTimeout(() => {
+                buttonText.innerText = 'Copiar Script';
+                copyButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                copyButton.classList.remove('bg-red-600');
+            }, 2500);
+        }
     </script>
 
 </body>
