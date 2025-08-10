@@ -1,4 +1,57 @@
-<#
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copiador de Script de PowerShell</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilo para la barra de desplazamiento del código */
+        pre::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        pre::-webkit-scrollbar-track {
+            background: #1e293b; /* bg-slate-800 */
+        }
+        pre::-webkit-scrollbar-thumb {
+            background-color: #475569; /* bg-slate-600 */
+            border-radius: 20px;
+            border: 3px solid #1e293b; /* bg-slate-800 */
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">Script de Optimización para Windows</h1>
+            <p class="text-slate-400 mt-2">Copia y pega este script en una ventana de PowerShell (ejecutada como Administrador).</p>
+        </div>
+
+        <!-- Contenedor del código y botón -->
+        <div class="bg-slate-800 rounded-xl shadow-2xl overflow-hidden">
+            <!-- Barra de título del código -->
+            <div class="bg-slate-700/50 flex items-center justify-between p-3 border-b border-slate-600">
+                <span class="text-sm font-medium text-slate-300">PowerShell Script</span>
+                <button id="copyButton" class="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-300">
+                    <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                    </svg>
+                    <svg id="checkIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg hidden" viewBox="0 0 16 16">
+                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z"/>
+                    </svg>
+                    <span id="buttonText">Copiar Código</span>
+                </button>
+            </div>
+            
+            <!-- Bloque de Código -->
+            <pre class="p-4 text-sm overflow-x-auto max-h-[60vh]"><code id="powershellCode"><#
 .SYNOPSIS
     Script de Optimización "Ultimate Edition" para Windows 11 (v5.3 - Corrección Final).
     Diseñado para ser copiado y pegado directamente en una consola de PowerShell (Administrador).
@@ -595,3 +648,63 @@ try {
     Write-Host ""
     Read-Host "El script ha finalizado. Presiona Enter para salir."
 }
+</code></pre>
+        </div>
+    </div>
+
+    <script>
+        // --- Lógica para copiar el código al portapapeles ---
+        const copyButton = document.getElementById('copyButton');
+        const buttonText = document.getElementById('buttonText');
+        const powershellCode = document.getElementById('powershellCode');
+        const copyIcon = document.getElementById('copyIcon');
+        const checkIcon = document.getElementById('checkIcon');
+
+        copyButton.addEventListener('click', () => {
+            // Se usa un textarea temporal para asegurar una copia fiable
+            const textArea = document.createElement('textarea');
+            textArea.value = powershellCode.innerText;
+            
+            // Estilos para hacerlo invisible y evitar que afecte el layout
+            textArea.style.position = 'fixed';
+            textArea.style.top = '-9999px';
+            textArea.style.left = '-9999px';
+            
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                // Comando para copiar el texto seleccionado
+                document.execCommand('copy');
+                
+                // Feedback visual para el usuario
+                buttonText.innerText = '¡Copiado!';
+                copyIcon.classList.add('hidden');
+                checkIcon.classList.remove('hidden');
+                copyButton.classList.remove('bg-cyan-500', 'hover:bg-cyan-600');
+                copyButton.classList.add('bg-green-500');
+
+                // Revertir el estado del botón después de 2 segundos
+                setTimeout(() => {
+                    buttonText.innerText = 'Copiar Código';
+                    copyIcon.classList.remove('hidden');
+                    checkIcon.classList.add('hidden');
+                    copyButton.classList.add('bg-cyan-500', 'hover:bg-cyan-600');
+                    copyButton.classList.remove('bg-green-500');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Error al intentar copiar el texto: ', err);
+                buttonText.innerText = 'Error al copiar';
+                 setTimeout(() => {
+                    buttonText.innerText = 'Copiar Código';
+                }, 2000);
+            }
+            
+            // Eliminar el textarea temporal
+            document.body.removeChild(textArea);
+        });
+    </script>
+
+</body>
+</html>
