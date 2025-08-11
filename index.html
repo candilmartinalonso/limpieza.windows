@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optimizador Definitivo para Windows v8.1.3</title>
+  <title>Optimizador Definitivo para Windows v8.2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body{font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
@@ -12,8 +12,8 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-6">
   <div class="max-w-6xl mx-auto space-y-4">
-    <h1 class="text-3xl font-bold">Script de Optimización v8.1.3</h1>
-    <p class="text-slate-300">Correcciones: cálculo de espacio (sin negativos) y deshabilitado de inicio con SKIP en acceso denegado.</p>
+    <h1 class="text-3xl font-bold">Script de Optimización v8.2</h1>
+    <p class="text-slate-300">Incluye <strong>[14] Servicios agresivos</strong> (SysMain, Indexado, Telemetría). Opción manual, reversible.</p>
 
     <div class="flex gap-3 flex-wrap">
       <button id="copy" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Copiar Script</button>
@@ -21,16 +21,16 @@
     </div>
 
     <div class="mt-2 text-xs text-slate-400">
-      <p>Si el copiado falla por restricciones del navegador, usa “Seleccionar todo” + Ctrl+C.</p>
+      <p>Tip: después de deshabilitar <em>Windows Search</em>, reinicia para liberar RAM.</p>
     </div>
 
     <div class="mt-4 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
       <div class="bg-slate-700/50 px-4 py-2 flex items-center justify-between">
-        <span class="text-sm">PowerShell - v8.1.3</span>
+        <span class="text-sm">PowerShell - v8.2</span>
       </div>
       <pre class="p-4 overflow-x-auto text-xs"><code id="ps">&lt;#
 .SYNOPSIS
-    Script de Optimización &quot;Definitive Edition&quot; para Windows 10/11 (v8.1.3).
+    Script de Optimización &quot;Definitive Edition&quot; para Windows 10/11 (v8.2).
     Seguro y reversible. Diseñado para no &quot;romper&quot; Windows.
 #&gt;
 
@@ -46,7 +46,7 @@ $Global:LogPath = &quot;C:\Windows\Temp\Win-Optimization-Logs&quot;
 if (-not (Test-Path -Path $Global:LogPath)) {
     try { New-Item -Path $Global:LogPath -ItemType Directory -Force | Out-Null } catch { Write-Error &quot;No se pudo crear el directorio de logs.&quot;; exit 1 }
 }
-$Global:LogFile = Join-Path $Global:LogPath &quot;Win-Optimization-v8.1.3-$(Get-Date -Format &#x27;yyyy-MM-dd_HH-mm-ss&#x27;).log&quot;
+$Global:LogFile = Join-Path $Global:LogPath &quot;Win-Optimization-v8.2-$(Get-Date -Format &#x27;yyyy-MM-dd_HH-mm-ss&#x27;).log&quot;
 $Global:StartTime = Get-Date
 
 $Global:Report = [PSCustomObject]@{
@@ -118,8 +118,8 @@ function Confirm-Action {
 function New-RestorePoint {
     Write-Log &quot;Creando punto de restauración...&quot; -Level &quot;TITLE&quot;
     if (Confirm-Action &quot;crear un punto de restauración del sistema (Recomendado)&quot; &#x27;S&#x27;) {
-        if ($PSCmdlet.ShouldProcess(&quot;Sistema Operativo&quot;,&quot;Crear Punto &#x27;Antes de Optimización v8.1.3&#x27;&quot;)) {
-            try { $null = Checkpoint-Computer -Description &quot;Antes de Optimización v8.1.3&quot; -ErrorAction Stop; Write-Log &quot;Punto de restauración creado.&quot; -Level &quot;SUCCESS&quot; }
+        if ($PSCmdlet.ShouldProcess(&quot;Sistema Operativo&quot;,&quot;Crear Punto &#x27;Antes de Optimización v8.2&#x27;&quot;)) {
+            try { $null = Checkpoint-Computer -Description &quot;Antes de Optimización v8.2&quot; -ErrorAction Stop; Write-Log &quot;Punto de restauración creado.&quot; -Level &quot;SUCCESS&quot; }
             catch { Write-Log &quot;Fallo al crear el punto de restauración. Verifica &#x27;Instantáneas de volumen&#x27;.&quot; -Level &quot;ERROR&quot; }
         }
     } else { Write-Log &quot;Punto de restauración omitido por el usuario.&quot; -Level &quot;WARN&quot; }
@@ -374,7 +374,6 @@ function Invoke-StartupAppsOptimization {
         &quot;$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\StartUp&quot;
     )
 
-    # Backups por clave (una vez)
     $toBackup = @(
         &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Run&quot;,
         &quot;HKLM:\Software\Microsoft\Windows\CurrentVersion\Run&quot;,
@@ -544,6 +543,40 @@ function Invoke-ContentAndBackgroundAppTweaks {
     Set-RegistryValue $appPriv &quot;LetAppsRunInBackground&quot; 2 &quot;DWord&quot; # 2 = Force Deny
 }
 
+# [14] Servicios agresivos (opcional y reversible)
+function Invoke-AggressiveServices {
+    Write-Log &quot;MÓDULO: Servicios agresivos (opcional)&quot; -Level &quot;TITLE&quot;
+    $choices = @(
+        @{Name=&#x27;SysMain (Superfetch)&#x27;; Service=&#x27;SysMain&#x27;},
+        @{Name=&#x27;Windows Search (Indexado)&#x27;; Service=&#x27;WSearch&#x27;},
+        @{Name=&#x27;Connected User Experiences / Telemetry&#x27;; Service=&#x27;DiagTrack&#x27;}
+    )
+
+    foreach ($c in $choices) {
+        $svc = Get-Service -Name $c.Service -ErrorAction SilentlyContinue
+        if (-not $svc) { Write-Log &quot;Servicio no encontrado: $($c.Name)&quot; -Level &quot;WARN&quot;; continue }
+        $actionDisable = &quot;deshabilitar el servicio &#x27;$($c.Name)&#x27; (detener y startup=Deshabilitado)&quot;
+        $actionEnable  = &quot;habilitar el servicio &#x27;$($c.Name)&#x27; (startup=Manual)&quot;
+        if (Confirm-Action $actionDisable &#x27;N&#x27;) {
+            if ($PSCmdlet.ShouldProcess($c.Service,&quot;Stop + Disabled&quot;)) {
+                try { Stop-Service -Name $c.Service -Force -ErrorAction SilentlyContinue } catch {}
+                try { Set-Service -Name $c.Service -StartupType Disabled } catch {}
+                $Global:Report.ServicesChanged.Add(&quot;Disabled: $($c.Service)&quot;) | Out-Null
+                Write-Log &quot;Deshabilitado: $($c.Name)&quot; -Level &quot;SUCCESS&quot;
+            }
+        } elseif (Confirm-Action $actionEnable &#x27;N&#x27;) {
+            if ($PSCmdlet.ShouldProcess($c.Service,&quot;Set Manual&quot;)) {
+                try { Set-Service -Name $c.Service -StartupType Manual } catch {}
+                $Global:Report.ServicesChanged.Add(&quot;Enabled (Manual): $($c.Service)&quot;) | Out-Null
+                Write-Log &quot;Habilitado (Manual): $($c.Name)&quot; -Level &quot;SUCCESS&quot;
+            }
+        } else {
+            Write-Log &quot;Sin cambios en: $($c.Name)&quot; -Level &quot;INFO&quot;
+        }
+    }
+    Write-Log &quot;Si deshabilitaste &#x27;Windows Search&#x27;, reinicia para liberar RAM del indexador.&quot; -Level &quot;WARN&quot;
+}
+
 #endregion
 
 #region REPORTE Y MENÚ
@@ -556,7 +589,7 @@ function Write-FinalReport {
 
     $summary = @&quot;
 ======================================================================
-         INFORME DE OPTIMIZACIÓN DE WINDOWS (v8.1.3)
+         INFORME DE OPTIMIZACIÓN DE WINDOWS (v8.2)
 ======================================================================
 Fecha: $($endTime.ToString(&#x27;yyyy-MM-dd HH:mm:ss&#x27;)) | Duración: $($duration.ToString(&#x27;g&#x27;))
 ----------------------------------------------------------------------
@@ -577,7 +610,7 @@ Log completo: $($Global:LogFile)
 function Show-Menu {
     Clear-Host
     Write-Host &quot;=====================================================================&quot; -ForegroundColor &quot;Green&quot;
-    Write-Host &quot;     Script de Optimización &#x27;Edición Definitiva&#x27; v8.1.3&quot; -ForegroundColor &quot;White&quot;
+    Write-Host &quot;     Script de Optimización &#x27;Edición Definitiva&#x27; v8.2&quot; -ForegroundColor &quot;White&quot;
     Write-Host &quot;=====================================================================&quot; -ForegroundColor &quot;Green&quot;
     Write-Host &quot;&quot;
     Write-Host &quot; Por favor, elige una opción:&quot; -ForegroundColor &quot;Yellow&quot;
@@ -595,6 +628,7 @@ function Show-Menu {
     Write-Host &quot;  [11] Optimización de Disco (SSD/HDD)&quot; -ForegroundColor &quot;Cyan&quot;
     Write-Host &quot;  [12] Microsoft Edge (startup/segundo plano)&quot; -ForegroundColor &quot;Cyan&quot;
     Write-Host &quot;  [13] Sugerencias y Apps en 2º plano&quot; -ForegroundColor &quot;Cyan&quot;
+    Write-Host &quot;  [14] Servicios agresivos (SysMain, Indexado, Telemetría)&quot; -ForegroundColor &quot;Red&quot;
     Write-Host &quot;&quot;
     Write-Host &quot;   [A] APLICAR TODO (Seguro, guiado)&quot; -ForegroundColor &quot;Green&quot;
     Write-Host &quot;   [B] APLICAR TODO (Modo Desatendido - Sin preguntas)&quot; -ForegroundColor &quot;Yellow&quot;
@@ -639,6 +673,7 @@ function Main {
                 &#x27;11&#x27; { Invoke-DiskOptimize }
                 &#x27;12&#x27; { Invoke-EdgeTweaks }
                 &#x27;13&#x27; { Invoke-ContentAndBackgroundAppTweaks }
+                &#x27;14&#x27; { Invoke-AggressiveServices }
                 &#x27;a&#x27; {
                     $runAll = $true
                     Invoke-DeepCleanup
@@ -654,6 +689,7 @@ function Main {
                     Invoke-DiskOptimize
                     Invoke-EdgeTweaks
                     Invoke-ContentAndBackgroundAppTweaks
+                    # Nota: [14] NO se ejecuta en A/B, queda como opción manual
                 }
                 &#x27;b&#x27; {
                     $runAll = $true; $unattended = $true; $global:ConfirmPreference = &#x27;None&#x27;
@@ -672,6 +708,7 @@ function Main {
                     Invoke-DiskOptimize
                     Invoke-EdgeTweaks
                     Invoke-ContentAndBackgroundAppTweaks
+                    # Nota: [14] NO se ejecuta en A/B, queda como opción manual
                 }
                 &#x27;q&#x27; { Write-Log &quot;Saliendo...&quot; -Level &quot;INFO&quot;; break }
                 default { Write-Host &quot;Opción no válida.&quot; -ForegroundColor &quot;Red&quot;; Start-Sleep -Seconds 2 }
