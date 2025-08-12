@@ -1,784 +1,527 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optimizador Definitivo para Windows v8.2</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body{font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
-    pre{white-space: pre;}
-  </style>
-</head>
-<body class="bg-gray-900 text-white min-h-screen p-6">
-  <div class="max-w-6xl mx-auto space-y-4">
-    <h1 class="text-3xl font-bold">Script de Optimización v8.2</h1>
-    <p class="text-slate-300">Incluye <strong>[14] Servicios agresivos</strong> (SysMain, Indexado, Telemetría). Opción manual, reversible.</p>
-
-    <div class="flex gap-3 flex-wrap">
-      <button id="copy" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Copiar Script</button>
-      <button id="selectAll" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded-lg">Seleccionar todo</button>
-    </div>
-
-    <div class="mt-2 text-xs text-slate-400">
-      <p>Tip: después de deshabilitar <em>Windows Search</em>, reinicia para liberar RAM.</p>
-    </div>
-
-    <div class="mt-4 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-      <div class="bg-slate-700/50 px-4 py-2 flex items-center justify-between">
-        <span class="text-sm">PowerShell - v8.2</span>
-      </div>
-      <pre class="p-4 overflow-x-auto text-xs"><code id="ps">&lt;#
+<# 
 .SYNOPSIS
-    Script de Optimización &quot;Definitive Edition&quot; para Windows 10/11 (v8.2).
-    Seguro y reversible. Diseñado para no &quot;romper&quot; Windows.
-#&gt;
+  Windows 10/11 Optimizer – SafePlus (SSD) [One-Shot]
+  Limpieza/optimización ampliada, segura y reversible.
 
-[CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact=&#x27;High&#x27;)]
-param()
+.INCLUYE (modo seguro):
+  • Mega-limpieza: TEMP de todos los usuarios, caches UWP/WebView2/Apps, WU/DO, WER/dumps,
+    logs viejos (CBS/DISM/MoSetup/Panther/WMI/BITS), miniaturas/iconos, FontCache, Prefetch *.pf
+  • Navegadores: Chrome/Edge/Firefox/Brave/Opera (caches)
+  • Inicio: deshabilita mediante StartupApproved y exporta/borra Run/RunOnce; accesos directos a cuarentena
+  • Servicios: SysMain & DiagTrack → Disabled; WSearch → Manual; Xbox → Manual; RemoteRegistry → Disabled
+  • Red segura: LLMNR off, Delivery Optimization HTTP only, winsock/IP reset
+  • Edge policies: sin segundo plano/startup boost/primer inicio/telemetría básica
+  • SSD: Hibernación OFF, ReTRIM de C:
+  • Tareas programadas típicas (CEIP/Xbl/RetailDemo) deshabilitadas
+  • SFC/DISM verificación
+  • Punto de restauración (si está habilitado)
 
-#region CONFIGURACIÓN INICIAL
+  Logs en:   C:\ProgramData\SafePlus\Logs\SafePlus-<fecha>.log
+  Quarantine:C:\ProgramData\SafePlus\Quarantine-<fecha>\
+#>
 
-$PSDefaultParameterValues[&#x27;*:ErrorAction&#x27;] = &#x27;SilentlyContinue&#x27;
-$Global:IsDryRun = $false
-
-$Global:LogPath = &quot;C:\Windows\Temp\Win-Optimization-Logs&quot;
-if (-not (Test-Path -Path $Global:LogPath)) {
-    try { New-Item -Path $Global:LogPath -ItemType Directory -Force | Out-Null } catch { Write-Error &quot;No se pudo crear el directorio de logs.&quot;; exit 1 }
-}
-$Global:LogFile = Join-Path $Global:LogPath &quot;Win-Optimization-v8.2-$(Get-Date -Format &#x27;yyyy-MM-dd_HH-mm-ss&#x27;).log&quot;
-$Global:StartTime = Get-Date
-
-$Global:Report = [PSCustomObject]@{
-    ExecutionDate   = $Global:StartTime
-    ExecutionMode   = if ($Global:IsDryRun) { &#x27;DryRun&#x27; } else { &#x27;Live&#x27; }
-    SpaceFreedBytes = 0
-    AppsRemoved     = [System.Collections.ArrayList]@()
-    ServicesChanged = [System.Collections.ArrayList]@()
-    TasksChanged    = [System.Collections.ArrayList]@()
-    RegistryChanges = [System.Collections.ArrayList]@()
-    RegistryBackups = [System.Collections.ArrayList]@()
-    HostFileBackups = [System.Collections.ArrayList]@()
-    SystemChecks    = [System.Collections.ArrayList]@()
-    NetworkChanges  = [System.Collections.ArrayList]@()
-    SecurityChanges = [System.Collections.ArrayList]@()
-    StartupItems    = [System.Collections.ArrayList]@()
-    DiskActions     = [System.Collections.ArrayList]@()
-}
-
-$Global:DefaultAppsToRemove = @(
-    &#x27;Microsoft.549981C3F5F10&#x27;,&#x27;Microsoft.BingNews&#x27;,&#x27;Microsoft.BingWeather&#x27;,&#x27;Microsoft.GetHelp&#x27;,&#x27;Microsoft.Getstarted&#x27;,
-    &#x27;Microsoft.Microsoft3DViewer&#x27;,&#x27;Microsoft.MicrosoftOfficeHub&#x27;,&#x27;Microsoft.MicrosoftSolitaireCollection&#x27;,
-    &#x27;Microsoft.MixedReality.Portal&#x27;,&#x27;Microsoft.People&#x27;,&#x27;Microsoft.PowerAutomateDesktop&#x27;,&#x27;Microsoft.SkypeApp&#x27;,&#x27;Microsoft.Teams&#x27;,
-    &#x27;Microsoft.WindowsAlarms&#x27;,&#x27;Microsoft.WindowsFeedbackHub&#x27;,&#x27;Microsoft.WindowsMaps&#x27;,&#x27;Microsoft.YourPhone&#x27;,&#x27;Microsoft.ZuneMusic&#x27;,
-    &#x27;Microsoft.ZuneVideo&#x27;,&#x27;MicrosoftCorporationII.MicrosoftFamily&#x27;,&#x27;MicrosoftCorporationII.QuickAssist&#x27;,&#x27;Microsoft.Todos&#x27;,
-    &#x27;Microsoft.Clipchamp&#x27;,&#x27;Microsoft.WindowsSoundRecorder&#x27;,&#x27;Microsoft.Paint&#x27;,&#x27;Microsoft.WebpImageExtension&#x27;,&#x27;Microsoft.HEIFImageExtension&#x27;,
-    &#x27;Microsoft.VP9VideoExtensions&#x27;,&#x27;Microsoft.XboxApp&#x27;,&#x27;Microsoft.Xbox.TCUI&#x27;,&#x27;Microsoft.XboxGameOverlay&#x27;,
-    &#x27;Microsoft.XboxGamingOverlay&#x27;,&#x27;Microsoft.XboxIdentityProvider&#x27;,&#x27;Microsoft.XboxSpeechToTextOverlay&#x27;,&#x27;Microsoft.GamingApp&#x27;
+#========================
+# PREPARACIÓN & VARIABLES
+#========================
+[CmdletBinding()] param(
+  [int]$LogRetentionDays = 7,
+  [switch]$Aggressive    # limpia Windows.old/$WINDOWS.~BT y Package Cache antiguo
 )
 
-$Global:OptionalWindowsFeaturesToRemove = @{
-    &quot;Internet Explorer (obsoleto)&quot; = &quot;Internet-Explorer-Optional-amd64&quot;;
-    &quot;Visor de XPS&quot; = &quot;XPS.Viewer-Optional-amd64&quot;;
-    &quot;Reproductor de Windows Media (Legacy)&quot; = &quot;WindowsMediaPlayer&quot;;
-    &quot;Cartera&quot; = &quot;App.Wallet&quot;;
-    &quot;Math Recognizer&quot; = &quot;MathRecognizer&quot;;
-    &quot;PowerShell v2 (obsoleto)&quot; = &quot;MicrosoftWindowsPowerShellV2&quot;;
-    &quot;SMBv1 (inseguro)&quot; = &quot;SMB1Protocol-Client&quot;
+# Admin check
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+  Write-Host "[!] Ejecuta PowerShell como ADMINISTRADOR." -ForegroundColor Red
+  return
 }
 
-$Global:TelemetryHosts = @(
-    &#x27;vortex.data.microsoft.com&#x27;,&#x27;vortex-win.data.microsoft.com&#x27;,&#x27;telemetry.microsoft.com&#x27;,
-    &#x27;watson.telemetry.microsoft.com&#x27;,&#x27;oca.telemetry.microsoft.com&#x27;,&#x27;settings-win.data.microsoft.com&#x27;,
-    &#x27;telemetry.remoteapp.microsoft.com&#x27;,&#x27;telemetry.urs.microsoft.com&#x27;,&#x27;events.data.microsoft.com&#x27;,
-    &#x27;v10.events.data.microsoft.com&#x27;,&#x27;watson.ppe.telemetry.microsoft.com&#x27;,&#x27;ssw.live.com&#x27;
-)
+# Silencio total de prompts/progreso
+$ProgressPreference = 'SilentlyContinue'
+$global:ConfirmPreference = 'None'
+$PSDefaultParameterValues['*:Confirm'] = $false
+$PSDefaultParameterValues['*:ErrorAction'] = 'SilentlyContinue'
 
-#endregion
+# Rutas seguras (NO se limpian)
+$Stamp      = Get-Date -Format 'yyyyMMdd-HHmmss'
+$BaseRoot   = "C:\ProgramData\SafePlus"
+$LogRoot    = Join-Path $BaseRoot "Logs"
+$SessionLog = Join-Path $LogRoot  ("SafePlus-{0}.log" -f $Stamp)
+$Quarantine = Join-Path $BaseRoot ("Quarantine-{0}" -f $Stamp)
 
-#region AUXILIARES
+#========================
+# UTILIDADES
+#========================
+function Ensure-Dir([string]$p){
+  if (-not (Test-Path $p)) { New-Item -Path $p -ItemType Directory -Force | Out-Null }
+}
+Ensure-Dir $BaseRoot; Ensure-Dir $LogRoot; Ensure-Dir $Quarantine
 
-function Write-Log {
-    param([Parameter(Mandatory)][string]$Message,[ValidateSet(&#x27;INFO&#x27;,&#x27;WARN&#x27;,&#x27;ERROR&#x27;,&#x27;SUCCESS&#x27;,&#x27;TITLE&#x27;,&#x27;STEP&#x27;,&#x27;INPUT&#x27;)][string]$Level=&#x27;INFO&#x27;)
-    $timestamp = Get-Date -Format &quot;HH:mm:ss&quot;
-    $formattedMessage = &quot;[$timestamp] [$Level] - $Message&quot;
-    $color = @{ INFO=&#x27;White&#x27;; WARN=&#x27;Yellow&#x27;; ERROR=&#x27;Red&#x27;; SUCCESS=&#x27;Green&#x27;; TITLE=&#x27;Cyan&#x27;; STEP=&#x27;Gray&#x27;; INPUT=&#x27;Magenta&#x27; }
-    Write-Host $formattedMessage -ForegroundColor $color[$Level]
-    Add-Content -Path $Global:LogFile -Value $formattedMessage
+function Write-Log{
+  param([string]$Message,[ValidateSet('INFO','WARN','ERROR','SUCCESS','TITLE','STEP')]$Level='INFO')
+  try { Ensure-Dir $LogRoot } catch {}
+  $ts = Get-Date -Format "HH:mm:ss"
+  $color = @{ INFO='White'; WARN='Yellow'; ERROR='Red'; SUCCESS='Green'; TITLE='Cyan'; STEP='Gray' }[$Level]
+  $line = "[{0}] [{1}] - {2}" -f $ts,$Level,$Message
+  Write-Host $line -ForegroundColor $color
+  try { Add-Content -Path $SessionLog -Value $line -Encoding UTF8 } catch {}
 }
 
-function Confirm-Action {
-    param([Parameter(Mandatory)][string]$Action,[string]$Default=&#x27;N&#x27;)
-    $choices = if ($Default -eq &#x27;S&#x27;) { &#x27;[S/n]&#x27; } else { &#x27;[s/N]&#x27; }
-    $response = Read-Host -Prompt &quot;-&gt; ¿Deseas $Action? $choices&quot;
-    if ([string]::IsNullOrEmpty($response)) { return $Default -eq &#x27;S&#x27; }
-    return $response -eq &#x27;s&#x27;
+function Try-Do([scriptblock]$sb){
+  try { & $sb } catch { Write-Log ('Excepción: {0}' -f $_.Exception.Message) 'WARN' }
 }
 
-function New-RestorePoint {
-    Write-Log &quot;Creando punto de restauración...&quot; -Level &quot;TITLE&quot;
-    if (Confirm-Action &quot;crear un punto de restauración del sistema (Recomendado)&quot; &#x27;S&#x27;) {
-        if ($PSCmdlet.ShouldProcess(&quot;Sistema Operativo&quot;,&quot;Crear Punto &#x27;Antes de Optimización v8.2&#x27;&quot;)) {
-            try { $null = Checkpoint-Computer -Description &quot;Antes de Optimización v8.2&quot; -ErrorAction Stop; Write-Log &quot;Punto de restauración creado.&quot; -Level &quot;SUCCESS&quot; }
-            catch { Write-Log &quot;Fallo al crear el punto de restauración. Verifica &#x27;Instantáneas de volumen&#x27;.&quot; -Level &quot;ERROR&quot; }
-        }
-    } else { Write-Log &quot;Punto de restauración omitido por el usuario.&quot; -Level &quot;WARN&quot; }
+function BytesToHuman([Int64]$b){
+  if($b -ge 1GB){ return ('{0:N2} GB' -f ($b/1GB)) }
+  elseif($b -ge 1MB){ return ('{0:N2} MB' -f ($b/1MB)) }
+  elseif($b -ge 1KB){ return ('{0:N2} KB' -f ($b/1KB)) }
+  else{ return ('{0} B' -f $b) }
 }
 
-function Backup-Registry {
-    param([Parameter(Mandatory)][string]$KeyPath)
-    $regPath = $KeyPath -replace &#x27;HKCU:&#x27;, &#x27;HKEY_CURRENT_USER&#x27; -replace &#x27;HKLM:&#x27;, &#x27;HKEY_LOCAL_MACHINE&#x27;
-    if (-not (Test-Path $regPath)) { Write-Log &quot;No existe &#x27;$regPath&#x27;. Sin backup necesario.&quot; -Level &quot;INFO&quot;; return }
-    $keyName = $KeyPath.Split(&#x27;\&#x27;)[-1]
-    $backupFile = Join-Path $Global:LogPath &quot;RegBackup-$keyName-$(Get-Date -Format &#x27;yyyyMMddHHmmss&#x27;).reg&quot;
-    if ($PSCmdlet.ShouldProcess($regPath,&quot;Exportar clave a &#x27;$backupFile&#x27;&quot;)) {
-        try { &amp; reg.exe export &quot;$regPath&quot; &quot;$backupFile&quot; /y; if ($LASTEXITCODE -eq 0) { $Global:Report.RegistryBackups.Add([pscustomobject]@{Key=$KeyPath;File=$backupFile}) | Out-Null; Write-Log &quot;Backup del registro: $backupFile&quot; -Level &quot;INFO&quot; } }
-        catch { Write-Log &quot;Error exportando &#x27;$KeyPath&#x27;.&quot; -Level &quot;ERROR&quot; }
-    }
+function Backup-Registry([string]$KeyPath){
+  # Exporta a .reg si existe
+  $regPath = $KeyPath -replace '^HKCU:', 'HKEY_CURRENT_USER' -replace '^HKLM:', 'HKEY_LOCAL_MACHINE'
+  if(-not (Test-Path $regPath)){ Write-Log ('Sin backup, no existe: {0}' -f $regPath) 'INFO'; return }
+  $safeName = ($KeyPath -replace '[:\\\/]','_')
+  $backupFile = Join-Path $Quarantine ("RegBackup-{0}.reg" -f $safeName)
+  Try-Do { & reg.exe export "$regPath" "$backupFile" /y | Out-Null; Write-Log ('Backup reg -> {0}' -f $backupFile) 'INFO' }
 }
 
-function Set-RegistryValue {
-    param([Parameter(Mandatory)][string]$Path,[Parameter(Mandatory)][string]$Name,[Parameter(Mandatory)]$Value,[Parameter(Mandatory)][Microsoft.Win32.RegistryValueKind]$Type)
-    if ($PSCmdlet.ShouldProcess($Path,&quot;Set &#x27;$Name&#x27; = &#x27;$Value&#x27;&quot;)) {
-        try {
-            if (-not (Test-Path $Path)) { New-Item -Path $Path -Force | Out-Null }
-            New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-Null
-            Write-Log &quot;Registro: $Path\$Name = $Value&quot; -Level &quot;SUCCESS&quot;
-            $Global:Report.RegistryChanges.Add(&quot;Set: $Path\$Name = $Value&quot;) | Out-Null
-        } catch { Write-Log &quot;Fallo al escribir $Path\$Name. $($_.Exception.Message)&quot; -Level &quot;ERROR&quot;; $script:hadError=$true }
-    }
+function Set-RegistryValue([string]$Path,[string]$Name,$Value,[Microsoft.Win32.RegistryValueKind]$Type){
+  Try-Do {
+    if(-not (Test-Path $Path)){ New-Item -Path $Path -Force | Out-Null }
+    New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-Null
+    Write-Log ('Registro: {0}\{1} = {2}' -f $Path,$Name,$Value) 'SUCCESS'
+  }
 }
 
-function Disable-OptionalFeature {
-    param([Parameter(Mandatory)][string]$FeatureDisplayName,[Parameter(Mandatory)][string]$FeatureId)
-    $feature = Get-WindowsOptionalFeature -Online -FeatureName $FeatureId
-    if ($feature -and $feature.State -ne &#x27;Disabled&#x27;) {
-        if ($PSCmdlet.ShouldProcess($FeatureId,&quot;Deshabilitar &#x27;$FeatureDisplayName&#x27;&quot;)) {
-            Disable-WindowsOptionalFeature -Online -FeatureName $FeatureId -NoRestart
-            $Global:Report.AppsRemoved.Add(&quot;Feature: $FeatureDisplayName&quot;) | Out-Null
-        }
-    } else { Write-Log &quot;Característica &#x27;$FeatureDisplayName&#x27; ausente o ya deshabilitada.&quot; -Level &quot;INFO&quot; }
-}
+# Borrado con control de directorios/archivos, sin prompts, y protegiendo rutas propias
+function Remove-PathContents {
+  param(
+    [Parameter(Mandatory)][string]$Path,
+    [string[]]$Include = @('*'),
+    [string[]]$Exclude = @(),
+    [switch]$IncludeDirs  # si true, borra directorios también (con -Recurse)
+  )
+  if(-not (Test-Path $Path)){ return 0L }
+  $freed = 0L
 
-#endregion
+  # PROTECCIÓN de nuestros directorios
+  $protect = @($BaseRoot.TrimEnd('\'), $LogRoot.TrimEnd('\'), $Quarantine.TrimEnd('\'))
 
-#region MÓDULOS
+  # Recolectar items
+  $items = @()
+  if ($IncludeDirs) {
+    # Directorios + archivos
+    $items = Get-ChildItem -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
+  } else {
+    # Solo archivos
+    $items = Get-ChildItem -LiteralPath $Path -Recurse -Force -File -ErrorAction SilentlyContinue
+  }
 
-function Start-Diagnostics {
-    Write-Log &quot;MÓDULO: Diagnóstico del Sistema&quot; -Level &quot;TITLE&quot;
-    $os = Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
-    Write-Log &quot;SO: $($os.WindowsProductName) v$($os.WindowsVersion) ($($os.OsArchitecture))&quot;
-    $disk = Get-CimInstance -ClassName Win32_LogicalDisk -Filter &quot;DeviceID=&#x27;C:&#x27;&quot;
-    Write-Log &quot;C: $([math]::Round($disk.FreeSpace/1GB,2)) GB libres de $([math]::Round($disk.Size/1GB,2)) GB&quot;
-    try { $trimStatus = fsutil.exe behavior query DisableDeleteNotify; Write-Log &quot;TRIM SSD: $(if ($trimStatus -match &#x27;DisableDeleteNotify = 0&#x27;) {&#x27;HABILITADO&#x27;} else {&#x27;DESHABILITADO&#x27;})&quot; } catch {}
-}
+  foreach($it in $items){
+    $full = $it.FullName.TrimEnd('\')
+    # No tocar lo nuestro
+    if ($protect | Where-Object { $full -like ("{0}*" -f $_) }) { continue }
+    # Filtro Include/Exclude por nombre
+    $name = $it.Name
+    $matchInclude = $false
+    foreach($pat in $Include){ if ($name -like $pat) { $matchInclude = $true; break } }
+    if (-not $matchInclude) { continue }
+    foreach($ex in $Exclude){ if ($name -like $ex) { $matchInclude = $false; break } }
+    if (-not $matchInclude) { continue }
 
-function Invoke-DeepCleanup {
-    Write-Log &quot;MÓDULO: Limpieza Profunda&quot; -Level &quot;TITLE&quot;
-    $initialFreeSpace = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter &quot;DeviceID=&#x27;C:&#x27;&quot;).FreeSpace
-
-    $cleanupTargets = @{
-        &quot;Temp Usuario&quot;      = @{ Path = &quot;$env:TEMP&quot; };
-        &quot;Temp Windows&quot;      = @{ Path = &quot;$env:SystemRoot\Temp&quot; };
-        &quot;Prefetch&quot;          = @{ Path = &quot;$env:SystemRoot\Prefetch&quot;; Include = &quot;*.pf&quot;; Exclude = &quot;Layout.ini&quot; };
-        &quot;WU Download&quot;       = @{ Path = &quot;$env:SystemRoot\SoftwareDistribution\Download&quot; };
-        &quot;Dumps Memoria&quot;     = @{ Path = @(&quot;$env:LOCALAPPDATA\CrashDumps&quot;,&quot;$env:SystemRoot\Minidump&quot;); Include = &quot;*.dmp&quot; };
-        &quot;Shaders NVIDIA&quot;    = @{ Path = &quot;$env:LOCALAPPDATA\NVIDIA\GLCache&quot; };
-        &quot;Shaders AMD&quot;       = @{ Path = &quot;$env:LOCALAPPDATA\AMD\DxCache&quot; };
-        &quot;Shaders DirectX&quot;   = @{ Path = &quot;$env:LOCALAPPDATA\D3DSCache&quot; };
-        &quot;Discord Cache&quot;     = @{ Path = &quot;$env:APPDATA\discord\Cache&quot; };
-        &quot;Steam Cache&quot;       = @{ Path = &quot;$env:LOCALAPPDATA\Steam\htmlcache&quot; };
-        &quot;VSCode Cache&quot;      = @{ Path = @(&quot;$env:APPDATA\Code\Cache&quot;,&quot;$env:APPDATA\Code\CachedData&quot;,&quot;$env:APPDATA\Code\GPUCache&quot;) }
-    }
-
-    foreach ($name in $cleanupTargets.Keys) {
-        $target = $cleanupTargets[$name]
-        foreach ($path in [array]$target.Path) {
-            if (Test-Path $path) {
-                Write-Log &quot;Limpiando &#x27;$name&#x27; -&gt; $path&quot; -Level &quot;STEP&quot;
-                $files = Get-ChildItem @target -Path $path -Recurse -Force
-                if ($files) { if ($PSCmdlet.ShouldProcess($path,&quot;Eliminar contenido&quot;)) { $files | Remove-Item -Recurse -Force } }
-            }
-        }
-    }
-
-    Write-Log &quot;Extras: Papelera, Store cache, WinSxS (StartComponentCleanup), DNS...&quot; -Level &quot;STEP&quot;
-    if ($PSCmdlet.ShouldProcess(&quot;RecycleBin&quot;,&quot;Vaciar&quot;)) { Clear-RecycleBin -Force }
-    if ($PSCmdlet.ShouldProcess(&quot;Microsoft Store&quot;,&quot;wsreset -s&quot;)) { &amp; wsreset.exe -s | Out-Null }
-    if ($PSCmdlet.ShouldProcess(&quot;WinSxS&quot;,&quot;StartComponentCleanup&quot;)) { &amp; dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Null }
-    if ($PSCmdlet.ShouldProcess(&quot;DNS&quot;,&quot;flush&quot;)) { ipconfig /flushdns | Out-Null }
-
-    Write-Log &quot;Miniaturas/Iconos...&quot; -Level &quot;STEP&quot;
-    if ($PSCmdlet.ShouldProcess(&quot;Explorer caches&quot;,&quot;reconstruir&quot;)) {
-        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-        Start-Sleep -Seconds 2
-        Get-ChildItem &quot;$env:LOCALAPPDATA\Microsoft\Windows\Explorer&quot; -Filter &quot;thumbcache_*.db&quot; -Force -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
-        Get-ChildItem &quot;$env:LOCALAPPDATA\IconCache.db&quot; -Force -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
-        Start-Process explorer.exe
-    }
-
-    $finalFreeSpace = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter &quot;DeviceID=&#x27;C:&#x27;&quot;).FreeSpace
-    $spaceFreedBytes = $finalFreeSpace - $initialFreeSpace
-    if ($spaceFreedBytes -lt 0) { $spaceFreedBytes = 0 } # clamp
-    $Global:Report.SpaceFreedBytes += $spaceFreedBytes
-    Write-Log &quot;Limpieza profunda: liberados $([math]::Round($spaceFreedBytes/1GB,2)) GB&quot; -Level &quot;SUCCESS&quot;
-}
-
-function Invoke-Debloat {
-    Write-Log &quot;MÓDULO: Desinstalación de Bloatware&quot; -Level &quot;TITLE&quot;
-    Write-Log &quot;Apps UWP preinstaladas (lista ampliada)...&quot; -Level &quot;STEP&quot;
-    foreach ($pattern in $Global:DefaultAppsToRemove) {
-        Get-AppxPackage -AllUsers | Where-Object { $_.Name -like &quot;*$pattern*&quot; } | ForEach-Object {
-            if ($PSCmdlet.ShouldProcess($_.Name,&quot;Desinstalar UWP&quot;)) {
-                try { $_ | Remove-AppxPackage -AllUsers -ErrorAction Stop; $Global:Report.AppsRemoved.Add($_.Name) | Out-Null }
-                catch { Write-Log &quot;Fallo al desinstalar $($_.Name)&quot; -Level &quot;ERROR&quot;; $script:hadError=$true }
-            }
-        }
-        Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like &quot;*$pattern*&quot; } | ForEach-Object {
-            if ($PSCmdlet.ShouldProcess($_.DisplayName,&quot;Desaprovisionar (nuevos usuarios)&quot;)) { $_ | Remove-AppxProvisionedPackage -Online | Out-Null }
-        }
-    }
-
-    Write-Log &quot;OneDrive...&quot; -Level &quot;STEP&quot;
-    if ($PSCmdlet.ShouldProcess(&quot;OneDrive&quot;,&quot;Desinstalar&quot;)) {
-        Stop-Process -Name OneDrive -Force -ErrorAction SilentlyContinue
-        $oneDriveSetup = &quot;$env:SystemRoot\SysWOW64\OneDriveSetup.exe&quot;
-        if (Test-Path $oneDriveSetup) {
-            Start-Process $oneDriveSetup &quot;/uninstall&quot; -Wait
-            $Global:Report.AppsRemoved.Add(&quot;OneDrive&quot;) | Out-Null
-            Remove-Item -Path &quot;$env:USERPROFILE\OneDrive&quot; -Recurse -Force -ErrorAction SilentlyContinue
-            Remove-Item -Path &quot;$env:LOCALAPPDATA\Microsoft\OneDrive&quot; -Recurse -Force -ErrorAction SilentlyContinue
-            Remove-Item -Path &quot;$env:PROGRAMDATA\Microsoft OneDrive&quot; -Recurse -Force -ErrorAction SilentlyContinue
-            &amp; reg.exe delete &quot;HKEY_CLASSES_ROOT\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}&quot; /f | Out-Null
-        }
-    }
-
-    Write-Log &quot;Características opcionales...&quot; -Level &quot;STEP&quot;
-    foreach ($featureName in $Global:OptionalWindowsFeaturesToRemove.Keys) {
-        if ($featureName -in @(&quot;PowerShell v2 (obsoleto)&quot;,&quot;SMBv1 (inseguro)&quot;)) { continue }
-        $featureId = $Global:OptionalWindowsFeaturesToRemove[$featureName]
-        Disable-OptionalFeature -FeatureDisplayName $featureName -FeatureId $featureId
-    }
-}
-
-function Invoke-SystemTweaks {
-    Write-Log &quot;MÓDULO: Ajustes de Rendimiento&quot; -Level &quot;TITLE&quot;
-
-    Write-Log &quot;Plan de energía &#x27;Máximo Rendimiento&#x27;...&quot; -Level &quot;STEP&quot;
+    # Sumar tamaño (archivos o tamaño total si es directorio)
     try {
-        $ultimateGuid = &quot;e9a42b02-d5df-448d-aa00-03f14749eb61&quot;
-        $highGuid     = &quot;8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c&quot;
-        $activated = $false
-
-        if ($PSCmdlet.ShouldProcess($ultimateGuid,&quot;Activar plan &#x27;Ultimate Performance&#x27;&quot;)) {
-            powercfg /setactive $ultimateGuid 2&gt;$null
-            if ($LASTEXITCODE -eq 0) { $activated = $true }
-        }
-        if (-not $activated) {
-            $dup = powercfg -duplicatescheme $ultimateGuid 2&gt;$null
-            $newGuid = ($dup | Select-String -Pattern &#x27;([0-9a-fA-F-]{36})&#x27; -AllMatches).Matches.Value | Select-Object -First 1
-            if ($newGuid) {
-                powercfg /setactive $newGuid 2&gt;$null
-                if ($LASTEXITCODE -eq 0) { $activated = $true }
-            }
-        }
-        if (-not $activated) {
-            powercfg /setactive $highGuid 2&gt;$null
-            if ($LASTEXITCODE -eq 0) { $activated = $true; Write-Log &quot;Plan &#x27;Alto rendimiento&#x27; activado como respaldo.&quot; -Level &quot;WARN&quot; }
-        }
-        if ($activated) { Write-Log &quot;Plan de energía activado.&quot; -Level &quot;SUCCESS&quot; } else { Write-Log &quot;No se pudo activar ningún plan. Continúo sin cambios.&quot; -Level &quot;WARN&quot; }
-    } catch {
-        Write-Log &quot;No se pudo configurar el plan de energía: $($_.Exception.Message)&quot; -Level &quot;WARN&quot;
-    }
-
-    Write-Log &quot;Game DVR / Barra Xbox...&quot; -Level &quot;STEP&quot;
-    Backup-Registry -KeyPath &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR&quot;
-    Set-RegistryValue &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR&quot; &quot;AppCaptureEnabled&quot; 0 &quot;DWord&quot;
-    Backup-Registry -KeyPath &quot;HKLM:\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR&quot;
-    Set-RegistryValue &quot;HKLM:\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR&quot; &quot;value&quot; 0 &quot;DWord&quot;
-
-    Write-Log &quot;Efectos visuales...&quot; -Level &quot;STEP&quot;
-    Backup-Registry -KeyPath &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects&quot;
-    Set-RegistryValue &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects&quot; &quot;VisualFXSetting&quot; 2 &quot;DWord&quot;
-    Backup-Registry -KeyPath &quot;HKCU:\Control Panel\Desktop&quot;
-    New-ItemProperty -Path &quot;HKCU:\Control Panel\Desktop&quot; -Name &quot;UserPreferencesMask&quot; -PropertyType Binary -Value ([byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00)) -Force | Out-Null
+      if ($it.PSIsContainer) {
+        $size = (Get-ChildItem -LiteralPath $full -Recurse -Force -File -EA SilentlyContinue | Measure-Object -Sum Length).Sum
+        if ($null -eq $size) { $size = 0 }
+        $freed += [int64]$size
+        Remove-Item -LiteralPath $full -Recurse -Force -ErrorAction SilentlyContinue -Confirm:$false
+      } else {
+        $freed += [int64]$it.Length
+        Remove-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue -Confirm:$false
+      }
+    } catch {}
+  }
+  return $freed
 }
 
-function Invoke-PrivacyAndSecurity {
-    Write-Log &quot;MÓDULO: Privacidad y Seguridad&quot; -Level &quot;TITLE&quot;
-
-    Write-Log &quot;Servicios de telemetría...&quot; -Level &quot;STEP&quot;
-    $servicesToDisable = @(&quot;DiagTrack&quot;,&quot;dmwappushservice&quot;,&quot;MapsBroker&quot;)
-    foreach ($serviceName in $servicesToDisable) {
-        $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
-        if ($service -and $service.StartType -ne &#x27;Disabled&#x27;) {
-            if ($PSCmdlet.ShouldProcess($serviceName,&quot;Deshabilitar servicio&quot;)) {
-                Set-Service -Name $serviceName -StartupType Disabled
-                Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
-                $Global:Report.ServicesChanged.Add(&quot;Disabled: $serviceName&quot;) | Out-Null
-            }
-        }
-    }
-
-    Write-Log &quot;hosts -&gt; bloquear dominios de telemetría...&quot; -Level &quot;STEP&quot;
-    $hostsPath = &quot;$env:SystemRoot\System32\drivers\etc\hosts&quot;
-    $backupFile = Join-Path $Global:LogPath &quot;hosts-backup-$(Get-Date -Format &#x27;yyyyMMddHHmmss&#x27;).txt&quot;
-    if ($PSCmdlet.ShouldProcess($hostsPath,&quot;Añadir dominios&quot;)) {
-        Copy-Item -Path $hostsPath -Destination $backupFile -Force
-        $Global:Report.HostFileBackups.Add($backupFile) | Out-Null
-        $currentHosts = Get-Content $hostsPath
-        $newEntries = $Global:TelemetryHosts | Where-Object { $currentHosts -notcontains &quot;0.0.0.0 $_&quot; } | ForEach-Object { &quot;0.0.0.0 $_&quot; }
-        if ($newEntries) { Add-Content -Path $hostsPath -Value $newEntries -Force }
-    }
-
-    Write-Log &quot;Fortalecimiento (SMBv1, PSv2, PUA)...&quot; -Level &quot;STEP&quot;
-    Disable-OptionalFeature -FeatureDisplayName &quot;SMBv1 (inseguro)&quot; -FeatureId $Global:OptionalWindowsFeaturesToRemove[&quot;SMBv1 (inseguro)&quot;]
-    Disable-OptionalFeature -FeatureDisplayName &quot;PowerShell v2 (obsoleto)&quot; -FeatureId $Global:OptionalWindowsFeaturesToRemove[&quot;PowerShell v2 (obsoleto)&quot;]
-    if ($PSCmdlet.ShouldProcess(&quot;Windows Defender&quot;,&quot;Habilitar protección PUA&quot;)) {
-        Set-MpPreference -PUAProtection Enabled
-        $Global:Report.SecurityChanges.Add(&quot;Enabled Defender PUA Protection&quot;) | Out-Null
-    }
+# Borrado por antigüedad (solo archivos)
+function Remove-OldFiles {
+  param(
+    [Parameter(Mandatory)][string]$Path,
+    [int]$OlderThanDays = 7,
+    [string[]]$Patterns = @('*')
+  )
+  if (-not (Test-Path $Path)) { return 0L }
+  $cut = (Get-Date).AddDays(-[math]::Abs($OlderThanDays))
+  $total = 0L
+  try {
+    Get-ChildItem -LiteralPath $Path -Recurse -Force -File -ErrorAction SilentlyContinue |
+      Where-Object { $_.LastWriteTime -lt $cut } |
+      ForEach-Object {
+        $fn = $_.Name
+        $ok = $false
+        foreach ($pat in $Patterns) { if ($fn -like $pat) { $ok = $true; break } }
+        if (-not $ok) { return }
+        # No tocar lo nuestro
+        $full = $_.FullName
+        if ($full -like ("{0}*" -f $BaseRoot)) { return }
+        $total += [int64]$_.Length
+        Remove-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue -Confirm:$false
+      }
+  } catch {}
+  return $total
 }
 
-function Invoke-UITweaks {
-    Write-Log &quot;MÓDULO: UI&quot; -Level &quot;TITLE&quot;
-
-    Write-Log &quot;Explorador de archivos...&quot; -Level &quot;STEP&quot;
-    $advPath = &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced&quot;
-    Backup-Registry -KeyPath $advPath
-    Set-RegistryValue $advPath &quot;HideFileExt&quot; 0 &quot;DWord&quot;
-    Set-RegistryValue $advPath &quot;Hidden&quot; 1 &quot;DWord&quot;
-    Set-RegistryValue $advPath &quot;LaunchTo&quot; 1 &quot;DWord&quot;
-
-    Write-Log &quot;Menú contextual clásico...&quot; -Level &quot;STEP&quot;
-    $menuPath = &quot;HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32&quot;
-    Backup-Registry -KeyPath &quot;HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}&quot;
-    if ($PSCmdlet.ShouldProcess($menuPath,&quot;Crear clave&quot;)) {
-        New-Item -Path $menuPath -Force | Out-Null
-        Set-ItemProperty -Path $menuPath -Name &quot;(Default)&quot; -Value &quot;&quot; -Force
-        Write-Log &quot;Menú clásico restaurado (reinicia explorer.exe si no aplica).&quot; -Level &quot;SUCCESS&quot;
-    }
-
-    Write-Log &quot;Barra de tareas...&quot; -Level &quot;STEP&quot;
-    Set-RegistryValue &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced&quot; &quot;TaskbarAl&quot; 0 &quot;DWord&quot;
-    Set-RegistryValue &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Shell\Feeds&quot; &quot;ShellFeedsTaskbarViewMode&quot; 2 &quot;DWord&quot;
+#========================
+# MÓDULOS
+#========================
+function Start-Diagnostics {
+  Write-Log "MÓDULO: Diagnóstico & Punto de restauración" 'TITLE'
+  Try-Do {
+    $os = Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
+    Write-Log ('SO: {0} v{1} ({2})' -f $os.WindowsProductName,$os.WindowsVersion,$os.OsArchitecture) 'INFO'
+  }
+  Try-Do {
+    $disk = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'"
+    Write-Log ('C: {0} libres de {1} GB' -f ([math]::Round($disk.FreeSpace/1GB,2)),[math]::Round($disk.Size/1GB,2)) 'INFO'
+  }
+  Try-Do {
+    Checkpoint-Computer -Description ("SafePlus-{0}" -f $Stamp) -ErrorAction SilentlyContinue
+    Write-Log "Punto de restauración solicitado (si está habilitado)." 'INFO'
+  }
 }
 
-function Invoke-StartupAppsOptimization {
-    Write-Log &quot;MÓDULO: Programas de Inicio&quot; -Level &quot;TITLE&quot;
-    $startupLocations = @(
-        &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Run&quot;,
-        &quot;HKLM:\Software\Microsoft\Windows\CurrentVersion\Run&quot;,
-        &quot;HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run&quot;,
-        &quot;$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup&quot;,
-        &quot;$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\StartUp&quot;
-    )
+function Invoke-MegaCleanup {
+  Write-Log "MÓDULO: Mega Limpieza (Safe, SSD-friendly)" 'TITLE'
+  $before = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
+  $freed = 0L
 
-    $toBackup = @(
-        &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Run&quot;,
-        &quot;HKLM:\Software\Microsoft\Windows\CurrentVersion\Run&quot;,
-        &quot;HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run&quot;
-    )
-    foreach ($k in $toBackup) { Backup-Registry -KeyPath $k }
+  Write-Log "Protegidos: $BaseRoot | $LogRoot | $Quarantine" 'STEP'
 
-    $startupItems = @{}
-    foreach ($location in $startupLocations) {
-        if (Test-Path $location) {
-            if ($location -like &quot;HK*:\*&quot;) {
-                Get-ItemProperty -Path $location | Get-Member -MemberType NoteProperty | ForEach-Object {
-                    $name = $_.Name
-                    if ($name -in &quot;PSPath&quot;,&quot;PSParentPath&quot;,&quot;PSChildName&quot;,&quot;PSDrive&quot;,&quot;PSProvider&quot;) { return }
-                    $value = (Get-ItemProperty -Path $location).&quot;$name&quot;
-                    if (-not $startupItems.ContainsKey($name)) { $startupItems[$name] = @{Path=$location; Value=$value; Kind=&quot;Reg&quot;} }
-                }
-            } else {
-                Get-ChildItem -Path $location -ErrorAction SilentlyContinue | ForEach-Object {
-                    if (-not $startupItems.ContainsKey($_.Name)) { $startupItems[$_.Name] = @{Path=$_.FullName; Value=$_.FullName; Kind=&quot;File&quot;} }
-                }
-            }
+  # 1) TEMP por usuario + UWP caches + Apps comunes + WebView2 + OneDrive logs
+  Write-Log "Usuarios: TEMP/INetCache/CrashDumps + UWP(LocalCache/TempState/AC) + Teams/Slack/Discord/Spotify + WebView2" 'STEP'
+  Try-Do {
+    $userRoots = Get-ChildItem 'C:\Users' -Directory -ErrorAction SilentlyContinue |
+                 Where-Object { $_.Name -notin @('Default','Default User','Public','All Users') }
+    foreach ($u in $userRoots) {
+      $usr = $u.FullName
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\Temp" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\Microsoft\Windows\INetCache" -f $usr) -IncludeDirs
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\CrashDumps" -f $usr)
+
+      $pkgRoot = ("{0}\AppData\Local\Packages" -f $usr)
+      if (Test-Path $pkgRoot) {
+        Get-ChildItem $pkgRoot -Directory -EA SilentlyContinue | ForEach-Object {
+          $freed += Remove-PathContents -Path ("{0}\LocalCache" -f $_.FullName)  -IncludeDirs
+          $freed += Remove-PathContents -Path ("{0}\TempState" -f $_.FullName)   -IncludeDirs
+          $freed += Remove-PathContents -Path ("{0}\AC" -f $_.FullName)          -IncludeDirs
         }
+      }
+
+      # Teams / Slack / Discord / Spotify
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Microsoft\Teams\Cache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Microsoft\Teams\Code Cache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Microsoft\Teams\GPUCache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Microsoft\Teams\Service Worker\CacheStorage" -f $usr) -IncludeDirs
+
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Slack\Cache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Slack\Code Cache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Slack\GPUCache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Slack\Service Worker\CacheStorage" -f $usr) -IncludeDirs
+
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Spotify\Storage" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Roaming\Spotify\Data" -f $usr)
+
+      # WebView2
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\Cache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\Code Cache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\GPUCache" -f $usr)
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\Service Worker\CacheStorage" -f $usr) -IncludeDirs
+
+      # OneDrive logs
+      $freed += Remove-PathContents -Path ("{0}\AppData\Local\Microsoft\OneDrive\logs" -f $usr)
     }
+  }
 
-    if ($startupItems.Count -eq 0) { Write-Log &quot;Sin programas de inicio en rutas comunes.&quot; -Level &quot;INFO&quot;; return }
-    Write-Log &quot;Programas detectados al inicio:&quot; -Level &quot;INFO&quot;
-    $startupItems.GetEnumerator() | Sort-Object Name | ForEach-Object { Write-Host &quot; - $($_.Name)&quot; }
+  # 2) Prefetch *.pf (mantiene Layout.ini) + GPU caches globales
+  $freed += Remove-PathContents -Path "$env:SystemRoot\Prefetch" -Include @('*.pf') -Exclude @('Layout.ini')
+  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\NVIDIA\GLCache" -IncludeDirs
+  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\AMD\DxCache"   -IncludeDirs
+  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\D3DSCache"     -IncludeDirs
 
-    foreach ($kvp in $startupItems.GetEnumerator()) {
-        $name=$kvp.Key; $info=$kvp.Value
-        if ($info.Value -match &#x27;(?i)\\Microsoft\\|Windows Defender|OneDrive|SecurityHealth|Windows Security&#x27;) { continue }
+  # 3) Windows Update / Delivery Optimization
+  Write-Log "Windows Update cache + Delivery Optimization" 'STEP'
+  $freed += Remove-PathContents -Path "$env:SystemRoot\SoftwareDistribution\Download" -IncludeDirs
+  Try-Do { Stop-Service -Name DoSvc -Force -EA SilentlyContinue }
+  $freed += Remove-PathContents -Path "$env:ProgramData\Microsoft\Windows\DeliveryOptimization\Cache" -IncludeDirs
+  Try-Do { Start-Service -Name DoSvc -EA SilentlyContinue }
 
-        if ($info.Kind -eq &quot;Reg&quot;) {
-            if ($PSCmdlet.ShouldProcess(&quot;$($info.Path)\$name&quot;,&quot;Eliminar entrada de inicio&quot;)) {
-                try {
-                    Remove-ItemProperty -Path $info.Path -Name $name -Force -ErrorAction Stop
-                    $Global:Report.StartupItems.Add(&quot;Disabled: $name&quot;) | Out-Null
-                } catch {
-                    Write-Log &quot;[SKIP] No se pudo deshabilitar &#x27;$name&#x27; en $($info.Path): $($_.Exception.Message)&quot; -Level &quot;WARN&quot;
-                    $Global:Report.StartupItems.Add(&quot;Skipped: $name&quot;) | Out-Null
-                }
-            }
-        } else {
-            if (Test-Path $info.Path) {
-                if ($PSCmdlet.ShouldProcess($info.Path,&quot;Mover acceso directo .lnk a backup&quot;)) {
-                    try {
-                        $dest = Join-Path $Global:LogPath (&quot;disabled-startup-&quot; + [io.path]::GetFileName($info.Path))
-                        Move-Item $info.Path $dest -Force -ErrorAction Stop
-                        $Global:Report.StartupItems.Add(&quot;Moved shortcut: $name&quot;) | Out-Null
-                    } catch {
-                        Write-Log &quot;[SKIP] No se pudo mover &#x27;$name&#x27;: $($_.Exception.Message)&quot; -Level &quot;WARN&quot;
-                        $Global:Report.StartupItems.Add(&quot;Skipped: $name&quot;) | Out-Null
-                    }
-                }
-            }
+  # 4) WER y dumps
+  $freed += Remove-PathContents -Path "$env:ProgramData\Microsoft\Windows\WER\ReportQueue"   -IncludeDirs
+  $freed += Remove-PathContents -Path "$env:ProgramData\Microsoft\Windows\WER\ReportArchive" -IncludeDirs
+  $freed += Remove-PathContents -Path "$env:SystemRoot\Minidump" -Include @('*.dmp')
+  if (Test-Path "$env:SystemRoot\MEMORY.DMP") {
+    Try-Do {
+      $f = Get-Item "$env:SystemRoot\MEMORY.DMP" -EA SilentlyContinue
+      if ($f) {
+        $freed += [int64]$f.Length
+        Remove-Item -LiteralPath $f.FullName -Force -EA SilentlyContinue -Confirm:$false
+      }
+    }
+  }
+
+  # 5) Logs viejos del sistema
+  Write-Log ("Purgando logs del sistema >= {0} días" -f $LogRetentionDays) 'STEP'
+  $freed += Remove-OldFiles -Path "$env:SystemRoot\Logs\CBS"     -OlderThanDays $LogRetentionDays -Patterns @('*.log','*.cab')
+  $freed += Remove-OldFiles -Path "$env:SystemRoot\Logs\DISM"    -OlderThanDays $LogRetentionDays -Patterns @('*.log','*.cab')
+  $freed += Remove-OldFiles -Path "$env:SystemRoot\Logs\MoSetup" -OlderThanDays $LogRetentionDays
+  $freed += Remove-OldFiles -Path "$env:SystemRoot\Panther"      -OlderThanDays $LogRetentionDays
+  $freed += Remove-OldFiles -Path "$env:SystemRoot\System32\LogFiles\WMI"  -OlderThanDays $LogRetentionDays
+  $freed += Remove-OldFiles -Path "$env:SystemRoot\System32\LogFiles\BITS" -OlderThanDays $LogRetentionDays
+
+  # 6) Defender logs (no definiciones)
+  $freed += Remove-OldFiles -Path "$env:ProgramData\Microsoft\Windows Defender\Support" -OlderThanDays $LogRetentionDays -Patterns @('*.log','*.etl')
+
+  # 7) Miniaturas/Iconos + FontCache
+  Try-Do {
+    Stop-Process -Name explorer -Force -EA SilentlyContinue
+    $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\Microsoft\Windows\Explorer" -Include @('thumbcache_*.db')
+    $freed += Remove-PathContents -Path "$env:LOCALAPPDATA" -Include @('IconCache.db')
+    Start-Process explorer.exe
+  }
+  Try-Do {
+    Stop-Service -Name "FontCache" -Force -EA SilentlyContinue
+    $freed += Remove-PathContents -Path "$env:SystemRoot\ServiceProfiles\LocalService\AppData\Local" -Include @('FontCache*')
+    $freed += Remove-PathContents -Path "$env:LOCALAPPDATA" -Include @('FontCache*')
+    Start-Service -Name "FontCache" -EA SilentlyContinue
+  }
+
+  # 8) .NET Temporary ASP.NET Files
+  $freed += Remove-PathContents -Path "$env:SystemRoot\Microsoft.NET\Framework*\v*\Temporary ASP.NET Files"    -IncludeDirs
+  $freed += Remove-PathContents -Path "$env:SystemRoot\Microsoft.NET\Framework64*\v*\Temporary ASP.NET Files"  -IncludeDirs
+
+  # 9) Downloaded Program Files
+  $freed += Remove-PathContents -Path "$env:SystemRoot\Downloaded Program Files" -IncludeDirs
+
+  # 10) Papelera + DNS
+  Try-Do { Clear-RecycleBin -Force }
+  Try-Do { ipconfig /flushdns | Out-Null }
+
+  # 11) OPCIONAL AGRESIVO
+  if ($Aggressive.IsPresent) {
+    Write-Log "AGRESIVO: Windows.old / \$WINDOWS.~BT / \$WINDOWS.~WS y Package Cache antiguo…" 'WARN'
+    foreach ($cand in @("C:\Windows.old","C:\$WINDOWS.~BT","C:\$WINDOWS.~WS")) {
+      if (Test-Path $cand) {
+        Try-Do {
+          $sz = (Get-ChildItem -LiteralPath $cand -Recurse -Force -File -EA SilentlyContinue | Measure-Object -Sum Length).Sum
+          if ($null -eq $sz) { $sz = 0 }
+          Remove-Item -LiteralPath $cand -Recurse -Force -EA SilentlyContinue -Confirm:$false
+          $freed += [int64]$sz
         }
+      }
     }
-    Write-Log &quot;Elementos de inicio no-Microsoft deshabilitados (cuando fue posible).&quot; -Level &quot;SUCCESS&quot;
+    $vsCache = "C:\ProgramData\Package Cache"
+    if (Test-Path $vsCache) {
+      $freed += Remove-OldFiles -Path $vsCache -OlderThanDays $LogRetentionDays
+    }
+  }
+
+  $after = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
+  $delta = $after - $before
+  if ($delta -lt 0) { $delta = $freed }
+  Write-Log ("MEGA Limpieza: {0}" -f (BytesToHuman $delta)) 'SUCCESS'
+}
+
+function Invoke-BrowserCleanup {
+  Write-Log "MÓDULO: Navegadores (caches)" 'TITLE'
+  $targets = @(
+    @{Name="Chrome";  Paths=@("$env:LOCALAPPDATA\Google\Chrome\User Data\*\Cache","$env:LOCALAPPDATA\Google\Chrome\User Data\*\Code Cache","$env:LOCALAPPDATA\Google\Chrome\User Data\*\GPUCache","$env:LOCALAPPDATA\Google\Chrome\User Data\*\Service Worker\CacheStorage")},
+    @{Name="Edge";    Paths=@("$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Cache","$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Code Cache","$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\GPUCache","$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Service Worker\CacheStorage")},
+    @{Name="Firefox"; Paths=@("$env:APPDATA\Mozilla\Firefox\Profiles\*\cache2","$env:LOCALAPPDATA\Mozilla\Firefox\Profiles\*\cache2")},
+    @{Name="Brave";   Paths=@("$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Cache","$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Code Cache","$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\GPUCache")},
+    @{Name="Opera";   Paths=@("$env:APPDATA\Opera Software\Opera GX Stable\Cache","$env:APPDATA\Opera Software\Opera Stable\Cache")}
+  )
+  foreach($t in $targets){
+    foreach($p in $t.Paths){ Remove-PathContents -Path $p -IncludeDirs | Out-Null }
+    Write-Log ("Caché de {0} limpia." -f $t.Name) 'SUCCESS'
+  }
+}
+
+function Invoke-StartupSafe {
+  Write-Log "MÓDULO: Inicio (deshabilitado seguro + cuarentena)" 'TITLE'
+  $BIN_DISABLED = [byte[]](0x02,0,0,0,0,0,0,0)
+  $SA_KEYS = @(
+    'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run',
+    'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32',
+    'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\StartupFolder',
+    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run',
+    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32'
+  )
+  foreach($k in $SA_KEYS){ if(-not (Test-Path $k)){ New-Item -Path $k -Force | Out-Null } }
+
+  $RUN_KEYS = @(
+    'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run',
+    'HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce',
+    'HKLM:\Software\Microsoft\Windows\CurrentVersion\Run',
+    'HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce',
+    'HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run',
+    'HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnce'
+  )
+  $STARTUP_FOLDERS = @(
+    [Environment]::GetFolderPath('Startup'),
+    "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\StartUp"
+  )
+  $ProtectedRegex = '(?i)(\\Microsoft\\|Windows\s*Defender|SecurityHealth|Windows\s*Security|OneDrive)'
+
+  $candidates = New-Object System.Collections.Generic.List[object]
+
+  foreach($key in $RUN_KEYS){
+    if(-not (Test-Path $key)){ continue }
+    Backup-Registry $key
+    Try-Do {
+      $item = Get-Item $key -EA SilentlyContinue
+      foreach($name in ($item.Property | Where-Object { $_ -and $_ -ne '(default)' })){
+        $val = (Get-ItemProperty -Path $key -Name $name -EA SilentlyContinue).$name
+        if([string]::IsNullOrWhiteSpace([string]$val)){ continue }
+        if(([string]$val) -match $ProtectedRegex){ continue }
+        $candidates.Add([pscustomobject]@{Kind='Reg'; Key=$key; Name=$name; Value=[string]$val}) | Out-Null
+      }
+    }
+  }
+
+  foreach($dir in $STARTUP_FOLDERS){
+    if(-not (Test-Path $dir)){ continue }
+    Try-Do {
+      Get-ChildItem -LiteralPath $dir -File -EA SilentlyContinue | ForEach-Object {
+        if($_.FullName -match $ProtectedRegex){ return }
+        $candidates.Add([pscustomobject]@{Kind='File'; Path=$_.FullName; Name=$_.Name}) | Out-Null
+      }
+    }
+  }
+
+  # Marcar Disabled en StartupApproved por nombre
+  function _SA_DisableName([string]$n){
+    foreach($k in $SA_KEYS){
+      Try-Do { New-ItemProperty -Path $k -Name $n -Value $BIN_DISABLED -PropertyType Binary -Force | Out-Null }
+    }
+  }
+  foreach($it in $candidates){ _SA_DisableName $it.Name }
+
+  # Eliminar Run/RunOnce y mover accesos
+  $removed=0; $moved=0
+  foreach($it in $candidates){
+    if($it.Kind -eq 'Reg'){
+      Try-Do { Remove-ItemProperty -Path $it.Key -Name $it.Name -Force -EA Stop -Confirm:$false; $removed++ }
+    } else {
+      if(Test-Path $it.Path){
+        $dest = Join-Path $Quarantine ([IO.Path]::GetFileName($it.Path))
+        Try-Do { Move-Item -LiteralPath $it.Path -Destination $dest -Force -EA Stop; $moved++ }
+      }
+    }
+  }
+  Write-Log ("Inicio deshabilitado. Reg eliminados: {0} | Accesos movidos: {1}" -f $removed,$moved) 'SUCCESS'
+}
+
+function Invoke-ServicesSafe {
+  Write-Log "MÓDULO: Servicios (perfil seguro)" 'TITLE'
+  foreach($s in @('SysMain','DiagTrack')){
+    Try-Do { Stop-Service -Name $s -Force -EA SilentlyContinue }
+    Try-Do { Set-Service -Name $s -StartupType Disabled }
+  }
+  Try-Do { Set-Service -Name 'WSearch' -StartupType Manual }
+  foreach($sx in @('XblAuthManager','XblGameSave','XboxGipSvc','XboxNetApiSvc')){
+    Try-Do { Set-Service -Name $sx -StartupType Manual }
+  }
+  Try-Do { Set-Service -Name 'RemoteRegistry' -StartupType Disabled }
+  Write-Log "Servicios ajustados (seguros)." 'SUCCESS'
+}
+
+function Invoke-NetworkSafe {
+  Write-Log "MÓDULO: Red segura & Delivery Optimization" 'TITLE'
+  $doPath="HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization"
+  Backup-Registry $doPath
+  Set-RegistryValue $doPath "DODownloadMode" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)  # HTTP only
+
+  $dnsCli="HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient"
+  Backup-Registry $dnsCli
+  Set-RegistryValue $dnsCli "EnableMulticast" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)  # LLMNR off
+
+  Try-Do { netsh winsock reset | Out-Null }
+  Try-Do { netsh int ip reset | Out-Null }
+  Write-Log "Red endurecida y DO configurado." 'SUCCESS'
+}
+
+function Invoke-EdgePolicies {
+  Write-Log "MÓDULO: Microsoft Edge (políticas)" 'TITLE'
+  $hkcu="HKCU:\Software\Microsoft\Edge"
+  $hklm="HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+  Backup-Registry $hkcu; Backup-Registry $hklm
+  Set-RegistryValue $hkcu "StartupBoostEnabled"   0 ([Microsoft.Win32.RegistryValueKind]::DWord)
+  Set-RegistryValue $hkcu "BackgroundModeEnabled" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)
+  Set-RegistryValue $hklm "StartupBoostEnabled"   0 ([Microsoft.Win32.RegistryValueKind]::DWord)
+  Set-RegistryValue $hklm "BackgroundModeEnabled" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)
+  Set-RegistryValue $hklm "MetricsReportingEnabled" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)
+  Set-RegistryValue $hklm "HideFirstRunExperience"  1 ([Microsoft.Win32.RegistryValueKind]::DWord)
+  Set-RegistryValue $hklm "NewTabPagePrerenderEnabled" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)
+  Write-Log "Edge ajustado." 'SUCCESS'
+}
+
+function Invoke-SSDOptimize {
+  Write-Log "MÓDULO: SSD (Hibernación OFF + ReTRIM)" 'TITLE'
+  Try-Do { powercfg /h off | Out-Null }
+  Try-Do { Optimize-Volume -DriveLetter C -ReTrim -Verbose | Out-Null }
+  Try-Do { dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Null } # seguro (no /ResetBase)
+  Write-Log "Hibernación deshabilitada, TRIM ejecutado y WinSxS limpiado." 'SUCCESS'
+}
+
+function Invoke-ScheduledTasksSafe {
+  Write-Log "MÓDULO: Tareas programadas (CEIP/Xbl/RetailDemo)" 'TITLE'
+  $tasks = @(
+    "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator",
+    "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip",
+    "\Microsoft\Windows\Customer Experience Improvement Program\KernelCeipTask",
+    "\Microsoft\XblGameSave\XblGameSaveTask",
+    "\Microsoft\XblGameSave\XblGameSaveTaskLogon",
+    "\Microsoft\Windows\RetailDemo\CleanupOfflineContent"
+  )
+  foreach($t in $tasks){
+    Try-Do {
+      $taskPath = (Split-Path $t -Parent) + "\"
+      $taskName = Split-Path $t -Leaf
+      Disable-ScheduledTask -TaskPath $taskPath -TaskName $taskName -EA SilentlyContinue | Out-Null
+      schtasks /change /TN $t /DISABLE | Out-Null
+    }
+  }
+  Write-Log "Tareas típicas deshabilitadas." 'SUCCESS'
 }
 
 function Run-IntegrityChecks {
-    Write-Log &quot;MÓDULO: Integridad del Sistema&quot; -Level &quot;TITLE&quot;
-    if ($PSCmdlet.ShouldProcess(&quot;sfc.exe&quot;,&quot;/scannow&quot;)) { sfc.exe /scannow | Out-Null; $sfcStatus = if ($LASTEXITCODE -eq 0) {&#x27;OK&#x27;} else {&#x27;Problemas&#x27;}; Write-Log &quot;SFC: $sfcStatus&quot; -Level $(if ($sfcStatus -eq &#x27;OK&#x27;) {&#x27;SUCCESS&#x27;} else {&#x27;ERROR&#x27;}); $Global:Report.SystemChecks.Add(&quot;SFC: $sfcStatus&quot;) | Out-Null }
-    if ($PSCmdlet.ShouldProcess(&quot;dism.exe&quot;,&quot;/Online /Cleanup-Image /RestoreHealth&quot;)) { dism.exe /Online /Cleanup-Image /RestoreHealth | Out-Null; $dismStatus = if ($LASTEXITCODE -eq 0) {&#x27;OK&#x27;} else {&#x27;Advertencias/Errores&#x27;}; Write-Log &quot;DISM: $dismStatus&quot; -Level $(if ($dismStatus -eq &#x27;OK&#x27;) {&#x27;SUCCESS&#x27;} else {&#x27;WARN&#x27;}); $Global:Report.SystemChecks.Add(&quot;DISM: $dismStatus&quot;) | Out-Null }
+  Write-Log "MÓDULO: Integridad (SFC/DISM) – puede tardar" 'TITLE'
+  Try-Do { sfc.exe /scannow | Out-Null }
+  Try-Do { dism.exe /Online /Cleanup-Image /RestoreHealth | Out-Null }
+  Write-Log "Comprobación de sistema finalizada." 'SUCCESS'
 }
 
-function Invoke-BrowserCacheCleanup {
-    Write-Log &quot;MÓDULO: Limpieza de Navegadores&quot; -Level &quot;TITLE&quot;
-    $targets = @(
-        @{Name=&quot;Chrome&quot;; Paths=@(&quot;$env:LOCALAPPDATA\Google\Chrome\User Data\*\Cache&quot;,&quot;$env:LOCALAPPDATA\Google\Chrome\User Data\*\Code Cache&quot;,&quot;$env:LOCALAPPDATA\Google\Chrome\User Data\*\GPUCache&quot;,&quot;$env:LOCALAPPDATA\Google\Chrome\User Data\*\Service Worker\CacheStorage&quot;) },
-        @{Name=&quot;Edge&quot;; Paths=@(&quot;$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Cache&quot;,&quot;$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Code Cache&quot;,&quot;$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\GPUCache&quot;,&quot;$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Service Worker\CacheStorage&quot;) },
-        @{Name=&quot;Firefox&quot;; Paths=@(&quot;$env:APPDATA\Mozilla\Firefox\Profiles\*\cache2&quot;,&quot;$env:LOCALAPPDATA\Mozilla\Firefox\Profiles\*\cache2&quot;) },
-        @{Name=&quot;Brave&quot;; Paths=@(&quot;$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Cache&quot;,&quot;$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Code Cache&quot;,&quot;$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\GPUCache&quot;) },
-        @{Name=&quot;Opera&quot;; Paths=@(&quot;$env:APPDATA\Opera Software\Opera GX Stable\Cache&quot;,&quot;$env:APPDATA\Opera Software\Opera Stable\Cache&quot;) }
-    )
-    foreach ($t in $targets) {
-        foreach ($p in $t.Paths) {
-            Get-ChildItem -Path $p -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-        }
-        Write-Log &quot;Caché de $($t.Name) limpiada.&quot; -Level &quot;SUCCESS&quot;
-    }
-}
+#========================
+# EJECUCIÓN
+#========================
+$start = Get-Date
+Write-Log "SafePlus (SSD) iniciando…" 'TITLE'
 
-function Invoke-NetworkOptimizations {
-    Write-Log &quot;MÓDULO: Red y Delivery Optimization&quot; -Level &quot;TITLE&quot;
+Start-Diagnostics
+Invoke-MegaCleanup
+Invoke-BrowserCleanup
+Invoke-StartupSafe
+Invoke-ServicesSafe
+Invoke-NetworkSafe
+Invoke-EdgePolicies
+Invoke-SSDOptimize
+Invoke-ScheduledTasksSafe
+Run-IntegrityChecks
 
-    Write-Log &quot;Delivery Optimization (sin P2P)...&quot; -Level &quot;STEP&quot;
-    $doPath = &quot;HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization&quot;
-    Backup-Registry -KeyPath $doPath
-    Set-RegistryValue $doPath &quot;DODownloadMode&quot; 0 &quot;DWord&quot;
-    $Global:Report.NetworkChanges.Add(&quot;DeliveryOptimization: HTTP only&quot;) | Out-Null
-
-    Write-Log &quot;Winsock/IP reset (opcional)...&quot; -Level &quot;STEP&quot;
-    if ($env:CI -ne &quot;true&quot;) {
-        if ($PSCmdlet.ShouldProcess(&quot;netsh winsock&quot;,&quot;reset&quot;)) { netsh winsock reset | Out-Null }
-        if ($PSCmdlet.ShouldProcess(&quot;netsh int ip&quot;,&quot;reset&quot;)) { netsh int ip reset | Out-Null }
-        Write-Log &quot;Winsock/IP reseteados. Reinicia el equipo si los usaste.&quot; -Level &quot;SUCCESS&quot;
-    }
-}
-
-function Invoke-SystemFootprint {
-    Write-Log &quot;MÓDULO: Hibernación y Huella del Sistema&quot; -Level &quot;TITLE&quot;
-    if ($PSCmdlet.ShouldProcess(&quot;powercfg&quot;,&quot;/h off&quot;)) { powercfg /h off | Out-Null; $Global:Report.DiskActions.Add(&quot;Hibernación deshabilitada&quot;) | Out-Null; Write-Log &quot;Hibernación deshabilitada.&quot; -Level &quot;SUCCESS&quot; }
-    Write-Log &quot;Analizar almacén de componentes (WinSxS)...&quot; -Level &quot;STEP&quot;
-    &amp; dism.exe /Online /Cleanup-Image /AnalyzeComponentStore | Out-Null
-}
-
-function Invoke-DiskOptimize {
-    Write-Log &quot;MÓDULO: Optimización de Disco&quot; -Level &quot;TITLE&quot;
-    try { $media = (Get-PhysicalDisk | Select-Object -First 1).MediaType } catch { $media = &#x27;Unknown&#x27; }
-    if ($media -eq &#x27;SSD&#x27; -or $media -eq &#x27;Unspecified&#x27; -or $media -eq &#x27;Unknown&#x27;) {
-        if ($PSCmdlet.ShouldProcess(&quot;C:&quot;,&quot;ReTrim SSD&quot;)) { Optimize-Volume -DriveLetter C -ReTrim -Verbose | Out-Null; $Global:Report.DiskActions.Add(&quot;ReTrim C:&quot;) | Out-Null; Write-Log &quot;SSD: ReTrim ejecutado.&quot; -Level &quot;SUCCESS&quot; }
-    } else {
-        if ($PSCmdlet.ShouldProcess(&quot;C:&quot;,&quot;Defrag/Optimize&quot;)) { Optimize-Volume -DriveLetter C -Defrag -Verbose | Out-Null; $Global:Report.DiskActions.Add(&quot;Defrag C:&quot;) | Out-Null; Write-Log &quot;HDD: Desfragmentación ejecutada.&quot; -Level &quot;SUCCESS&quot; }
-    }
-}
-
-function Invoke-EdgeTweaks {
-    Write-Log &quot;MÓDULO: Microsoft Edge&quot; -Level &quot;TITLE&quot;
-    $pathHKCU = &quot;HKCU:\Software\Microsoft\Edge&quot;
-    $pathHKLM = &quot;HKLM:\SOFTWARE\Policies\Microsoft\Edge&quot;
-    Backup-Registry -KeyPath $pathHKCU
-    Backup-Registry -KeyPath $pathHKLM
-    Set-RegistryValue $pathHKCU &quot;StartupBoostEnabled&quot; 0 &quot;DWord&quot;
-    Set-RegistryValue $pathHKCU &quot;BackgroundModeEnabled&quot; 0 &quot;DWord&quot;
-    Set-RegistryValue $pathHKLM &quot;StartupBoostEnabled&quot; 0 &quot;DWord&quot;
-    Set-RegistryValue $pathHKLM &quot;BackgroundModeEnabled&quot; 0 &quot;DWord&quot;
-}
-
-function Invoke-ScheduledTasksTweaks {
-    Write-Log &quot;MÓDULO: Tareas Programadas&quot; -Level &quot;TITLE&quot;
-    $tasks = @(
-        &quot;\Microsoft\Windows\Customer Experience Improvement Program\Consolidator&quot;,
-        &quot;\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip&quot;,
-        &quot;\Microsoft\Windows\Customer Experience Improvement Program\KernelCeipTask&quot;,
-        &quot;\Microsoft\XblGameSave\XblGameSaveTask&quot;,
-        &quot;\Microsoft\XblGameSave\XblGameSaveTaskLogon&quot;
-    )
-    foreach ($t in $tasks) {
-        $taskPath = (Split-Path $t -Parent) + &quot;\&quot;
-        $taskName = Split-Path $t -Leaf
-        if ($PSCmdlet.ShouldProcess($t,&quot;Deshabilitar tarea&quot;)) {
-            try { Disable-ScheduledTask -TaskPath $taskPath -TaskName $taskName -ErrorAction SilentlyContinue | Out-Null } catch {}
-            try { schtasks /change /TN $t /DISABLE | Out-Null } catch {}
-            $Global:Report.TasksChanged.Add(&quot;Disabled: $t&quot;) | Out-Null
-        }
-    }
-}
-
-function Invoke-ContentAndBackgroundAppTweaks {
-    Write-Log &quot;MÓDULO: Sugerencias y Apps en segundo plano&quot; -Level &quot;TITLE&quot;
-
-    Write-Log &quot;Sugerencias/Contenido recomendado...&quot; -Level &quot;STEP&quot;
-    $cdm = &quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager&quot;
-    Backup-Registry -KeyPath $cdm
-    $pairs = @{
-        &quot;ContentDeliveryAllowed&quot;=0; &quot;OemPreInstalledAppsEnabled&quot;=0; &quot;PreInstalledAppsEnabled&quot;=0;
-        &quot;SilentInstalledAppsEnabled&quot;=0; &quot;SubscribedContent-338388Enabled&quot;=0; &quot;SubscribedContent-338389Enabled&quot;=0;
-        &quot;SubscribedContent-353694Enabled&quot;=0; &quot;SubscribedContent-353696Enabled&quot;=0; &quot;SystemPaneSuggestionsEnabled&quot;=0
-    }
-    foreach ($k in $pairs.Keys) { Set-RegistryValue $cdm $k $pairs[$k] &quot;DWord&quot; }
-
-    Write-Log &quot;Apps UWP en 2º plano...&quot; -Level &quot;STEP&quot;
-    $appPriv = &quot;HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy&quot;
-    Backup-Registry -KeyPath $appPriv
-    Set-RegistryValue $appPriv &quot;LetAppsRunInBackground&quot; 2 &quot;DWord&quot; # 2 = Force Deny
-}
-
-# [14] Servicios agresivos (opcional y reversible)
-function Invoke-AggressiveServices {
-    Write-Log &quot;MÓDULO: Servicios agresivos (opcional)&quot; -Level &quot;TITLE&quot;
-    $choices = @(
-        @{Name=&#x27;SysMain (Superfetch)&#x27;; Service=&#x27;SysMain&#x27;},
-        @{Name=&#x27;Windows Search (Indexado)&#x27;; Service=&#x27;WSearch&#x27;},
-        @{Name=&#x27;Connected User Experiences / Telemetry&#x27;; Service=&#x27;DiagTrack&#x27;}
-    )
-
-    foreach ($c in $choices) {
-        $svc = Get-Service -Name $c.Service -ErrorAction SilentlyContinue
-        if (-not $svc) { Write-Log &quot;Servicio no encontrado: $($c.Name)&quot; -Level &quot;WARN&quot;; continue }
-        $actionDisable = &quot;deshabilitar el servicio &#x27;$($c.Name)&#x27; (detener y startup=Deshabilitado)&quot;
-        $actionEnable  = &quot;habilitar el servicio &#x27;$($c.Name)&#x27; (startup=Manual)&quot;
-        if (Confirm-Action $actionDisable &#x27;N&#x27;) {
-            if ($PSCmdlet.ShouldProcess($c.Service,&quot;Stop + Disabled&quot;)) {
-                try { Stop-Service -Name $c.Service -Force -ErrorAction SilentlyContinue } catch {}
-                try { Set-Service -Name $c.Service -StartupType Disabled } catch {}
-                $Global:Report.ServicesChanged.Add(&quot;Disabled: $($c.Service)&quot;) | Out-Null
-                Write-Log &quot;Deshabilitado: $($c.Name)&quot; -Level &quot;SUCCESS&quot;
-            }
-        } elseif (Confirm-Action $actionEnable &#x27;N&#x27;) {
-            if ($PSCmdlet.ShouldProcess($c.Service,&quot;Set Manual&quot;)) {
-                try { Set-Service -Name $c.Service -StartupType Manual } catch {}
-                $Global:Report.ServicesChanged.Add(&quot;Enabled (Manual): $($c.Service)&quot;) | Out-Null
-                Write-Log &quot;Habilitado (Manual): $($c.Name)&quot; -Level &quot;SUCCESS&quot;
-            }
-        } else {
-            Write-Log &quot;Sin cambios en: $($c.Name)&quot; -Level &quot;INFO&quot;
-        }
-    }
-    Write-Log &quot;Si deshabilitaste &#x27;Windows Search&#x27;, reinicia para liberar RAM del indexador.&quot; -Level &quot;WARN&quot;
-}
-
-#endregion
-
-#region REPORTE Y MENÚ
-
-function Write-FinalReport {
-    Write-Log &quot;MÓDULO: Reporte Final&quot; -Level &quot;TITLE&quot;
-    $endTime = Get-Date
-    $duration = New-TimeSpan -Start $Global:StartTime -End $endTime
-    $spaceFreedMB = [math]::Round($Global:Report.SpaceFreedBytes / 1MB, 2)
-
-    $summary = @&quot;
-======================================================================
-         INFORME DE OPTIMIZACIÓN DE WINDOWS (v8.2)
-======================================================================
-Fecha: $($endTime.ToString(&#x27;yyyy-MM-dd HH:mm:ss&#x27;)) | Duración: $($duration.ToString(&#x27;g&#x27;))
-----------------------------------------------------------------------
-Espacio Liberado (Estimado): $spaceFreedMB MB
-Apps/Features Eliminadas: $($Global:Report.AppsRemoved.Count)
-Servicios/Tareas tocadas: $($Global:Report.ServicesChanged.Count)/$($Global:Report.TasksChanged.Count)
-Cambios de Registro: $($Global:Report.RegistryChanges.Count)
-Cambios de Red/Seguridad: $($Global:Report.NetworkChanges.Count)/$($Global:Report.SecurityChanges.Count)
-Acciones de Disco: $($Global:Report.DiskActions.Count)
-Backups creados: $($Global:Report.RegistryBackups.Count + $($Global:Report.HostFileBackups.Count))
-======================================================================
-Log completo: $($Global:LogFile)
-&quot;@
-    Write-Host $summary -ForegroundColor &quot;Cyan&quot;
-    Add-Content -Path $Global:LogFile -Value $summary
-}
-
-function Show-Menu {
-    Clear-Host
-    Write-Host &quot;=====================================================================&quot; -ForegroundColor &quot;Green&quot;
-    Write-Host &quot;     Script de Optimización &#x27;Edición Definitiva&#x27; v8.2&quot; -ForegroundColor &quot;White&quot;
-    Write-Host &quot;=====================================================================&quot; -ForegroundColor &quot;Green&quot;
-    Write-Host &quot;&quot;
-    Write-Host &quot; Por favor, elige una opción:&quot; -ForegroundColor &quot;Yellow&quot;
-    Write-Host &quot;&quot;
-    Write-Host &quot;   [1] Limpieza Profunda&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [2] Desinstalar Bloatware (Debloat)&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [3] Ajustes de Rendimiento y Sistema&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [4] Privacidad y Seguridad&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [5] Ajustes de Interfaz (UI)&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [6] Programas de Inicio&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [7] Integridad del Sistema (SFC &amp; DISM)&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [8] Limpieza de Navegadores&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;   [9] Red y Delivery Optimization&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;  [10] Hibernación y Huella del Sistema&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;  [11] Optimización de Disco (SSD/HDD)&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;  [12] Microsoft Edge (startup/segundo plano)&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;  [13] Sugerencias y Apps en 2º plano&quot; -ForegroundColor &quot;Cyan&quot;
-    Write-Host &quot;  [14] Servicios agresivos (SysMain, Indexado, Telemetría)&quot; -ForegroundColor &quot;Red&quot;
-    Write-Host &quot;&quot;
-    Write-Host &quot;   [A] APLICAR TODO (Seguro, guiado)&quot; -ForegroundColor &quot;Green&quot;
-    Write-Host &quot;   [B] APLICAR TODO (Modo Desatendido - Sin preguntas)&quot; -ForegroundColor &quot;Yellow&quot;
-    Write-Host &quot;&quot;
-    Write-Host &quot;   [Q] Salir&quot; -ForegroundColor &quot;Red&quot;
-    Write-Host &quot;&quot;
-}
-
-function Main {
-    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        Write-Host &quot;ERROR: Requiere permisos de ADMINISTRADOR.&quot; -ForegroundColor &quot;Red&quot;
-        Write-Host &quot;Reinicia PowerShell como Administrador.&quot;
-        Read-Host &quot;Enter para salir.&quot;
-        return
-    }
-
-    $originalConfirmPreference = $global:ConfirmPreference
-    $script:hadError = $false
-
-    try {
-        Start-Diagnostics
-        New-RestorePoint
-
-        $runAll = $false
-        $unattended = $false
-
-        do {
-            if (-not $runAll) { Show-Menu }
-            if ($unattended) { $choice = &#x27;b&#x27; } else { $choice = Read-Host -Prompt &quot;Tu elección&quot; }
-
-            switch ($choice.ToLower()) {
-                &#x27;1&#x27; { Invoke-DeepCleanup }
-                &#x27;2&#x27; { Invoke-Debloat }
-                &#x27;3&#x27; { Invoke-SystemTweaks }
-                &#x27;4&#x27; { Invoke-PrivacyAndSecurity }
-                &#x27;5&#x27; { Invoke-UITweaks }
-                &#x27;6&#x27; { Invoke-StartupAppsOptimization }
-                &#x27;7&#x27; { Run-IntegrityChecks }
-                &#x27;8&#x27; { Invoke-BrowserCacheCleanup }
-                &#x27;9&#x27; { Invoke-NetworkOptimizations }
-                &#x27;10&#x27; { Invoke-SystemFootprint }
-                &#x27;11&#x27; { Invoke-DiskOptimize }
-                &#x27;12&#x27; { Invoke-EdgeTweaks }
-                &#x27;13&#x27; { Invoke-ContentAndBackgroundAppTweaks }
-                &#x27;14&#x27; { Invoke-AggressiveServices }
-                &#x27;a&#x27; {
-                    $runAll = $true
-                    Invoke-DeepCleanup
-                    Invoke-Debloat
-                    Invoke-SystemTweaks
-                    Invoke-PrivacyAndSecurity
-                    Invoke-UITweaks
-                    Invoke-StartupAppsOptimization
-                    Run-IntegrityChecks
-                    Invoke-BrowserCacheCleanup
-                    Invoke-NetworkOptimizations
-                    Invoke-SystemFootprint
-                    Invoke-DiskOptimize
-                    Invoke-EdgeTweaks
-                    Invoke-ContentAndBackgroundAppTweaks
-                    # Nota: [14] NO se ejecuta en A/B, queda como opción manual
-                }
-                &#x27;b&#x27; {
-                    $runAll = $true; $unattended = $true; $global:ConfirmPreference = &#x27;None&#x27;
-                    function global:Confirm-Action { param([string]$Action,[string]$Default=&#x27;N&#x27;) return $true }
-                    Write-Log &quot;MODO DESATENDIDO ACTIVADO. Se aplicarán TODAS las optimizaciones.&quot; -Level &quot;WARN&quot;
-                    Invoke-DeepCleanup
-                    Invoke-Debloat
-                    Invoke-SystemTweaks
-                    Invoke-PrivacyAndSecurity
-                    Invoke-UITweaks
-                    Invoke-StartupAppsOptimization
-                    Run-IntegrityChecks
-                    Invoke-BrowserCacheCleanup
-                    Invoke-NetworkOptimizations
-                    Invoke-SystemFootprint
-                    Invoke-DiskOptimize
-                    Invoke-EdgeTweaks
-                    Invoke-ContentAndBackgroundAppTweaks
-                    # Nota: [14] NO se ejecuta en A/B, queda como opción manual
-                }
-                &#x27;q&#x27; { Write-Log &quot;Saliendo...&quot; -Level &quot;INFO&quot;; break }
-                default { Write-Host &quot;Opción no válida.&quot; -ForegroundColor &quot;Red&quot;; Start-Sleep -Seconds 2 }
-            }
-
-            if ($runAll) { break }
-            if ($choice -ne &#x27;q&#x27;) { Read-Host &quot;Enter para volver al menú...&quot; }
-
-        } while ($choice -ne &#x27;q&#x27;)
-
-    } catch {
-        $script:hadError = $true
-        Write-Log &quot;ERROR FATAL: $($_.Exception.Message)&quot; -Level &quot;ERROR&quot;
-    } finally {
-        if (-not $script:hadError) { Write-Log &quot;Operaciones completadas.&quot; -Level &quot;SUCCESS&quot; }
-        Write-FinalReport
-        $global:ConfirmPreference = $originalConfirmPreference
-        Write-Log &quot;Fin de la sesión.&quot; -Level &quot;TITLE&quot;
-        Write-Host &quot;&quot;; Read-Host &quot;El script ha finalizado. Presiona Enter para cerrar.&quot;
-    }
-}
-
-Main
-# end
-</code></pre>
-    </div>
-  </div>
-  <script>
-    const btn = document.getElementById('copy');
-    const sel = document.getElementById('selectAll');
-    const codeEl = document.getElementById('ps');
-
-    async function copyViaClipboardAPI(text) { 
-      await navigator.clipboard.writeText(text);
-    }
-    function copyViaFallback(text) { 
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.top = '-1000px';
-      ta.setAttribute('readonly','');
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-    }
-
-    btn.addEventListener('click', async () => { 
-      const text = codeEl.innerText;
-      try { 
-        if (navigator.clipboard && window.isSecureContext) { 
-          await copyViaClipboardAPI(text); 
-        } else { 
-          copyViaFallback(text); 
-        }
-        btn.textContent='¡Copiado!';
-        setTimeout(()=>btn.textContent='Copiar Script', 1800);
-      } catch(e) { 
-        try { copyViaFallback(text); btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar Script', 1800); }
-        catch(err) { btn.textContent='Error'; setTimeout(()=>btn.textContent='Copiar Script', 1800); }
-      }
-    });
-
-    sel.addEventListener('click', () => { 
-      const range = document.createRange();
-      range.selectNodeContents(codeEl);
-      const selObj = window.getSelection();
-      selObj.removeAllRanges();
-      selObj.addRange(range);
-    });
-  </script>
-</body>
-</html>
+$end = Get-Date
+$dur = New-TimeSpan -Start $start -End $end
+Write-Log ('FIN. Duración: {0} | Log: {1} | Cuarentena: {2}' -f $dur,$SessionLog,$Quarantine) 'TITLE'
+Write-Host "Recomendado: reiniciar el equipo para aplicar todo." -ForegroundColor Green
