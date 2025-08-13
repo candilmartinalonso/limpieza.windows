@@ -1,36 +1,39 @@
-<# 
+<#
 .SYNOPSIS
-  Windows 10/11 Optimizer – SafePlus Pro Max (SSD) [ONE FILE]
-.DESCRIPCIÓN (modo seguro, reversible)
-  • Limpieza profunda: TEMP, UWP/WebView2/Apps, Windows Update, WER/dumps, logs, miniaturas, FontCache, Prefetch
+  Windows 10/11 Optimizer – SafePlus Pro Max X (SSD) [ONE FILE] (PS 5.1 + PS7 compatible)
+
+.DESCRIPCIÓN (seguro, reversible, sin tocar archivos personales)
+  • Limpieza profunda y ampliada (TEMP, UWP/WebView2/Apps, Windows Update, WER/dumps, logs, miniaturas, FontCache, Prefetch, Office/Store/Adobe/VS/Drivers, instaladores obsoletos, etc.)
   • Navegadores: Chrome/Edge/Firefox/Brave/Opera/Vivaldi (caches completos)
-  • Bloatware: Elimina apps innecesarias (Xbox, Candy Crush, etc.) con opción de exclusión
-  • Inicio: Deshabilita programas de inicio + cuarentena de accesos directos
-  • Servicios: SysMain/DiagTrack/RemoteRegistry → Disabled; WSearch/Xbox → Manual
-  • Red: LLMNR off, Delivery Optimization HTTP only, winsock/IP reset
-  • Edge: Sin segundo plano/startup boost/telemetría
-  • SSD: Hibernación OFF, ReTRIM, DISM cleanup
-  • Tareas programadas: CEIP/Xbl/RetailDemo/telemetría deshabilitadas
-  • SFC/DISM verificación (omitible con -SkipIntegrity)
+  • Bloatware (opcional), inicio seguro, servicios, red endurecida
+  • SSD: Hibernación OFF, ReTRIM (Optimize-Volume o fallback defrag /L), DISM cleanup
+  • Tareas programadas de telemetría deshabilitadas (schtasks, sin depender de módulo)
+  • Integridad: SFC/DISM (omitible con -SkipIntegrity)
   • Punto de restauración automático
-  • Optimización de memoria y procesos
-  • Limpieza de registro de rastros innecesarios
+  • Actualiza Windows + Microsoft Store + programas (winget) por defecto
+  • Protección estricta: NO borra Documentos/Escritorio/Imágenes/Descargas/etc.
 SALIDA
   Logs:   C:\ProgramData\SafePlus\Logs\SafePlus-<fecha>.log
   Cuar.:  C:\ProgramData\SafePlus\Quarantine-<fecha>\
 USO
-  1) Ejecuta PowerShell como Administrador
-  2) Pega este script completo y ENTER
-  3) Opcional: .\script.ps1 -Aggressive -RemoveBloatware -ExcludeStore -LogRetentionDays 3 -SkipIntegrity
+  1) PowerShell como Administrador
+  2) Pega todo el script y ENTER
+  3) Opciones:
+     - Saltar integridad:     .\script.ps1 -SkipIntegrity
+     - Sin bloatware:         (no agregues -RemoveBloatware)
+     - Desactivar actualiz.:  .\script.ps1 -NoUpdate
+     - Simulación:            .\script.ps1 -DryRun
 #>
 [CmdletBinding()]
 param(
   [int]$LogRetentionDays = 7,
-  [switch]$Aggressive,       # Limpia Windows.old/$WINDOWS.~BT y Package Cache antiguo
-  [switch]$RemoveBloatware, # Elimina bloatware preinstalado
-  [switch]$ExcludeStore,     # Excluye Microsoft Store de la eliminación
-  [switch]$SkipIntegrity,    # No correr SFC/DISM
-  [switch]$DeepClean         # Limpieza profunda de registro y optimización de memoria
+  [switch]$Aggressive,        # Limpia Windows.old/$WINDOWS.~BT y Package Cache antiguo
+  [switch]$RemoveBloatware,   # Elimina bloatware preinstalado
+  [switch]$ExcludeStore,      # Excluye Microsoft Store de la eliminación
+  [switch]$SkipIntegrity,     # No correr SFC/DISM
+  [switch]$DeepClean,         # Limpieza de registro y optimización de memoria
+  [switch]$NoUpdate,          # No actualizar (Windows/Store/winget)
+  [switch]$DryRun             # Simulación: no elimina/mueve (solo log)
 )
 
 #========================
@@ -53,6 +56,29 @@ $LogRoot    = Join-Path $BaseRoot "Logs"
 $SessionLog = Join-Path $LogRoot  ("SafePlus-{0}.log" -f $Stamp)
 $Quarantine = Join-Path $BaseRoot ("Quarantine-{0}" -f $Stamp)
 
+# Rutas personales a proteger SIEMPRE
+$PersonalProtect = @(
+  'C:\Users\*\Documents\*',
+  'C:\Users\*\Pictures\*',
+  'C:\Users\*\Music\*',
+  'C:\Users\*\Videos\*',
+  'C:\Users\*\Desktop\*',
+  'C:\Users\*\Downloads\*',
+  'D:\*','E:\*' # amplía si usas otras unidades de datos
+)
+
+#========================
+# COMPATIBILIDAD PS7 (módulos de Windows PowerShell)
+#========================
+try {
+  if ($PSVersionTable.PSEdition -eq 'Core') {
+    foreach ($m in 'Storage','Appx') {
+      try { Import-Module $m -UseWindowsPowerShell -ErrorAction Stop } catch {}
+    }
+    # ScheduledTasks no es estrictamente necesario: usamos schtasks.exe
+  }
+} catch {}
+
 #========================
 # UTILIDADES
 #========================
@@ -69,7 +95,7 @@ function Write-Log{
   try { Add-Content -Path $SessionLog -Value $line -Encoding UTF8 } catch {}
 }
 
-function Try-Do([scriptblock]$sb){ try { & $sb } catch { Write-Log ('Excepción: {0}' -f $_.Exception.Message) 'WARN' } }
+function Try-Do([scriptblock]$sb){ try { & $sb } catch { Write-Log ("Excepción: {0}" -f ($_.Exception.Message)) 'WARN' } }
 
 function BytesToHuman([Int64]$b){
   if($b -ge 1GB){ return ('{0:N2} GB' -f ($b/1GB)) }
@@ -78,62 +104,70 @@ function BytesToHuman([Int64]$b){
   else{ return ('{0} B' -f $b) }
 }
 
+function Is-ProtectedPath([string]$fullPath){
+  $p = $fullPath.TrimEnd('\')
+  foreach($mask in $PersonalProtect){ if ($p -like $mask) { return $true } }
+  $protectedRoots = @($BaseRoot.TrimEnd('\'), $LogRoot.TrimEnd('\'), $Quarantine.TrimEnd('\'))
+  foreach($r in $protectedRoots){ if ($p -like ("{0}*" -f $r)) { return $true } }
+  return $false
+}
+
 function Backup-Registry([string]$KeyPath){
   $regPath = $KeyPath -replace '^HKCU:', 'HKEY_CURRENT_USER' -replace '^HKLM:', 'HKEY_LOCAL_MACHINE'
   $safeName = ($KeyPath -replace '[:\\\/]','_')
   $backupFile = Join-Path $Quarantine ("RegBackup-{0}.reg" -f $safeName)
-  Try-Do { & reg.exe export "$regPath" "$backupFile" /y 2>$null | Out-Null; Write-Log ('Backup reg -> {0}' -f $backupFile) 'INFO' }
+  Try-Do { & reg.exe export "$regPath" "$backupFile" /y 2>$null | Out-Null; Write-Log ("Backup reg -> {0}" -f $backupFile) 'INFO' }
 }
 
 function Set-RegistryValue([string]$Path,[string]$Name,$Value,[Microsoft.Win32.RegistryValueKind]$Type){
   Try-Do {
     if(-not (Test-Path $Path)){ New-Item -Path $Path -Force | Out-Null }
     New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-Null
-    Write-Log ('Registro: {0}\{1} = {2}' -f $Path,$Name,$Value) 'SUCCESS'
+    Write-Log ("Registro: {0}\{1} = {2}" -f $Path,$Name,$Value) 'SUCCESS'
   }
 }
 
+# Acepta múltiples rutas y suma correctamente
 function Remove-PathContents {
   param(
-    [Parameter(Mandatory)][string]$Path,
+    [Parameter(Mandatory)][string[]]$Path,
     [string[]]$Include = @('*'),
     [string[]]$Exclude = @(),
     [switch]$IncludeDirs
   )
-  if(-not (Test-Path $Path)){ return 0L }
-  $freed = 0L
-  $protect = @($BaseRoot.TrimEnd('\'), $LogRoot.TrimEnd('\'), $Quarantine.TrimEnd('\'))
-  $hasWildcard = $Path -match '[\*\?]'
-  
-  $items = if ($IncludeDirs) { 
-    if($hasWildcard){ Get-ChildItem -Path $Path -Recurse -Force -ErrorAction SilentlyContinue }
-    else{ Get-ChildItem -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue }
-  } else { 
-    if($hasWildcard){ Get-ChildItem -Path $Path -Recurse -Force -File -ErrorAction SilentlyContinue }
-    else{ Get-ChildItem -LiteralPath $Path -Recurse -Force -File -ErrorAction SilentlyContinue }
+  $totalFreed = 0L
+  foreach ($p0 in $Path) {
+    if(-not (Test-Path $p0)){ continue }
+    $hasWildcard = $p0 -match '[\*\?]'
+    $items = if ($IncludeDirs) {
+      if($hasWildcard){ Get-ChildItem -Path $p0 -Recurse -Force -ErrorAction SilentlyContinue }
+      else{ Get-ChildItem -LiteralPath $p0 -Recurse -Force -ErrorAction SilentlyContinue }
+    } else {
+      if($hasWildcard){ Get-ChildItem -Path $p0 -Recurse -Force -File -ErrorAction SilentlyContinue }
+      else{ Get-ChildItem -LiteralPath $p0 -Recurse -Force -File -ErrorAction SilentlyContinue }
+    }
+    foreach($it in $items){
+      $full = $it.FullName.TrimEnd('\')
+      if (Is-ProtectedPath $full) { continue }
+      $name = $it.Name
+      $matchInclude = $false; foreach ($pat in $Include) { if ($name -like $pat) { $matchInclude = $true; break } }
+      if (-not $matchInclude) { continue }
+      $skip = $false; foreach ($pat in $Exclude) { if ($name -like $pat) { $skip = $true; break } }
+      if ($skip) { continue }
+      try {
+        if ($it.PSIsContainer) {
+          $size = (Get-ChildItem -Path $full -Recurse -Force -File -EA SilentlyContinue | Measure-Object -Sum Length).Sum
+          if ($null -eq $size) { $size = 0 }
+          $totalFreed += [int64]$size
+          if (-not $DryRun) { Remove-Item -Path $full -Recurse -Force -EA SilentlyContinue -Confirm:$false }
+        } else {
+          $totalFreed += [int64]$it.Length
+          if (-not $DryRun) { Remove-Item -LiteralPath $full -Force -EA SilentlyContinue -Confirm:$false }
+        }
+      } catch {}
+    }
   }
-  
-  foreach($it in $items){
-    $full = $it.FullName.TrimEnd('\')
-    if ($protect | Where-Object { $full -like ("{0}*" -f $_) }) { continue }
-    $name = $it.Name
-    $matchInclude = $Include | ForEach-Object { if ($name -like $_) { $true; break } }
-    if (-not $matchInclude) { continue }
-    if ($Exclude | ForEach-Object { if ($name -like $_) { $true; break } }) { continue }
-    
-    try {
-      if ($it.PSIsContainer) {
-        $size = (Get-ChildItem -Path $full -Recurse -Force -File -EA SilentlyContinue | Measure-Object -Sum Length).Sum
-        if ($null -eq $size) { $size = 0 }
-        $freed += [int64]$size
-        Remove-Item -Path $full -Recurse -Force -EA SilentlyContinue -Confirm:$false
-      } else {
-        $freed += [int64]$it.Length
-        Remove-Item -Path $full -Force -EA SilentlyContinue -Confirm:$false
-      }
-    } catch {}
-  }
-  return $freed
+  return $totalFreed
 }
 
 function Remove-OldFiles {
@@ -145,123 +179,112 @@ function Remove-OldFiles {
   if (-not (Test-Path $Path)) { return 0L }
   $cut = (Get-Date).AddDays(-[math]::Abs($OlderThanDays))
   $total = 0L
-  
   try {
     Get-ChildItem -LiteralPath $Path -Recurse -Force -File -ErrorAction SilentlyContinue |
       Where-Object { $_.LastWriteTime -lt $cut } |
       ForEach-Object {
         $fn = $_.Name
-        $ok = $false
-        foreach ($pat in $Patterns) { if ($fn -like $pat) { $ok = $true; break } }
+        $ok = $false; foreach ($pat in $Patterns) { if ($fn -like $pat) { $ok = $true; break } }
         if (-not $ok) { return }
         $full = $_.FullName
-        if ($full -like ("{0}*" -f $BaseRoot)) { return }
+        if (Is-ProtectedPath $full) { return }
         $total += [int64]$_.Length
-        Remove-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue -Confirm:$false
+        if (-not $DryRun) { Remove-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue -Confirm:$false }
       }
   } catch {}
   return $total
 }
 
 #========================
-# MÓDULOS MEJORADOS
+# MÓDULOS
 #========================
 function Start-Diagnostics {
   Write-Log "MÓDULO: Diagnóstico & Punto de restauración" 'TITLE'
   Try-Do {
     $os = Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture, CsProcessors
-    Write-Log ('SO: {0} v{1} ({2}) | CPU: {3}' -f $os.WindowsProductName,$os.WindowsVersion,$os.OsArchitecture,$os.CsProcessors.NumberOfCores) 'INFO'
+    Write-Log ("SO: {0} v{1} ({2}) | CPU: {3}" -f $os.WindowsProductName,$os.WindowsVersion,$os.OsArchitecture,$os.CsProcessors.NumberOfCores) 'INFO'
   }
   Try-Do {
     $disk = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'"
-    Write-Log ('C: {0} libres de {1} GB' -f ([math]::Round($disk.FreeSpace/1GB,2)),[math]::Round($disk.Size/1GB,2)) 'INFO'
+    Write-Log ("C: {0} libres de {1} GB" -f ([math]::Round($disk.FreeSpace/1GB,2)),[math]::Round($disk.Size/1GB,2)) 'INFO'
   }
-  Try-Do {
-    Checkpoint-Computer -Description ("SafePlus-{0}" -f $Stamp) -ErrorAction SilentlyContinue
-    Write-Log "Punto de restauración solicitado (si está habilitado)." 'INFO'
-  }
+  Try-Do { Checkpoint-Computer -Description ("SafePlus-{0}" -f $Stamp) -ErrorAction SilentlyContinue; Write-Log "Punto de restauración solicitado (si está habilitado)." 'INFO' }
 }
 
 function Invoke-MegaCleanup {
   Write-Log "MÓDULO: Mega Limpieza (Safe, SSD-friendly)" 'TITLE'
   $before = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
   $totalFreed = 0L
-  Write-Log "Protegidos: $BaseRoot | $LogRoot | $Quarantine" 'STEP'
-  
+  Write-Log "Protegidos: Documentos/Imágenes/Música/Vídeos/Descargas/Escritorio + $BaseRoot" 'STEP'
+
   # 1) TEMP por usuario + UWP + Apps + WebView2 + OneDrive logs
   Write-Log "Usuarios: TEMP/INetCache/CrashDumps + UWP(LocalCache/TempState/AC) + Teams/Slack/Discord/Spotify + WebView2" 'STEP'
   Try-Do {
     $userRoots = Get-ChildItem 'C:\Users' -Directory -ErrorAction SilentlyContinue |
                  Where-Object { $_.Name -notin @('Default','Default User','Public','All Users') }
     foreach ($u in $userRoots) {
-      $usr = $u.FullName
-      $freed = 0L
-      
-      $freed += Remove-PathContents -Path ("$usr\AppData\Local\Temp")
-      $freed += Remove-PathContents -Path ("$usr\AppData\Local\Microsoft\Windows\INetCache") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Local\CrashDumps")
-      
+      $usr = $u.FullName; $freed = 0L
+      $freed += Remove-PathContents -Path @("$usr\AppData\Local\Temp")
+      $freed += Remove-PathContents -Path @("$usr\AppData\Local\Microsoft\Windows\INetCache") -IncludeDirs
+      $freed += Remove-PathContents -Path @("$usr\AppData\Local\CrashDumps")
+      $freed += Remove-PathContents -Path @("$usr\AppData\Local\Microsoft\Windows\Explorer") -Include @('thumbcache_*.db','IconCache.db')
+
       $pkgRoot = "$usr\AppData\Local\Packages"
       if (Test-Path $pkgRoot) {
         Get-ChildItem $pkgRoot -Directory -EA SilentlyContinue | ForEach-Object {
-          $freed += Remove-PathContents -Path ("$($_.FullName)\LocalCache") -IncludeDirs
-          $freed += Remove-PathContents -Path ("$($_.FullName)\TempState")  -IncludeDirs
-          $freed += Remove-PathContents -Path ("$($_.FullName)\AC")         -IncludeDirs
+          $freed += Remove-PathContents -Path @("$($_.FullName)\LocalCache") -IncludeDirs
+          $freed += Remove-PathContents -Path @("$($_.FullName)\TempState")  -IncludeDirs
+          $freed += Remove-PathContents -Path @("$($_.FullName)\AC")         -IncludeDirs
         }
       }
-      
       # Apps comunes
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Microsoft\Teams\Cache") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Microsoft\Teams\Code Cache") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Microsoft\Teams\GPUCache") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Slack\Cache") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Slack\Code Cache") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Spotify\Storage") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Zoom\logs") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Roaming\Adobe\Acrobat\*\Cache") -IncludeDirs
-      
+      $freed += Remove-PathContents -Path @("$usr\AppData\Roaming\Microsoft\Teams\Cache","$usr\AppData\Roaming\Microsoft\Teams\Code Cache","$usr\AppData\Roaming\Microsoft\Teams\GPUCache") -IncludeDirs
+      $freed += Remove-PathContents -Path @("$usr\AppData\Roaming\Slack\Cache","$usr\AppData\Roaming\Slack\Code Cache") -IncludeDirs
+      $freed += Remove-PathContents -Path @("$usr\AppData\Roaming\Spotify\Storage") -IncludeDirs
+      $freed += Remove-PathContents -Path @("$usr\AppData\Roaming\Zoom\logs") -IncludeDirs
+      $freed += Remove-PathContents -Path @("$usr\AppData\Roaming\Adobe\Acrobat\*\Cache") -IncludeDirs
       # WebView2
-      $freed += Remove-PathContents -Path ("$usr\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\Cache") -IncludeDirs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\Code Cache") -IncludeDirs
-      
+      $freed += Remove-PathContents -Path @("$usr\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\Cache",
+                                            "$usr\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\Code Cache",
+                                            "$usr\AppData\Local\Microsoft\EdgeWebView\Application\*\User Data\*\GPUCache") -IncludeDirs
       # OneDrive logs
-      $freed += Remove-PathContents -Path ("$usr\AppData\Local\Microsoft\OneDrive\logs") -IncludeDirs
-      
+      $freed += Remove-PathContents -Path @("$usr\AppData\Local\Microsoft\OneDrive\logs") -IncludeDirs
+
       $totalFreed += $freed
-      if ($freed -gt 0) { Write-Log ("Limpieza de usuario {0}: {1}" -f $u.Name, (BytesToHuman $freed)) 'INFO' }
+      if ($freed -gt 0) { Write-Log ("Limpieza usuario {0}: {1}" -f $u.Name, (BytesToHuman $freed)) 'INFO' }
     }
   }
-  
+
   # 2) Prefetch + caches GPU
   $freed = 0L
-  $freed += Remove-PathContents -Path "$env:SystemRoot\Prefetch" -Include @('*.pf') -Exclude @('Layout.ini')
-  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\NVIDIA\GLCache" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\AMD\DxCache" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\D3DSCache" -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:SystemRoot\Prefetch") -Include @('*.pf') -Exclude @('Layout.ini')
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\NVIDIA\GLCache") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\AMD\DxCache") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\D3DSCache") -IncludeDirs
   $totalFreed += $freed
-  
+
   # 3) Windows Update / Delivery Optimization
   Write-Log "Windows Update cache + Delivery Optimization" 'STEP'
   $freed = 0L
-  $freed += Remove-PathContents -Path "$env:SystemRoot\SoftwareDistribution\Download" -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:SystemRoot\SoftwareDistribution\Download") -IncludeDirs
   Try-Do { Stop-Service -Name DoSvc -Force -EA SilentlyContinue }
-  $freed += Remove-PathContents -Path "$env:ProgramData\Microsoft\Windows\DeliveryOptimization\Cache" -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:ProgramData\Microsoft\Windows\DeliveryOptimization\Cache") -IncludeDirs
   Try-Do { Start-Service -Name DoSvc -EA SilentlyContinue }
   $totalFreed += $freed
-  
+
   # 4) WER y dumps
   $freed = 0L
-  $freed += Remove-PathContents -Path "$env:ProgramData\Microsoft\Windows\WER\ReportQueue" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:ProgramData\Microsoft\Windows\WER\ReportArchive" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:SystemRoot\Minidump" -Include @('*.dmp')
+  $freed += Remove-PathContents -Path @("$env:ProgramData\Microsoft\Windows\WER\ReportQueue") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:ProgramData\Microsoft\Windows\WER\ReportArchive") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:SystemRoot\Minidump") -Include @('*.dmp')
   if (Test-Path "$env:SystemRoot\MEMORY.DMP") {
     Try-Do {
       $f = Get-Item "$env:SystemRoot\MEMORY.DMP" -EA SilentlyContinue
-      if ($f) { $freed += [int64]$f.Length; Remove-Item -LiteralPath $f.FullName -Force -EA SilentlyContinue -Confirm:$false }
+      if ($f) { $freed += [int64]$f.Length; if (-not $DryRun) { Remove-Item -LiteralPath $f.FullName -Force -EA SilentlyContinue -Confirm:$false } }
     }
   }
   $totalFreed += $freed
-  
+
   # 5) Logs viejos sistema
   Write-Log ("Purgando logs del sistema >= {0} días" -f $LogRetentionDays) 'STEP'
   $freed = 0L
@@ -272,66 +295,90 @@ function Invoke-MegaCleanup {
   $freed += Remove-OldFiles -Path "$env:SystemRoot\System32\LogFiles\WMI" -OlderThanDays $LogRetentionDays
   $freed += Remove-OldFiles -Path "$env:SystemRoot\System32\LogFiles\BITS" -OlderThanDays $LogRetentionDays
   $totalFreed += $freed
-  
+
   # 6) Defender logs
   $freed = 0L
   $freed += Remove-OldFiles -Path "$env:ProgramData\Microsoft\Windows Defender\Support" -OlderThanDays $LogRetentionDays -Patterns @('*.log','*.etl')
   $totalFreed += $freed
-  
+
   # 7) Miniaturas/Iconos + FontCache
   Try-Do {
     Stop-Process -Name explorer -Force -EA SilentlyContinue
     $freed = 0L
-    $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\Microsoft\Windows\Explorer" -Include @('thumbcache_*.db')
-    $freed += Remove-PathContents -Path "$env:LOCALAPPDATA" -Include @('IconCache.db')
+    $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\Microsoft\Windows\Explorer") -Include @('thumbcache_*.db')
+    $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA") -Include @('IconCache.db')
     $totalFreed += $freed
     Start-Process explorer.exe
   }
   Try-Do {
     Stop-Service -Name "FontCache" -Force -EA SilentlyContinue
     $freed = 0L
-    $freed += Remove-PathContents -Path "$env:SystemRoot\ServiceProfiles\LocalService\AppData\Local" -Include @('FontCache*')
-    $freed += Remove-PathContents -Path "$env:LOCALAPPDATA" -Include @('FontCache*')
+    $freed += Remove-PathContents -Path @("$env:SystemRoot\ServiceProfiles\LocalService\AppData\Local") -Include @('FontCache*')
+    $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA") -Include @('FontCache*')
     $totalFreed += $freed
     Start-Service -Name "FontCache" -EA SilentlyContinue
   }
-  
+
   # 8) .NET Temporary ASP.NET Files
   $freed = 0L
-  $freed += Remove-PathContents -Path "$env:SystemRoot\Microsoft.NET\Framework*\v*\Temporary ASP.NET Files" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:SystemRoot\Microsoft.NET\Framework64*\v*\Temporary ASP.NET Files" -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:SystemRoot\Microsoft.NET\Framework*\v*\Temporary ASP.NET Files") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:SystemRoot\Microsoft.NET\Framework64*\v*\Temporary ASP.NET Files") -IncludeDirs
   $totalFreed += $freed
-  
-  # 9) Downloaded Program Files
+
+  # 9) Downloaded Program Files + caches de Store/Office/Adobe
   $freed = 0L
-  $freed += Remove-PathContents -Path "$env:SystemRoot\Downloaded Program Files" -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:SystemRoot\Downloaded Program Files") -IncludeDirs
+  $freed += Remove-PathContents -Path @("C:\ProgramData\Microsoft\Windows\Caches") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\Microsoft\Office\*\Telemetry") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\Microsoft\Office\*\Temporary Internet Files") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\Adobe\*\Cache") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:APPDATA\Adobe\*\Cache") -IncludeDirs
   $totalFreed += $freed
-  
+
   # 10) Papelera + DNS
-  Try-Do { Clear-RecycleBin -Force }
+  Try-Do { if (-not $DryRun) { Clear-RecycleBin -Force } }
   Try-Do { ipconfig /flushdns | Out-Null }
-  
-  # 11) OPCIONAL AGRESIVO
+
+  # 11) AGRESIVO (seguro)
   if ($Aggressive.IsPresent) {
-    Write-Log "AGRESIVO: Windows.old / `$WINDOWS.~BT / `$WINDOWS.~WS y Package Cache antiguo" 'WARN'
+    Write-Log "AGRESIVO: Windows.old / `$WINDOWS.~BT / `$WINDOWS.~WS + Package Cache antiguo" 'WARN'
     $freed = 0L
     foreach ($cand in @("C:\Windows.old","C:\$WINDOWS.~BT","C:\$WINDOWS.~WS")) {
       if (Test-Path $cand) {
         Try-Do {
           $sz = (Get-ChildItem -Path $cand -Recurse -Force -File -EA SilentlyContinue | Measure-Object -Sum Length).Sum
           if ($null -eq $sz) { $sz = 0 }
-          Remove-Item -Path $cand -Recurse -Force -EA SilentlyContinue -Confirm:$false
           $freed += [int64]$sz
+          if (-not $DryRun) { Remove-Item -Path $cand -Recurse -Force -EA SilentlyContinue -Confirm:$false }
         }
       }
     }
     $vsCache = "C:\ProgramData\Package Cache"
-    if (Test-Path $vsCache) {
-      $freed += Remove-OldFiles -Path $vsCache -OlderThanDays $LogRetentionDays
-    }
+    if (Test-Path $vsCache) { $freed += Remove-OldFiles -Path $vsCache -OlderThanDays $LogRetentionDays }
     $totalFreed += $freed
   }
-  
+
+  # 12) Instaladores/driver leftovers seguros
+  $freed = 0L
+  $freed += Remove-OldFiles -Path "C:\AMD" -OlderThanDays $LogRetentionDays
+  $freed += Remove-OldFiles -Path "C:\NVIDIA" -OlderThanDays $LogRetentionDays
+  $freed += Remove-OldFiles -Path "C:\ProgramData\NVIDIA Corporation\Downloader" -OlderThanDays $LogRetentionDays
+  $freed += Remove-OldFiles -Path "C:\Windows\System32\DriverStore\FileRepository" -OlderThanDays 90 -Patterns @('*.log','*.tmp','*.bak','*old*')
+  $totalFreed += $freed
+
+  # 13) Program Files vacías residuales
+  foreach($pf in @("$env:ProgramFiles","${env:ProgramFiles(x86)}")){
+    if (Test-Path $pf) {
+      Get-ChildItem $pf -Directory -EA SilentlyContinue | ForEach-Object {
+        try {
+          if (-not (Get-ChildItem $_.FullName -Recurse -EA SilentlyContinue)) {
+            if (-not $DryRun) { Remove-Item -LiteralPath $_.FullName -Force -EA SilentlyContinue }
+          }
+        } catch {}
+      }
+    }
+  }
+
   $after = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
   $delta = $after - $before
   if ($delta -lt 0) { $delta = $totalFreed }
@@ -341,110 +388,67 @@ function Invoke-MegaCleanup {
 function Invoke-BrowserCleanup {
   Write-Log "MÓDULO: Navegadores (caches completos)" 'TITLE'
   $targets = @(
-    @{Name="Chrome";  Paths=@("$env:LOCALAPPDATA\Google\Chrome\User Data\*\Cache","$env:LOCALAPPDATA\Google\Chrome\User Data\*\Code Cache","$env:LOCALAPPDATA\Google\Chrome\User Data\*\GPUCache","$env:LOCALAPPDATA\Google\Chrome\User Data\*\Service Worker\CacheStorage")},
-    @{Name="Edge";    Paths=@("$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Cache","$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Code Cache","$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\GPUCache","$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Service Worker\CacheStorage")},
-    @{Name="Firefox"; Paths=@("$env:APPDATA\Mozilla\Firefox\Profiles\*\cache2","$env:LOCALAPPDATA\Mozilla\Firefox\Profiles\*\cache2")},
-    @{Name="Brave";   Paths=@("$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Cache","$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Code Cache","$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\GPUCache")},
+    @{Name="Chrome";  Paths=@("$env:LOCALAPPDATA\Google\Chrome\User Data\*\Cache",
+                               "$env:LOCALAPPDATA\Google\Chrome\User Data\*\Code Cache",
+                               "$env:LOCALAPPDATA\Google\Chrome\User Data\*\GPUCache",
+                               "$env:LOCALAPPDATA\Google\Chrome\User Data\*\Service Worker\CacheStorage")},
+    @{Name="Edge";    Paths=@("$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Cache",
+                               "$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Code Cache",
+                               "$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\GPUCache",
+                               "$env:LOCALAPPDATA\Microsoft\Edge\User Data\*\Service Worker\CacheStorage")},
+    @{Name="Firefox"; Paths=@("$env:APPDATA\Mozilla\Firefox\Profiles\*\cache2",
+                               "$env:LOCALAPPDATA\Mozilla\Firefox\Profiles\*\cache2")},
+    @{Name="Brave";   Paths=@("$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Cache",
+                               "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\Code Cache",
+                               "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\*\GPUCache")},
     @{Name="Opera";   Paths=@("$env:APPDATA\Opera Software\Opera*\Cache")},
-    @{Name="Vivaldi"; Paths=@("$env:LOCALAPPDATA\Vivaldi\User Data\*\Cache","$env:LOCALAPPDATA\Vivaldi\User Data\*\Code Cache","$env:LOCALAPPDATA\Vivaldi\User Data\*\GPUCache")}
+    @{Name="Vivaldi"; Paths=@("$env:LOCALAPPDATA\Vivaldi\User Data\*\Cache",
+                               "$env:LOCALAPPDATA\Vivaldi\User Data\*\Code Cache",
+                               "$env:LOCALAPPDATA\Vivaldi\User Data\*\GPUCache")}
   )
-  
   foreach($t in $targets){
     $freed = 0L
-    foreach($p in $t.Paths){ $freed += Remove-PathContents -Path $p -IncludeDirs }
-    if ($freed -gt 0) { Write-Log ("Caché de {0} limpia: {1}" -f $t.Name, (BytesToHuman $freed)) 'SUCCESS' }
-    else { Write-Log ("Caché de {0} limpia." -f $t.Name) 'SUCCESS' }
+    foreach($p in $t.Paths){ $freed += Remove-PathContents -Path @($p) -IncludeDirs }
+    Write-Log ("Caché de {0} limpiada: {1}" -f $t.Name, (BytesToHuman $freed)) 'SUCCESS'
   }
 }
 
 function Invoke-ExtrasCleanup {
-  Write-Log "MÓDULO: Extras (caches de juegos/dev + restos de drivers + spool)" 'TITLE'
+  Write-Log "MÓDULO: Extras (juegos/dev/drivers/spool/Steam/Epic/Code/Discord)" 'TITLE'
   $freed = 0L
-  
   # VS Code
-  $freed += Remove-PathContents -Path "$env:APPDATA\Code\Cache" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:APPDATA\Code\CachedData" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:APPDATA\Code\GPUCache" -IncludeDirs
-  
+  $freed += Remove-PathContents -Path @("$env:APPDATA\Code\Cache","$env:APPDATA\Code\CachedData","$env:APPDATA\Code\GPUCache") -IncludeDirs
   # Discord
-  $freed += Remove-PathContents -Path "$env:APPDATA\discord\Cache" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:APPDATA\discord\Code Cache" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:APPDATA\discord\GPUCache" -IncludeDirs
-  
-  # Steam
-  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\Steam\htmlcache" -IncludeDirs
-  $freed += Remove-PathContents -Path (Join-Path "${env:ProgramFiles(x86)}" "Steam\appcache\httpcache") -IncludeDirs
-  $freed += Remove-PathContents -Path (Join-Path "${env:ProgramFiles(x86)}" "Steam\logs") -IncludeDirs
-  
-  # Epic Games
-  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\EpicGamesLauncher\Saved\Logs" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\EpicGamesLauncher\Saved\webcache" -IncludeDirs
-  
-  # Battle.net
-  $freed += Remove-PathContents -Path "C:\ProgramData\Battle.net\Cache" -IncludeDirs
-  $freed += Remove-PathContents -Path "C:\ProgramData\Battle.net\Logs" -IncludeDirs
-  
-  # Restos de drivers
-  $freed += Remove-PathContents -Path "C:\NVIDIA" -IncludeDirs
-  $freed += Remove-PathContents -Path "C:\AMD" -IncludeDirs
-  $freed += Remove-PathContents -Path "C:\ProgramData\NVIDIA Corporation\Downloader" -IncludeDirs
-  
+  $freed += Remove-PathContents -Path @("$env:APPDATA\discord\Cache","$env:APPDATA\discord\Code Cache","$env:APPDATA\discord\GPUCache") -IncludeDirs
+  # Steam / Epic / Battle.net
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\Steam\htmlcache") -IncludeDirs
+  $freed += Remove-PathContents -Path @(Join-Path "${env:ProgramFiles(x86)}" "Steam\appcache\httpcache") -IncludeDirs
+  $freed += Remove-PathContents -Path @(Join-Path "${env:ProgramFiles(x86)}" "Steam\logs") -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:LOCALAPPDATA\EpicGamesLauncher\Saved\Logs","$env:LOCALAPPDATA\EpicGamesLauncher\Saved\webcache") -IncludeDirs
+  $freed += Remove-PathContents -Path @("C:\ProgramData\Battle.net\Cache","C:\ProgramData\Battle.net\Logs") -IncludeDirs
   # Spool impresión
   Try-Do { Stop-Service -Name Spooler -Force -EA SilentlyContinue }
-  $freed += Remove-PathContents -Path "$env:SystemRoot\System32\spool\PRINTERS" -Include @('*.spl','*.shd') -IncludeDirs
+  $freed += Remove-PathContents -Path @("$env:SystemRoot\System32\spool\PRINTERS") -Include @('*.spl','*.shd') -IncludeDirs
   Try-Do { Start-Service -Name Spooler -EA SilentlyContinue }
-  
   # Temp antiguo de Windows
   $freed += Remove-OldFiles -Path "$env:SystemRoot\Temp" -OlderThanDays $LogRetentionDays -Patterns @('*.tmp','*.bak','*.old','*.log','*.dmp')
-  
-  # Adobe caches
-  $freed += Remove-PathContents -Path "$env:LOCALAPPDATA\Adobe\*\Cache" -IncludeDirs
-  $freed += Remove-PathContents -Path "$env:APPDATA\Adobe\*\Cache" -IncludeDirs
-  
   Write-Log ("Extras limpiados: {0}" -f (BytesToHuman $freed)) 'SUCCESS'
 }
 
 function Invoke-BloatwareRemoval {
   if (-not $RemoveBloatware.IsPresent) { return }
-  
   Write-Log "MÓDULO: Eliminación de Bloatware" 'TITLE'
-  
   $bloatware = @(
-    "Microsoft.BingNews"
-    "Microsoft.BingWeather"
-    "Microsoft.GetHelp"
-    "Microsoft.Getstarted"
-    "Microsoft.Messaging"
-    "Microsoft.MicrosoftOfficeHub"
-    "Microsoft.MicrosoftSolitaireCollection"
-    "Microsoft.MixedReality.Portal"
-    "Microsoft.People"
-    "Microsoft.PowerAutomateDesktop"
-    "Microsoft.Print3D"
-    "Microsoft.ScreenSketch"
-    "Microsoft.WindowsAlarms"
-    "Microsoft.WindowsCamera"
-    "Microsoft.WindowsFeedbackHub"
-    "Microsoft.WindowsMaps"
-    "Microsoft.WindowsSoundRecorder"
-    "Microsoft.YourPhone"
-    "Microsoft.ZuneMusic"
-    "Microsoft.ZuneVideo"
-    "Microsoft.Xbox.TCUI"
-    "Microsoft.XboxApp"
-    "Microsoft.XboxGameOverlay"
-    "Microsoft.XboxGamingOverlay"
-    "Microsoft.XboxIdentityProvider"
-    "Microsoft.XboxSpeechToTextOverlay"
-    "king.com.CandyCrushSaga"
-    "king.com.CandyCrushSodaSaga"
+    "Microsoft.BingNews","Microsoft.BingWeather","Microsoft.GetHelp","Microsoft.Getstarted",
+    "Microsoft.Messaging","Microsoft.MicrosoftOfficeHub","Microsoft.MicrosoftSolitaireCollection",
+    "Microsoft.MixedReality.Portal","Microsoft.People","Microsoft.PowerAutomateDesktop","Microsoft.Print3D",
+    "Microsoft.ScreenSketch","Microsoft.WindowsAlarms","Microsoft.WindowsCamera","Microsoft.WindowsFeedbackHub",
+    "Microsoft.WindowsMaps","Microsoft.WindowsSoundRecorder","Microsoft.YourPhone","Microsoft.ZuneMusic","Microsoft.ZuneVideo",
+    "Microsoft.Xbox.TCUI","Microsoft.XboxApp","Microsoft.XboxGameOverlay","Microsoft.XboxGamingOverlay",
+    "Microsoft.XboxIdentityProvider","Microsoft.XboxSpeechToTextOverlay","king.com.CandyCrushSaga","king.com.CandyCrushSodaSaga",
     "Microsoft.549981C3F5F10" # Cortana
   )
-  
-  if (-not $ExcludeStore.IsPresent) {
-    $bloatware += "Microsoft.WindowsStore"
-  }
-  
+  if (-not $ExcludeStore.IsPresent) { $bloatware += "Microsoft.WindowsStore" }
   $removed = 0
   foreach ($app in $bloatware) {
     Try-Do {
@@ -452,11 +456,9 @@ function Invoke-BloatwareRemoval {
       Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $app | ForEach-Object {
         Remove-ProvisionedAppxPackage -Online -AllUsers -PackageName $_.PackageName
       }
-      $removed++
-      Write-Log "Bloatware eliminado: $app" 'SUCCESS'
+      $removed++; Write-Log "Bloatware eliminado: $app" 'SUCCESS'
     }
   }
-  
   Write-Log ("Bloatware eliminado: {0} aplicaciones" -f $removed) 'SUCCESS'
 }
 
@@ -471,7 +473,6 @@ function Invoke-StartupSafe {
     'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run32'
   )
   foreach($k in $SA_KEYS){ if(-not (Test-Path $k)){ New-Item -Path $k -Force | Out-Null } }
-  
   $RUN_KEYS = @(
     'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run',
     'HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce',
@@ -480,11 +481,10 @@ function Invoke-StartupSafe {
     'HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run',
     'HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnce'
   )
-  
   $STARTUP_FOLDERS = @([Environment]::GetFolderPath('Startup'), "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\StartUp")
   $ProtectedRegex = '(?i)(\\Microsoft\\|Windows\s*Defender|SecurityHealth|Windows\s*Security|OneDrive)'
+
   $candidates = New-Object System.Collections.Generic.List[object]
-  
   foreach($key in $RUN_KEYS){
     if(-not (Test-Path $key)){ continue }
     Backup-Registry $key
@@ -498,7 +498,6 @@ function Invoke-StartupSafe {
       }
     }
   }
-  
   foreach($dir in $STARTUP_FOLDERS){
     if(-not (Test-Path $dir)){ continue }
     Try-Do {
@@ -508,25 +507,19 @@ function Invoke-StartupSafe {
       }
     }
   }
-  
-  function _SA_DisableName([string]$n){
-    foreach($k in $SA_KEYS){ Try-Do { New-ItemProperty -Path $k -Name $n -Value $BIN_DISABLED -PropertyType Binary -Force | Out-Null } }
-  }
-  
+  function _SA_DisableName([string]$n){ foreach($k in $SA_KEYS){ Try-Do { New-ItemProperty -Path $k -Name $n -Value $BIN_DISABLED -PropertyType Binary -Force | Out-Null } } }
   foreach($it in $candidates){ _SA_DisableName $it.Name }
-  
   $removed=0; $moved=0
   foreach($it in $candidates){
     if($it.Kind -eq 'Reg'){
-      Try-Do { Remove-ItemProperty -Path $it.Key -Name $it.Name -Force -EA Stop -Confirm:$false; $removed++ }
+      Try-Do { if (-not $DryRun) { Remove-ItemProperty -Path $it.Key -Name $it.Name -Force -EA Stop -Confirm:$false }; $removed++ }
     } else {
       if(Test-Path $it.Path){
         $dest = Join-Path $Quarantine ([IO.Path]::GetFileName($it.Path))
-        Try-Do { Move-Item -LiteralPath $it.Path -Destination $dest -Force -EA Stop; $moved++ }
+        Try-Do { if (-not $DryRun) { Move-Item -LiteralPath $it.Path -Destination $dest -Force -EA Stop }; $moved++ }
       }
     }
   }
-  
   Write-Log ("Inicio deshabilitado. Reg eliminados: {0} | Accesos movidos: {1}" -f $removed,$moved) 'SUCCESS'
 }
 
@@ -545,12 +538,12 @@ function Invoke-NetworkSafe {
   Write-Log "MÓDULO: Red segura & Delivery Optimization" 'TITLE'
   $doPath="HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization"
   Backup-Registry $doPath
-  Set-RegistryValue $doPath "DODownloadMode" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)
-  
+  Set-RegistryValue $doPath "DODownloadMode" 0 ([Microsoft.Win32.RegistryValueKind]::DWord) # HTTP only
+
   $dnsCli="HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient"
   Backup-Registry $dnsCli
-  Set-RegistryValue $dnsCli "EnableMulticast" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)
-  
+  Set-RegistryValue $dnsCli "EnableMulticast" 0 ([Microsoft.Win32.RegistryValueKind]::DWord) # LLMNR off
+
   Try-Do { netsh winsock reset | Out-Null }
   Try-Do { netsh int ip reset | Out-Null }
   Write-Log "Red endurecida y DO configurado." 'SUCCESS'
@@ -561,7 +554,6 @@ function Invoke-EdgePolicies {
   $hkcu="HKCU:\Software\Microsoft\Edge"
   $hklm="HKLM:\SOFTWARE\Policies\Microsoft\Edge"
   Backup-Registry $hkcu; Backup-Registry $hklm
-  
   Set-RegistryValue $hkcu "StartupBoostEnabled"   0 ([Microsoft.Win32.RegistryValueKind]::DWord)
   Set-RegistryValue $hkcu "BackgroundModeEnabled" 0 ([Microsoft.Win32.RegistryValueKind]::DWord)
   Set-RegistryValue $hklm "StartupBoostEnabled"   0 ([Microsoft.Win32.RegistryValueKind]::DWord)
@@ -572,10 +564,20 @@ function Invoke-EdgePolicies {
   Write-Log "Edge ajustado." 'SUCCESS'
 }
 
+# SSD optimize con fallback para PS7/errores
 function Invoke-SSDOptimize {
   Write-Log "MÓDULO: SSD (Hibernación OFF + ReTRIM + WinSxS cleanup)" 'TITLE'
   Try-Do { powercfg /h off | Out-Null }
-  Try-Do { Optimize-Volume -DriveLetter C -ReTrim -Verbose | Out-Null }
+  $optOk = $false
+  try {
+    if (Get-Command Optimize-Volume -ErrorAction Stop) {
+      Try-Do { Optimize-Volume -DriveLetter C -ReTrim -Verbose | Out-Null }
+      $optOk = $true
+    }
+  } catch {}
+  if (-not $optOk) {
+    Try-Do { defrag.exe C: /L | Out-Null }  # TRIM
+  }
   Try-Do { dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Null }
   Write-Log "Hibernación deshabilitada, TRIM ejecutado y WinSxS limpiado." 'SUCCESS'
 }
@@ -603,99 +605,97 @@ function Invoke-ScheduledTasksSafe {
     "\Microsoft\Windows\Shell\FamilySafetyRefreshTask",
     "\Microsoft\Windows\Windows Error Reporting\QueueReporting"
   )
-  
   foreach($t in $tasks){
-    Try-Do {
-      $taskPath = (Split-Path $t -Parent) + "\"
-      $taskName = Split-Path $t -Leaf
-      Disable-ScheduledTask -TaskPath $taskPath -TaskName $taskName -EA SilentlyContinue | Out-Null
-      schtasks /change /TN $t /DISABLE | Out-Null
-    }
+    Try-Do { schtasks /change /TN $t /DISABLE | Out-Null }
   }
   Write-Log "Tareas típicas deshabilitadas." 'SUCCESS'
 }
 
 function Invoke-DeepOptimization {
   if (-not $DeepClean.IsPresent) { return }
-  
   Write-Log "MÓDULO: Optimización profunda (memoria y registro)" 'TITLE'
-  
-  # Optimización de memoria
   Try-Do {
     $mem = Get-CimInstance -ClassName Win32_OperatingSystem
     $freeMem = [math]::Round($mem.FreePhysicalMemory / 1KB, 2)
     $totalMem = [math]::Round($mem.TotalVisibleMemorySize / 1KB, 2)
-    Write-Log ("Memoria antes de optimización: {0} GB libres de {1} GB" -f $freeMem, $totalMem) 'INFO'
-    
-    # Liberar memoria de procesos en espera
-    $processes = Get-Process | Where-Object { $_.WorkingSet -gt 50MB } | Sort-Object -Property WorkingSet -Descending
+    Write-Log ("Memoria antes: {0} GB libres de {1} GB" -f $freeMem, $totalMem) 'INFO'
+    $processes = Get-Process | Where-Object { $_.WorkingSet -gt 150MB } | Sort-Object -Property WorkingSet -Descending
     foreach ($proc in $processes) {
-      if ($proc.ProcessName -notin @("System", "svchost", "explorer")) {
-        Try-Do { $proc.CloseMainWindow() | Out-Null }
-        Try-Do { [System.GC]::Collect() }
-        Try-Do { [System.GC]::WaitForPendingFinalizers() }
+      if ($proc.ProcessName -notin @("System","svchost","explorer","SearchIndexer","MsMpEng")) {
+        Try-Do { $null = $proc.CloseMainWindow() }
       }
     }
-    
+    [System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers()
     $memAfter = Get-CimInstance -ClassName Win32_OperatingSystem
     $freeMemAfter = [math]::Round($memAfter.FreePhysicalMemory / 1KB, 2)
-    Write-Log ("Memoria después de optimización: {0} GB libres de {1} GB" -f $freeMemAfter, $totalMem) 'INFO'
+    Write-Log ("Memoria después: {0} GB libres de {1} GB" -f $freeMemAfter, $totalMem) 'INFO'
   }
-  
-  # Limpieza de registro
   Try-Do {
-    Write-Log "Limpiando entradas de registro obsoletas..." 'STEP'
-    
-    # Rutas temporales en registro
+    Write-Log "Limpiando MRU/recientes del registro…" 'STEP'
     $tempRegPaths = @(
       "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU",
       "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU",
-      "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU"
+      "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU",
+      "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs"
     )
-    
     foreach ($path in $tempRegPaths) {
       if (Test-Path $path) {
         Backup-Registry $path
-        Try-Do { Remove-Item -Path $path -Recurse -Force }
+        if (-not $DryRun) { Remove-Item -Path $path -Recurse -Force -EA SilentlyContinue }
       }
     }
-    
-    # Limpieza de rutas de archivos recientes
-    $recentPaths = @(
-      "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs",
-      "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU"
-    )
-    
-    foreach ($path in $recentPaths) {
-      if (Test-Path $path) {
-        Backup-Registry $path
-        Try-Do { 
-          $items = Get-Item $path
-          foreach ($item in $items.Property) {
-            if ($item -ne "(default)") {
-              Try-Do { Remove-ItemProperty -Path $path -Name $item -Force }
-            }
-          }
-        }
-      }
-    }
-    
     Write-Log "Limpieza de registro completada." 'SUCCESS'
   }
 }
 
 function Run-IntegrityChecks {
-  Write-Log "MÓDULO: Integridad (SFC/DISM) – puede tardar" 'TITLE'
+  Write-Log "MÓDULO: Integridad (SFC/DISM)" 'TITLE'
   Try-Do { sfc.exe /scannow | Out-Null }
   Try-Do { dism.exe /Online /Cleanup-Image /RestoreHealth | Out-Null }
   Write-Log "Comprobación de sistema finalizada." 'SUCCESS'
 }
 
 #========================
+# ACTUALIZACIÓN SEGURA (Windows + Store + winget)
+#========================
+function Update-EverythingSafe {
+  if ($NoUpdate) { Write-Log "Actualizaciones omitidas (-NoUpdate)." 'WARN'; return }
+  Write-Log "MÓDULO: Actualización de Windows, Microsoft Store y programas" 'TITLE'
+
+  # --- Windows Update ---
+  Try-Do { UsoClient StartScan | Out-Null }
+  Try-Do { UsoClient StartDownload | Out-Null }
+  Try-Do { UsoClient StartInstall | Out-Null }
+  Try-Do { wuauclt /detectnow | Out-Null }
+  Try-Do { wuauclt /updatenow | Out-Null }
+  Write-Log "Windows Update: comprobación e instalación iniciadas (puede requerir reinicio)." 'SUCCESS'
+
+  # --- Microsoft Store ---
+  Try-Do { Start-Process -FilePath "wsreset.exe" -Wait -WindowStyle Hidden }
+  Try-Do {
+    # Si Appx no está disponible en PS7, este bloque simplemente no hace nada
+    Get-AppxPackage -AllUsers | ForEach-Object {
+      Try-Do { Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppxManifest.xml" -ForceApplicationShutdown }
+    }
+  }
+  Write-Log "Microsoft Store: caché reiniciada y apps re-registradas." 'SUCCESS'
+
+  # --- Programas vía winget ---
+  $winget = (Get-Command winget -ErrorAction SilentlyContinue)
+  if ($winget) {
+    Try-Do { winget source update | Out-Null }
+    Try-Do { winget upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity | Out-Null }
+    Write-Log "Programas actualizados con winget." 'SUCCESS'
+  } else {
+    Write-Log "winget no disponible (instala 'App Installer' desde Microsoft Store)." 'WARN'
+  }
+}
+
+#========================
 # EJECUCIÓN
 #========================
 $start = Get-Date
-Write-Log "SafePlus Pro Max (SSD) iniciando…" 'TITLE'
+Write-Log "SafePlus Pro Max X (SSD) iniciando…" 'TITLE'
 
 Start-Diagnostics
 Invoke-MegaCleanup
@@ -709,9 +709,12 @@ Invoke-EdgePolicies
 Invoke-SSDOptimize
 Invoke-ScheduledTasksSafe
 Invoke-DeepOptimization
-if (-not $SkipIntegrity) { Run-IntegrityChecks }
+
+Update-EverythingSafe
+
+if (-not $SkipIntegrity) { Run-IntegrityChecks } else { Write-Log "Integridad omitida (-SkipIntegrity)." 'WARN' }
 
 $end = Get-Date
 $dur = New-TimeSpan -Start $start -End $end
-Write-Log ('FIN. Duración: {0} | Log: {1} | Cuarentena: {2}' -f $dur,$SessionLog,$Quarantine) 'TITLE'
-Write-Host "Recomendado: reiniciar el equipo para aplicar todo." -ForegroundColor Green
+Write-Log ("FIN. Duración: {0} | Log: {1} | Cuarentena: {2}" -f $dur,$SessionLog,$Quarantine) 'TITLE'
+Write-Host "Recomendado: reiniciar el equipo para aplicar todo. (No se tocan archivos personales)." -ForegroundColor Green
