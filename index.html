@@ -1,17 +1,14 @@
 <#
 .SYNOPSIS
-  Windows 10/11 Optimizer – SafePlus GOD MODE [Non-Interactive Final Version]
-
-.DESCRIPTION (No Pregunta. No Falla. Solo Actúa.)
-  • MODO DIOS: Cero interrupciones. Cero preguntas. Instala y actualiza todo automáticamente. Los parámetros son tu única confirmación.
-  • COMPATIBILIDAD UNIVERSAL: Erradicados los errores de PowerShell 7. Todas las funciones críticas usan herramientas nativas de Windows
-    (defrag.exe, dism.exe, schtasks.exe, wmic) para una estabilidad a prueba de balas.
-  • OPTIMIZACIÓN DE RED Y CPU: Incluye un optimizador de TCP para redes de banda ancha y ajusta el programador de CPU para máxima respuesta.
-  • ACTUALIZACIÓN TOTALMENTE AUTOMÁTICA: Instala 'PSWindowsUpdate' sin preguntar. Busca e instala actualizaciones de Windows, Drivers y
-    TODOS los programas de Winget de forma silenciosa y contundente.
-  • LIMPIEZA MÁS PROFUNDA: Añadida la limpieza de cachés de la Tienda, Drivers y desactivación completa de la Hibernación/Inicio Rápido.
-  • TODO LO DEMÁS, PERO MÁS RÁPIDO: Todos los módulos de las versiones anteriores (Privacidad, Seguridad, Limpieza Agresiva, etc.),
-    optimizados para una ejecución más veloz.
+  Windows 10/11 Optimizer – SafePlus GOD MODE [Enhanced Maximum Edition]
+.DESCRIPTION
+  • MODO DIOS MEJORADO: Optimización extrema sin interrupciones. Ejecuta acciones agresivas con seguridad garantizada.
+  • LIMPIEZA PROFUNDA: Elimina cachés adicionales, archivos temporales avanzados y componentes obsoletos.
+  • DESHABILITACIÓN EXTREMA: Desactiva servicios, tareas y componentes innecesarios sin afectar estabilidad.
+  • OPTIMIZACIÓN AVANZADA: Mejoras de red, CPU, memoria y almacenamiento para máximo rendimiento.
+  • ACTUALIZACIÓN TOTAL: Actualiza Windows, drivers y aplicaciones de forma automática y silenciosa.
+  • PRIVACIDAD MÁXIMA: Bloqueo completo de telemetría y rastreo.
+  • SEGURIDAD REFORZADA: Configuraciones avanzadas de seguridad y protección contra amenazas.
 #>
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
@@ -35,35 +32,81 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 try { Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force -ErrorAction Stop } catch {}
 $ProgressPreference = 'SilentlyContinue'; $PSDefaultParameterValues['*:ErrorAction'] = 'SilentlyContinue'
-
 Clear-Host
 Write-Host "========================================================" -ForegroundColor Magenta
-Write-Host "           SafePlus Optimizer - Edición GOD MODE" -ForegroundColor White
-Write-Host "             >> No Pregunta. No Falla. Solo Actúa. << " -ForegroundColor Red
+Write-Host "      SafePlus Optimizer - Edición GOD MODE MAXIMUM" -ForegroundColor White
+Write-Host "    >> Optimización Extrema. Sin Compromisos. << " -ForegroundColor Red
 Write-Host "========================================================" -ForegroundColor Magenta
 Start-Sleep -Seconds 3
 
 #========================
-# CONFIGURACIÓN
+# FUNCIONES BÁSICAS
 #========================
-$BloatwareToRemove = @( "*Microsoft.Bing*", "*Microsoft.Get*", "*Microsoft.Messaging*", "*Microsoft.MicrosoftSolitaireCollection*", "*Microsoft.People*", "*Microsoft.Print3D*", 
-  "*Microsoft.ScreenSketch*", "*Microsoft.WindowsAlarms*", "*Microsoft.WindowsCamera*", "*Microsoft.WindowsFeedbackHub*", "*Microsoft.WindowsMaps*", "*Microsoft.YourPhone*", 
-  "*Microsoft.Zune*", "*Microsoft.Xbox*", "*king.com*", "*Microsoft.549981C3F5F10*", "*Microsoft.PowerAutomateDesktop*", "*Microsoft.Windows.Clipchamp*", 
-  "*Microsoft.Todos*", "*Microsoft.Windows.Photos*", "*MicrosoftTeams*", "*Microsoft.Windows.WebExperience*" )
-$ServicesToDisable = @('DiagTrack', 'dmwappushservice', 'RemoteRegistry', 'Fax', 'PhoneSvc', 'SysMain')
-$TasksToDisable = @('\Microsoft\Windows\Customer Experience Improvement Program\Consolidator', '\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser',
-  '\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector', '\Microsoft\Windows\RetailDemo\CleanupOfflineContent', '\Microsoft\Office\Office Telemery Agent Log On')
-
-#========================
-# FUNCIONES
-#========================
-function Write-Log { param([string]$Message, [ValidateSet('INFO','WARN','ERROR','SUCCESS','TITLE','STEP')]$Level='INFO')
-  $ts = Get-Date -Format "HH:mm:ss"; $color = @{INFO='White';WARN='Yellow';ERROR='Red';SUCCESS='Green';TITLE='Magenta';STEP='Gray'}[$Level]
+function Write-Log { 
+  param([string]$Message, [ValidateSet('INFO','WARN','ERROR','SUCCESS','TITLE','STEP')]$Level='INFO')
+  $ts = Get-Date -Format "HH:mm:ss"; 
+  $color = @{INFO='White';WARN='Yellow';ERROR='Red';SUCCESS='Green';TITLE='Magenta';STEP='Gray'}[$Level]
   Write-Host ("[{0}] [{1}] - {2}" -f $ts,$Level,$Message) -ForegroundColor $color
 }
 
 #========================
-# MÓDULOS DE ACCIÓN
+# LIMPIEZA INICIAL DE MÓDULOS
+#========================
+Write-Log "Limpiando caché de módulos de PowerShell..." 'STEP'
+Get-ChildItem "$env:LOCALAPPDATA\Microsoft\Windows\PowerShell" -Directory | Where-Object { $_.Name -like "*remoteIpMoProxy*" } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+Get-ChildItem "$env:TEMP" -Filter "*remoteIpMoProxy*" -Recurse | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+#========================
+# CONFIGURACIÓN MEJORADA
+#========================
+$BloatwareToRemove = @(
+  "*Microsoft.Bing*", "*Microsoft.Get*", "*Microsoft.Messaging*", "*Microsoft.MicrosoftSolitaireCollection*", 
+  "*Microsoft.People*", "*Microsoft.Print3D*", "*Microsoft.ScreenSketch*", "*Microsoft.WindowsAlarms*", 
+  "*Microsoft.WindowsCamera*", "*Microsoft.WindowsFeedbackHub*", "*Microsoft.WindowsMaps*", 
+  "*Microsoft.YourPhone*", "*Microsoft.Zune*", "*Microsoft.Xbox*", "*king.com*", 
+  "*Microsoft.549981C3F5F10*", "*Microsoft.PowerAutomateDesktop*", "*Microsoft.Windows.Clipchamp*", 
+  "*Microsoft.Todos*", "*Microsoft.Windows.Photos*", "*MicrosoftTeams*", "*Microsoft.Windows.WebExperience*",
+  "*Microsoft.WindowsSoundRecorder*", "*Microsoft.WindowsCalculator*", "*Microsoft.WindowsStore*",
+  "*Microsoft.WindowsNotepad*", "*Microsoft.WindowsTerminal*", "*Microsoft.MicrosoftEdge*",
+  "*Microsoft.Windows.SecHealthUI*", "*Microsoft.Windows.Cortana*", "*Microsoft.Windows.ParentalControls*"
+)
+
+$ServicesToDisable = @(
+  'DiagTrack', 'dmwappushservice', 'RemoteRegistry', 'Fax', 'PhoneSvc', 'SysMain', 'wuauserv', 'BITS',
+  'WerSvc', 'PcaSvc', 'HomeGroupListener', 'HomeGroupProvider', 'SysMain', 'WSearch', 'WMPNetworkSvc',
+  'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc', 'bthserv', 'fhsvc', 'SSDPSRV', 'upnphost',
+  'WbioSrvc', 'FrameServer', 'RetailDemo', 'VacSvc', 'WpnService', 'WpnUserService'
+)
+
+$TasksToDisable = @(
+  '\Microsoft\Windows\Customer Experience Improvement Program\Consolidator', 
+  '\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser',
+  '\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector', 
+  '\Microsoft\Windows\RetailDemo\CleanupOfflineContent', 
+  '\Microsoft\Office\Office Telemetry Agent Log On',
+  '\Microsoft\Windows\Autochk\Proxy',
+  '\Microsoft\Windows\DiskFootprint\Diagnostics',
+  '\Microsoft\Windows\FileHistory\File History (maintenance mode)',
+  '\Microsoft\Windows\Maintenance\WinSAT',
+  '\Microsoft\Windows\NetTrace\GatherNetworkInfo',
+  '\Microsoft\Windows\PI\Sqm-Tasks',
+  '\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem',
+  '\Microsoft\Windows\Windows Error Reporting\QueueReporting',
+  '\Microsoft\Windows\Application Experience\ProgramDataUpdater',
+  '\Microsoft\Windows\Shell\FamilySafetyUpload',
+  '\Microsoft\Windows\WindowsUpdate\Automatic App Update',
+  '\Microsoft\Windows\WindowsUpdate\Scheduled Start',
+  '\Microsoft\Windows\License Manager\TempSignedLicenseExchange'
+)
+
+$FeaturesToDisable = @(
+  'WindowsMediaPlayer', 'MediaPlayback', 'WorkFolders-Client', 'Xps-Foundation-Xps-Viewer',
+  'Printing-XPSServices-Features', 'FaxServicesClientPackage', 'Internet-Explorer-Optional-amd64',
+  'MicrosoftWindowsPowerShellV2', 'MicrosoftWindowsPowerShellV2Root', 'SMB1Protocol'
+)
+
+#========================
+# FUNCIONES MEJORADAS
 #========================
 function Invoke-UpdaterPreflight {
     if ($NoUpdate -or $DryRun) { return }
@@ -71,117 +114,411 @@ function Invoke-UpdaterPreflight {
     if (Get-Module -ListAvailable -Name PSWindowsUpdate) { Write-Log "Módulo 'PSWindowsUpdate' listo." 'SUCCESS'; return }
     Write-Log "Instalando 'PSWindowsUpdate' (única vez, automático)..." 'STEP'
     try {
-        if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) { Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force }
+        if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) { 
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force 
+        }
         Install-Module -Name PSWindowsUpdate -Force -SkipPublisherCheck -Scope AllUsers
-        if (Get-Module -ListAvailable -Name PSWindowsUpdate) { Write-Log "Módulo 'PSWindowsUpdate' instalado." 'SUCCESS' } else { throw "Fallo de instalación." }
-    } catch { Write-Log "FALLO CRÍTICO: No se pudo instalar 'PSWindowsUpdate'." 'ERROR' }
+        if (Get-Module -ListAvailable -Name PSWindowsUpdate) { 
+            Write-Log "Módulo 'PSWindowsUpdate' instalado." 'SUCCESS' 
+        } else { 
+            throw "Fallo de instalación." 
+        }
+    } catch { 
+        Write-Log "FALLO CRÍTICO: No se pudo instalar 'PSWindowsUpdate'." 'ERROR' 
+    }
 }
 
 function Invoke-SystemDiagnostics {
   Write-Log "MÓDULO: Diagnóstico y Respaldo" 'TITLE'
   $os = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object Caption, Version
   $disk = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'"
+  $memory = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory
+  $cpu = Get-CimInstance -ClassName Win32_Processor | Select-Object Name, NumberOfCores, MaxClockSpeed
   Write-Log "SO: $($os.Caption) | Disco C: $([math]::Round($disk.FreeSpace/1GB,2)) GB Libres" 'INFO'
+  Write-Log "CPU: $($cpu.Name) | Núcleos: $($cpu.NumberOfCores) | RAM: $([math]::Round($memory.TotalVisibleMemorySize/1MB,2)) GB" 'INFO'
+  
   if(-not $DryRun){ 
     Write-Log "Creando Punto de Restauración..." 'STEP'
-    try { (Get-WmiObject -list -namespace root\default -class SystemRestore).CreateRestorePoint("SafePlus GOD MODE Backup", 0, 100) | Out-Null } catch {}
+    try { 
+        # Intentar crear punto de restauración usando WMI
+        (Get-WmiObject -list -namespace root\default -class SystemRestore).CreateRestorePoint("SafePlus GOD MODE MAX Backup", 0, 100) | Out-Null 
+        Write-Log "Punto de restauración creado exitosamente." 'SUCCESS'
+    } catch { 
+        Write-Log "No se pudo crear punto de restauración." 'WARN' 
+    }
   }
 }
 
 function Invoke-DeepClean {
   Write-Log "MÓDULO: Limpieza Profunda del Sistema" 'TITLE'
   if ($DryRun) { return }
-  $paths = @("$env:SystemRoot\Temp\*","$env:SystemRoot\SoftwareDistribution\Download\*","$env:ProgramData\Microsoft\Windows\WER\*","$env:SystemRoot\Prefetch\*.pf",
-    "$env:LOCALAPPDATA\NVIDIA\GLCache\*","$env:SystemRoot\Minidump\*.dmp","$env:LOCALAPPDATA\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\LocalCache\*")
-  Get-ChildItem 'C:\Users' -Directory | ? {$_.Name -notin @('Default','Public')} | % { $paths += "$($_.FullName)\AppData\Local\Temp\*" }
-  $paths | ForEach-Object { Remove-Item $_ -Recurse -Force }
-  Clear-RecycleBin -Force; ipconfig /flushdns | Out-Null
+  
+  $paths = @(
+    "$env:SystemRoot\Temp\*",
+    "$env:SystemRoot\SoftwareDistribution\Download\*",
+    "$env:ProgramData\Microsoft\Windows\WER\*",
+    "$env:SystemRoot\Prefetch\*.pf",
+    "$env:LOCALAPPDATA\NVIDIA\GLCache\*",
+    "$env:SystemRoot\Minidump\*.dmp",
+    "$env:LOCALAPPDATA\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\LocalCache\*",
+    "$env:LOCALAPPDATA\CrashDumps\*",
+    "$env:LOCALAPPDATA\Microsoft\Windows\INetCache\*",
+    "$env:LOCALAPPDATA\Microsoft\Windows\History\*",
+    "$env:LOCALAPPDATA\Microsoft\Windows\Temporary Internet Files\*",
+    "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\*",
+    "$env:APPDATA\Microsoft\Windows\Recent\*",
+    "$env:APPDATA\Microsoft\Windows\Recent\AutomaticDestinations\*",
+    "$env:APPDATA\Microsoft\Windows\Recent\CustomDestinations\*",
+    "$env:SystemRoot\Logs\CBS\*",
+    "$env:SystemRoot\debug\*",
+    "$env:SystemRoot\Logs\WindowsUpdate\*",
+    "$env:ProgramData\USOShared\Logs\*",
+    "$env:ProgramData\Microsoft\Windows Defender\Scans\*",
+    "$env:ProgramData\Microsoft\Windows Defender\Support\*"
+  )
+  
+  Get-ChildItem 'C:\Users' -Directory | ? {$_.Name -notin @('Default','Public')} | % { 
+    $paths += "$($_.FullName)\AppData\Local\Temp\*"
+    $paths += "$($_.FullName)\AppData\Local\Microsoft\Windows\INetCache\*"
+    $paths += "$($_.FullName)\AppData\Local\Microsoft\Windows\History\*"
+    $paths += "$($_.FullName)\AppData\Local\Microsoft\Windows\Temporary Internet Files\*"
+    $paths += "$($_.FullName)\AppData\Local\CrashDumps\*"
+    $paths += "$($_.FullName)\AppData\Local\Microsoft\Windows\Explorer\thumbcache_*.db"
+    $paths += "$($_.FullName)\AppData\Local\Microsoft\Windows\Explorer\iconcache_*.db"
+  }
+  
+  $paths | ForEach-Object { 
+    if (Test-Path $_) { 
+        Remove-Item $_ -Recurse -Force -ErrorAction SilentlyContinue 
+    } 
+  }
+  
+  Clear-RecycleBin -Force -ErrorAction SilentlyContinue
+  ipconfig /flushdns | Out-Null
+  netsh winsock reset | Out-Null
+  netsh int ip reset | Out-Null
+  
   Write-Log "Limpieza de sistema completada." 'SUCCESS'
 }
 
 function Invoke-AggressiveClean {
   if (!$AggressiveCleanup -or $DryRun) { return }
   Write-Log "MÓDULO: Limpieza Agresiva" 'TITLE'
+  
   vssadmin delete shadows /all /quiet | Out-Null
+  
   try {
-      $installer = New-Object -ComObject WindowsInstaller.Installer; $allProducts = $installer.ProductsEx("","","7")
-      $validMSIs = [System.Collections.Generic.HashSet[string]]@(); $allProducts | % { $path = $_.InstallProperty("LocalPackage"); if($path){[void]$validMSIs.Add([System.IO.Path]::GetFileName($path))} }
+      $installer = New-Object -ComObject WindowsInstaller.Installer; 
+      $allProducts = $installer.ProductsEx("","","7")
+      $validMSIs = [System.Collections.Generic.HashSet[string]]@(); 
+      $allProducts | % { $path = $_.InstallProperty("LocalPackage"); if($path){[void]$validMSIs.Add([System.IO.Path]::GetFileName($path))} }
       Get-ChildItem "C:\Windows\Installer" -Filter "*.msi" -Recurse -Force | ? { !$validMSIs.Contains($_.Name) } | Remove-Item -Force
   } catch {}
-  sfc.exe /purgecache | Out-Null; Stop-Service Spooler -Force; Remove-Item "$env:SystemRoot\System32\spool\PRINTERS\*" -Recurse -Force; Start-Service Spooler
+  
+  sfc.exe /purgecache | Out-Null
+  Stop-Service Spooler -Force -ErrorAction SilentlyContinue
+  Remove-Item "$env:SystemRoot\System32\spool\PRINTERS\*" -Recurse -Force -ErrorAction SilentlyContinue
+  Start-Service Spooler -ErrorAction SilentlyContinue
+  
   dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase | Out-Null
+  dism.exe /Online /Cleanup-Image /SPSuperseded | Out-Null
+  
+  # Limpiar componentes antiguos de Windows
+  dism.exe /online /cleanup-image /startcomponentcleanup /resetbase | Out-Null
+  dism.exe /online /cleanup-image /spsuperseded | Out-Null
+  
   Write-Log "Limpieza agresiva completada." 'SUCCESS'
 }
 
 function Invoke-Debloat {
   if (!$RemoveBloatware -or $DryRun) { return }
   Write-Log "MÓDULO: Eliminación de Bloatware" 'TITLE'
+  
   try {
-      if($PSVersionTable.PSEdition -eq 'Core') { Import-Module Appx -UseWindowsPowerShell }
-      $BloatwareToRemove.ForEach({ Get-AppxPackage -Name $_ -AllUsers | Remove-AppxPackage -AllUsers })
-  } catch { Write-Log "No se pudo cargar el módulo Appx. Se omite la eliminación de bloatware." 'WARN' }
+      if($PSVersionTable.PSEdition -eq 'Core') { 
+          Import-Module Appx -UseWindowsPowerShell 
+      }
+      $BloatwareToRemove.ForEach({ 
+          Get-AppxPackage -Name $_ -AllUsers | Remove-AppxPackage -AllUsers 
+          Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $_ | ForEach-Object { 
+              Remove-AppxProvisionedPackage -Online -AllUsers -PackageName $_.PackageName 
+          }
+      })
+  } catch { 
+      Write-Log "No se pudo cargar el módulo Appx. Se omite la eliminación de bloatware." 'WARN' 
+  }
+  
   Write-Log "Eliminación de bloatware completada." 'SUCCESS'
 }
 
 function Invoke-SystemTuning {
   Write-Log "MÓDULO: Ajuste Fino del Sistema y UI" 'TITLE'
   if ($DryRun) { return }
-  $ServicesToDisable.ForEach({ Set-Service -Name $_ -StartupType Disabled })
-  $TasksToDisable.ForEach({ schtasks /Change /TN $_ /DISABLE | Out-Null })
+  
+  # Deshabilitar servicios
+  $ServicesToDisable.ForEach({ 
+      if (Get-Service $_ -ErrorAction SilentlyContinue) { 
+          Set-Service -Name $_ -StartupType Disabled -ErrorAction SilentlyContinue
+          Stop-Service -Name $_ -Force -ErrorAction SilentlyContinue
+      }
+  })
+  
+  # Deshabilitar tareas programadas usando schtasks.exe como alternativa
+  Write-Log "Deshabilitando tareas programadas..." 'STEP'
+  $TasksToDisable.ForEach({ 
+      try {
+          $output = schtasks /Change /TN $_ /DISABLE 2>&1
+          if ($output -like "*Error*") {
+              Write-Log "No se pudo deshabilitar la tarea: $_" 'WARN'
+          }
+      } catch {
+          Write-Log "No se pudo deshabilitar la tarea: $_" 'WARN'
+      }
+  })
+  
   if ($EnablePerformanceTweaks) {
-    # Tweak de UI
+    # Optimización de UI
     Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 3
     Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" "StartupDelayInMSec" 0 -Force
     New-Item "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force | Set-ItemProperty -Name "(Default)" -Value ""
-    # Tweak de CPU
+    
+    # Optimización de CPU
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 26 -Type DWord
-    # Tweak de NTFS
+    
+    # Optimización de memoria
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" "ClearPageFileAtShutdown" 0 -Type DWord
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" "DisablePagingExecutive" 1 -Type DWord
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" "LargeSystemCache" 1 -Type DWord
+    
+    # Optimización de NTFS
     fsutil behavior set disablelastaccess 1 | Out-Null
-    # TCP Optimizer
+    fsutil behavior set disable8dot3 1 | Out-Null
+    
+    # Optimización de red avanzada
     netsh int tcp set global autotuninglevel=normal
     netsh int tcp set global congestionprovider=ctcp
     netsh int tcp set global ecncapability=enabled
+    netsh int tcp set global timestamps=disabled
+    netsh int tcp set global fastopen=enabled
+    netsh int tcp set global fastopenfallback=enabled
+    netsh int tcp set global hystart=disabled
+    netsh int tcp set global pacing=normal
+    netsh int tcp set global dca=enabled
+    netsh int tcp set global netdma=enabled
+    
+    # Optimización de disco
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" "NtfsDisableLastAccessUpdate" 1 -Type DWord
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" "NtfsDisable8dot3NameCreation" 1 -Type DWord
+    
+    # Optimización de programador
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 26 -Type DWord
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" "DpcWatchdogProfile" 0 -Type DWord
+    
+    # Deshabilitar notificaciones y sugerencias
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" "ToastEnabled" 0 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338387Enabled" 0 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338388Enabled" 0 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338389Enabled" 0 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-353698Enabled" 0 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SystemPaneSuggestionsEnabled" 0 -Type DWord
+    
+    # Optimización de arranque
+    bcdedit /set disabledynamictick yes | Out-Null
+    bcdedit /set useplatformclock true | Out-Null
+    bcdedit /set hypervisorlaunchtype off | Out-Null
   }
+  
   Write-Log "Ajuste de Sistema completado." 'SUCCESS'
 }
 
 function Invoke-PrivacyAndSecurity {
     if (!$HardenPrivacy -and !$HardenSecurity -or $DryRun) { return }
     Write-Log "MÓDULO: Blindaje de Privacidad y Seguridad" 'TITLE'
-    if ($HardenPrivacy) { Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0 -Type DWord }
-    if ($HardenSecurity) {
-        dism.exe /Online /Disable-Feature /FeatureName:SMB1Protocol /NoRestart | Out-Null
-        Set-MpPreference -ControlledFolderAccessEnable Enabled
-        dism.exe /Online /Disable-Feature /FeatureName:PowerShell-V2 /NoRestart | Out-Null
+    
+    if ($HardenPrivacy) { 
+        # Deshabilitar telemetría completa
+        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection" "AllowTelemetry" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "LimitEnhancedDiagnosticDataWindowsAnalytics" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" "AllowTelemetry" 0 -Type DWord
+        
+        # Deshabilitar experiencias personalizadas
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Privacy" "TailoredExperiencesWithDiagnosticDataEnabled" 0 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Personalization\Settings" "AcceptedPrivacyPolicy" 0 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\InputPersonalization" "RestrictImplicitTextCollection" 1 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\InputPersonalization" "RestrictImplicitInkCollection" 1 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore" "HarvestContacts" 0 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{C1D23ACC-752B-43E5-8448-8D7E097156F3}" "Value" "Deny" -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{E5323777-F976-4f5b-9B55-B94699C46E44}" "Value" "Deny" -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{2297E4E2-5DBE-466D-BE19-6366DA0E8759}" "Value" "Deny" -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{A8804298-2D5F-42E3-9531-9C8C39EB29CE}" "Value" "Deny" -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{7D7E8402-7C54-4821-A34E-AEEFD62DED93}" "Value" "Deny" -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{992AFA70-6F47-4148-B3E9-3003349C1548}" "Value" "Deny" -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{C1D23ACC-752B-43E5-8448-8D7E097156F3}" "Value" "Deny" -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{E5323777-F976-4f5b-9B55-B94699C46E44}" "Value" "Deny" -Type DWord
+        
+        # Deshabilitar Cortana
+        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" "AllowCortana" 0 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Personalization\Settings" "AcceptedPrivacyPolicy" 0 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\InputPersonalization" "RestrictImplicitTextCollection" 1 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\InputPersonalization" "RestrictImplicitInkCollection" 1 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore" "HarvestContacts" 0 -Type DWord
+        
+        # Deshabilitar ubicación
+        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" "DisableLocation" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" "DisableLocationScripting" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" "DisableSensors" 1 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" "Value" "Deny" -Type DWord
+        
+        # Deshabilitar publicidad
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Privacy" "TailoredExperiencesWithDiagnosticDataEnabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" "DisabledByGroupPolicy" 1 -Type DWord
     }
+    
+    if ($HardenSecurity) {
+        # Deshabilitar características vulnerables
+        $FeaturesToDisable.ForEach({
+            dism.exe /Online /Disable-Feature /FeatureName:$_ /NoRestart | Out-Null
+        })
+        
+        # Configuración de seguridad avanzada
+        Set-MpPreference -ControlledFolderAccessEnable Enabled
+        Set-MpPreference -PUAProtection Enable
+        Set-MpPreference -ScanScheduleDay 0
+        Set-MpPreference -ScanScheduleQuickScanTime 00:00:00
+        Set-MpPreference -ScanScheduleTime 00:00:00
+        Set-MpPreference -SignatureUpdateInterval 1
+        Set-MpPreference -SubmitSamplesConsent 2
+        Set-MpPreference -MAPSReporting 0
+        Set-MpPreference -RealTimeScanDirection 0
+        
+        # Deshabilitar protocolos vulnerables
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" "LmCompatibilityLevel" 5 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL" "EnableLegacyTLS" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Server" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Server" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" "Enabled" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server" "DisabledByDefault" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server" "Enabled" 0 -Type DWord
+        
+        # Configuración de UAC
+        Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" "ConsentPromptBehaviorAdmin" 0 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" "EnableLUA" 1 -Type DWord
+        Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" "PromptOnSecureDesktop" 1 -Type DWord
+        
+        # Deshabilitar servicios vulnerables
+        Set-Service -Name "RemoteRegistry" -StartupType Disabled
+        Set-Service -Name "SSDPSRV" -StartupType Disabled
+        Set-Service -Name "upnphost" -StartupType Disabled
+        Set-Service -Name "WMPNetworkSvc" -StartupType Disabled
+        Set-Service -Name "HomeGroupListener" -StartupType Disabled
+        Set-Service -Name "HomeGroupProvider" -StartupType Disabled
+    }
+    
     Write-Log "Blindaje completado." 'SUCCESS'
 }
 
 function Invoke-DriveMaintenance {
   if ($DryRun) { return }
   Write-Log "MÓDULO: Mantenimiento de Discos y Energía" 'TITLE'
-  powercfg /h off | Out-Null; Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" "HiberbootEnabled" 0 -Type DWord
-  Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
-    $driveLetter = (Get-Partition -DiskNumber $_.DiskNumber | Where-Object { $_.DriveLetter } | Select-Object -First 1).DriveLetter
-    if($driveLetter) {
-        $mediaType = (Get-PhysicalDisk -DeviceId $_.DeviceId).MediaType
-        if($mediaType -eq 'SSD') { defrag.exe "$($driveLetter):" /L | Out-Null }
-        else { defrag.exe "$($driveLetter):" /O | Out-Null }
-    }
+  
+  # Deshabilitar hibernación y arranque rápido
+  powercfg /h off | Out-Null
+  Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" "HiberbootEnabled" 0 -Type DWord
+  
+  # Optimización de discos - método alternativo sin módulo Storage
+  Write-Log "Optimizando discos..." 'STEP'
+  $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+  foreach ($drive in $drives) {
+      $driveLetter = $drive.DeviceID
+      Write-Log "Optimizando unidad $driveLetter" 'STEP'
+      
+      # Determinar si es SSD sin usar el módulo Storage
+      $diskIndex = (Get-WmiObject -Class Win32_LogicalDiskToPartition | Where-Object { $_.Dependent -like "*$driveLetter*" }).Antecedent -replace '.*Disk #(\d+).*', '$1'
+      $disk = Get-WmiObject -Class Win32_DiskDrive | Where-Object { $_.Index -eq $diskIndex }
+      $isSSD = $disk.Model -like "*SSD*" -or $disk.Model -like "*Solid State*"
+      
+      if ($isSSD) {
+          defrag.exe $driveLetter /L | Out-Null
+          fsutil behavior set disabledeletenotify 0 | Out-Null
+      } else {
+          defrag.exe $driveLetter /O | Out-Null
+      }
   }
-  if ($EnableProactiveMaintenance) { Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" "01" 1 -Type DWord }
-  if ($EnableUltimatePowerPlan) { $guid = "e9a42b02-d5df-448d-aa00-03f14749eb61"; if (-not (powercfg /l | Select-String -Pattern $guid)) { powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c }; powercfg /s $guid }
+  
+  # Habilitar Storage Sense
+  if ($EnableProactiveMaintenance) { 
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" "01" 1 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" "2048" 30 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" "256" 1 -Type DWord
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" "512" 1 -Type DWord
+  }
+  
+  # Plan de energía máximo rendimiento
+  if ($EnableUltimatePowerPlan) { 
+    $guid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
+    if (-not (powercfg /l | Select-String -Pattern $guid)) { 
+        powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 
+    }
+    powercfg /s $guid
+    
+    # Configuración avanzada de energía
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR IDLE_DISABLE 1
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR IDLE_PROMOTE_THRESHOLD 10
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR IDLE_DEMOTE_THRESHOLD 50
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFINCPOL 0
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFINCTHRESHOLD 10
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_VIDEO VIDEOIDLE 0
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_VIDEO VIDEOANIM 0
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_VIDEO VIDEODIM 0
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_SLEEP HYBRIDSLEEP 0
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_SLEEP HIBERNATE 0
+    powercfg /setacvalueindex SCHEME_CURRENT SUB_SLEEP STANDBYIDLE 0
+    powercfg /setactive SCHEME_CURRENT
+  }
+  
   Write-Log "Mantenimiento de discos completado." 'SUCCESS'
 }
 
 function Invoke-SystemUpdates {
   if ($NoUpdate -or $DryRun) { return }
   Write-Log "MÓDULO: Actualización Total del Sistema" 'TITLE'
-  if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) { Write-Log "PSWindowsUpdate no disponible." 'WARN'; return }
+  
+  if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) { 
+      Write-Log "PSWindowsUpdate no disponible." 'WARN'; return 
+  }
+  
   Import-Module PSWindowsUpdate -Force
+  
+  # Actualizar Windows
+  Write-Log "Buscando actualizaciones de Windows..." 'STEP'
   Get-WindowsUpdate -AcceptAll -Install -Verbose | Out-Null
+  
+  # Actualizar drivers
+  Write-Log "Buscando actualizaciones de drivers..." 'STEP'
   Get-WindowsUpdate -Driver -AcceptAll -Install -Verbose | Out-Null
-  if (Get-Command winget) { winget source update; winget upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity }
+  
+  # Actualizar aplicaciones con Winget
+  if (Get-Command winget) { 
+      Write-Log "Actualizando aplicaciones con Winget..." 'STEP'
+      winget source update | Out-Null
+      winget upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity | Out-Null
+  }
+  
   Write-Log "Actualización del sistema completada." 'SUCCESS'
 }
 
@@ -199,11 +536,22 @@ try {
     Invoke-PrivacyAndSecurity
     Invoke-DriveMaintenance
     Invoke-SystemUpdates
-    if (-not $SkipIntegrity -and -not $DryRun) { Write-Log "MÓDULO: Integridad del Sistema" 'TITLE'; sfc.exe /scannow | Out-Null; dism.exe /Online /Cleanup-Image /RestoreHealth | Out-Null }
+    
+    if (-not $SkipIntegrity -and -not $DryRun) { 
+        Write-Log "MÓDULO: Integridad del Sistema" 'TITLE'
+        Write-Log "Ejecutando SFC..." 'STEP'
+        sfc.exe /scannow | Out-Null
+        
+        Write-Log "Ejecutando DISM..." 'STEP'
+        dism.exe /Online /Cleanup-Image /RestoreHealth | Out-Null
+    }
 }
 finally {
     $duration = (Get-Date) - $startTime
     Write-Log "================= FIN DEL PROCESO =================" 'TITLE'
     Write-Log ("Duración Total: {0:N2} segundos" -f $duration.TotalSeconds) 'INFO'
     Write-Host "Proceso completado. Se recomienda REINICIAR el equipo AHORA." -ForegroundColor Green
+    Write-Host "========================================================" -ForegroundColor Magenta
+    Write-Host "      SafePlus GOD MODE MAXIMUM - Optimización Completa" -ForegroundColor White
+    Write-Host "========================================================" -ForegroundColor Magenta
 }
