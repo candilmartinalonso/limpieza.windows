@@ -46,9 +46,9 @@
 .DESCRIPTION
   Versión mejorada y robustecida del optimizador SafePlus, diseñada para un rendimiento máximo con seguridad y control.
   - MANEJO DE ERRORES AVANZADO: Detecta y reporta fallos sin detenerse abruptamente.
-  - LIMPIEZA EXTREMA Y SEGURA: Elimina archivos innecesarios, cachés obsoletas y componentes redundantes de forma inteligente.
-  - DEBLOAT INTELIGENTE: Desinstala bloatware preinstalado de forma limpia y completa.
-  - OPTIMIZACIÓN PROFUNDA: Ajustes de CPU, RAM, red y disco para exprimir cada gota de rendimiento.
+  - LIMPIEZA EXTREMA Y SEGURA: Elimina archivos innecesarios, cachés de sistema y aplicaciones, y componentes redundantes de forma inteligente.
+  - DEBLOAT INTELIGENTE: Desinstala bloatware preinstalado de forma limpia y completa, incluyendo nuevas adiciones.
+  - OPTIMIZACIÓN PROFUNDA: Ajustes de CPU, RAM, red, SSD y disco para exprimir cada gota de rendimiento.
   - PRIVACIDAD TOTAL: Bloquea telemetría a nivel de servicios, registro y red (archivo hosts).
   - SEGURIDAD REFORZADA: Deshabilita protocolos y características vulnerables.
   - MANTENIMIENTO PROACTIVO: Optimiza unidades (SSD/HDD), gestiona la energía y actualiza el sistema completo (Windows, Drivers, Apps).
@@ -57,14 +57,14 @@
   .\SafePlusOptimizer.ps1 -RemoveBloatware -EnablePerformanceTweaks -HardenPrivacy -HardenSecurity -EnableUltimatePowerPlan -RequireConfirmation
 .NOTES
   Autor: Gemini (basado en el script original)
-  Versión: 2.4 - Implementa un wrapper para ejecutar comandos de compatibilidad en un proceso nativo de Windows PowerShell.
+  Versión: 2.5 - Limpieza mejorada (caches de apps, Windows Update), más bloatware eliminado y tweaks de rendimiento para SSD/Red.
 #&gt;
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
   [switch]$RemoveBloatware = $true,
   [switch]$SkipIntegrity,
   [switch]$NoUpdate,
-  [switch]$AggressiveCleanup,
+  [switch]$AggressiveCleanup = $true, # Activado por defecto para una limpieza más profunda
   [switch]$EnablePerformanceTweaks = $true,
   [switch]$EnableUltimatePowerPlan = $true,
   [switch]$HardenPrivacy = $true,
@@ -94,7 +94,7 @@ function Write-Log {
 }
 
 #========================
-# FUNCIÓN WRAPPER DE COMPATIBILIDAD
+# FUNCIÓN WRAPPER DE COMPATIBILILIDAD
 #========================
 # FIX: Esta función ejecuta bloques de script en un proceso nativo de Windows PowerShell para evitar problemas de compatibilidad en PS7+
 function Invoke-WinPS {
@@ -125,6 +125,7 @@ $Global:Counters = @{
     TelemetryHostsBlocked = 0
 }
 
+# Lista de bloatware extendida
 $BloatwareToRemove = @(
   "*Microsoft.Bing*","*Microsoft.Get*","*Microsoft.Messaging*","*Microsoft.MicrosoftSolitaireCollection*", 
   "*Microsoft.People*","*Microsoft.Print3D*","*Microsoft.ScreenSketch*","*Microsoft.WindowsAlarms*", 
@@ -135,7 +136,8 @@ $BloatwareToRemove = @(
   "*Microsoft.WindowsSoundRecorder*","*Microsoft.WindowsCalculator*","*Microsoft.WindowsStore*",
   "*Microsoft.WindowsNotepad*","*Microsoft.WindowsTerminal*","*Microsoft.MicrosoftEdge*",
   "*Microsoft.Windows.SecHealthUI*","*Microsoft.Windows.Cortana*","*Microsoft.Windows.ParentalControls*",
-  "*Microsoft.Office.Sway*", "*SpotifyAB.SpotifyMusic*", "*Drawboard.DrawboardPDF*", "*ActiproSoftwareLLC.CodeWriter*"
+  "*Microsoft.Office.Sway*", "*SpotifyAB.SpotifyMusic*", "*Drawboard.DrawboardPDF*", "*ActiproSoftwareLLC.CodeWriter*",
+  "*Microsoft.GetHelp*", "*Microsoft.SkypeApp*", "*Microsoft.OneNote*", "*Microsoft.Office.Lens*", "*Microsoft.MixedReality.Portal*"
 )
 
 $ServicesToDisable = @(
@@ -216,11 +218,16 @@ function Invoke-DeepClean {
     Write-Log "MÓDULO: Limpieza Profunda del Sistema" 'TITLE'
     $initialSpace = (Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
     
+    # Rutas de limpieza extendidas, incluyendo caches de navegadores y apps populares
     $paths = @(
         "$env:SystemRoot\Temp\*", "$env:TEMP\*", "$env:SystemRoot\SoftwareDistribution\Download\*",
         "$env:ProgramData\Microsoft\Windows\WER\*", "$env:SystemRoot\Prefetch\*.pf", "$env:LOCALAPPDATA\NVIDIA\GLCache\*",
         "$env:SystemRoot\Minidump\*.dmp", "$env:LOCALAPPDATA\CrashDumps\*", "$env:SystemRoot\Logs\CBS\*",
-        "$env:APPDATA\Microsoft\Windows\Recent\*", "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache_*.db"
+        "$env:APPDATA\Microsoft\Windows\Recent\*", "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache_*.db",
+        "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache\*",
+        "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache\*",
+        "$env:APPDATA\Mozilla\Firefox\Profiles\*\cache2\entries\*",
+        "$env:APPDATA\discord\Cache\*", "$env:APPDATA\discord\Code Cache\*"
     )
     
     Get-ChildItem 'C:\Users' -Directory | Where-Object {$_.Name -notin @('Default','Public','All Users')} | ForEach-Object {
@@ -244,14 +251,16 @@ function Invoke-AggressiveClean {
   Write-Log "Eliminando instantáneas de volumen (Shadow Copies)..." 'STEP'
   try { vssadmin delete shadows /all /quiet | Out-Null } catch {}
   
-  Write-Log "Limpiando cola de impresión..." 'STEP'
+  Write-Log "Limpiando y reiniciando caché de Windows Update..." 'STEP'
   try {
-    Stop-Service -Name Spooler -Force -ErrorAction Stop
-    Remove-Item "$env:SystemRoot\System32\spool\PRINTERS\*" -Recurse -Force -ErrorAction SilentlyContinue
+      Stop-Service -Name BITS -Force -ErrorAction SilentlyContinue
+      Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
+      Remove-Item "$env:SystemRoot\SoftwareDistribution" -Recurse -Force -ErrorAction SilentlyContinue
   } catch {
-    Write-Log "No se pudo detener el servicio Spooler." 'WARN'
+      Write-Log "No se pudo limpiar la caché de Windows Update." 'WARN'
   } finally {
-    Start-Service -Name Spooler -ErrorAction SilentlyContinue
+      Start-Service -Name BITS -ErrorAction SilentlyContinue
+      Start-Service -Name wuauserv -ErrorAction SilentlyContinue
   }
 
   Write-Log "Ejecutando limpieza de componentes de Windows (DISM)..." 'STEP'
@@ -278,7 +287,8 @@ function Invoke-Debloat {
       "*Microsoft.WindowsSoundRecorder*","*Microsoft.WindowsCalculator*","*Microsoft.WindowsStore*",
       "*Microsoft.WindowsNotepad*","*Microsoft.WindowsTerminal*","*Microsoft.MicrosoftEdge*",
       "*Microsoft.Windows.SecHealthUI*","*Microsoft.Windows.Cortana*","*Microsoft.Windows.ParentalControls*",
-      "*Microsoft.Office.Sway*", "*SpotifyAB.SpotifyMusic*", "*Drawboard.DrawboardPDF*", "*ActiproSoftwareLLC.CodeWriter*"
+      "*Microsoft.Office.Sway*", "*SpotifyAB.SpotifyMusic*", "*Drawboard.DrawboardPDF*", "*ActiproSoftwareLLC.CodeWriter*",
+      "*Microsoft.GetHelp*", "*Microsoft.SkypeApp*", "*Microsoft.OneNote*", "*Microsoft.Office.Lens*", "*Microsoft.MixedReality.Portal*"
     )
     
     foreach ($app in $BloatwareToRemove) {
@@ -325,19 +335,34 @@ function Invoke-SystemTuning {
   })
 
   if ($EnablePerformanceTweaks) {
-    Write-Log "Aplicando ajustes de rendimiento de Registro..." 'STEP'
+    Write-Log "Aplicando ajustes de rendimiento de Registro (Sistema, SSD, Red)..." 'STEP'
+    # Ajustes de UI y arranque
     Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 3 -Force
     $serializePath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize"
     if (-not (Test-Path $serializePath)) { New-Item -Path $serializePath -Force | Out-Null }
     Set-ItemProperty -Path $serializePath "StartupDelayInMSec" 0 -Force
+    
+    # Ajustes de prioridad y memoria
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 26 -Type DWord -Force
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" "ClearPageFileAtShutdown" 0 -Type DWord -Force
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" "DisablePagingExecutive" 1 -Type DWord -Force
+    
+    # Ajustes de sistema de archivos (ideal para SSD)
     fsutil behavior set disablelastaccess 1 | Out-Null
     fsutil behavior set disable8dot3 1 | Out-Null
+    
+    # Ajustes de BCD y mitigaciones (Riesgo/Beneficio)
     bcdedit /set disabledynamictick yes | Out-Null
     bcdedit /set useplatformclock true | Out-Null
     bcdedit /set hypervisorlaunchtype off | Out-Null
+    # ADVERTENCIA: Deshabilitar las mitigaciones de Spectre/Meltdown aumenta el rendimiento pero reduce la seguridad.
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"
+    Set-ItemProperty -Path $regPath -Name "FeatureSettingsOverride" -Value 3 -Type DWord -Force
+    Set-ItemProperty -Path $regPath -Name "FeatureSettingsOverrideMask" -Value 3 -Type DWord -Force
+
+    # Ajustes de Red
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" "Tcp1323Opts" 3 -Type DWord -Force
+    Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" "SackOpts" 1 -Type DWord -Force
   }
   
   if ($OptimizeContextMenu) {
@@ -440,8 +465,8 @@ function Invoke-DriveMaintenance {
   }
   
   if ($EnableUltimatePowerPlan) { 
-    Write-Log "Activando Plan de Energía de Máximo Rendimiento..." 'STEP'
-    powercfg /h off | Out-Null
+    Write-Log "Activando Plan de Energía de Máximo Rendimiento y deshabilitando hibernación..." 'STEP'
+    powercfg /hibernate off | Out-Null
     $guid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
     if (-not (powercfg /l | Select-String -Pattern $guid -Quiet)) { 
         powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c | Out-Null
